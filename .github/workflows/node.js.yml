@@ -3,10 +3,10 @@ name: Test and Deploy to AWS Amplify
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-test:
