@@ -25,4 +25,7 @@ jobs:
       - name: Set permissions for scripts
         run: chmod +x node_modules/.bin/react-scripts
       - name: Run tests
+        env:
+          REACT_APP_SPOTIFY_CLIENT_ID: ${{ secrets.REACT_APP_MY_SPOTIFY_CLIENT_ID }}
+          REACT_APP_OPENAI_API_KEY: ${{ secrets.REACT_APP_MY_OPENAI_API_KEY }}
         run: npm test
