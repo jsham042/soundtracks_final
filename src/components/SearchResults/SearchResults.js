@@ -29,10 +29,7 @@ class SearchResults extends React.Component {
     return (
       <div className="SearchResults">
         <h2>Results</h2>
-          {/*<button className="addTopFive" onClick={this.addTopFive}>Add Top 5</button>*/}
-          {/*  <button className="addTopTen" onClick={this.addTopTen}>Add Top 10</button>*/}
-          {/*  <button className="addAll" onClick={this.addAll}>Add All</button>*/}
-        <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} />
+        <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle}  currentTrack={this.props.currentTrack}/>
       </div>
     );
   }

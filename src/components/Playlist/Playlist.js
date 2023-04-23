@@ -29,7 +29,11 @@ class Playlist extends React.Component {
                 </div>
                 <TrackList tracks={this.props.playlistTracks}
                            isRemoval={true}
-                           onRemove={this.props.onRemove} />
+                           onRemove={this.props.onRemove}
+                            onToggle ={this.props.onToggle}
+                           currentTrack={this.props.currentTrack}
+
+                />
 
             </div>
         );

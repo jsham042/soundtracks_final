@@ -20,6 +20,7 @@ class App extends React.Component {
       isFetching: false,
       searchState: true,
       albumArt: defaultAlbumArt,
+        currentTrack: null,
     };
 
     this.search = this.search.bind(this);
@@ -31,7 +32,9 @@ class App extends React.Component {
     this.generatePlaylistName = this.generatePlaylistName.bind(this);
     this.setToSearchState = this.setToSearchState.bind(this);
     this.setToPlaylistState=this.setToPlaylistState.bind(this);
-    Spotify.getAccessToken();
+      this.toggleTrack = this.toggleTrack.bind(this);
+
+      Spotify.getAccessToken();
   }
 
 
@@ -91,13 +94,6 @@ class App extends React.Component {
             });
     }
 
-    //play the full track and stop it when the user clicks on the track
-    playTrack(track) {
-        let tracks = this.state.playlistTracks;
-        tracks = tracks.filter(currentTrack => currentTrack.id === track.id);
-        this.setState({playlistTracks: tracks});
-    }
-
   addTrack(track) {
     let tracks = this.state.playlistTracks;
     if (tracks.find(savedTrack => savedTrack.id === track.id)) {
@@ -110,20 +106,25 @@ class App extends React.Component {
     this.setState({searchResults: searchResults })
   }
 
-  //add multiple tracks to playlist
-    addTracks(tracks) {
-        let playlistTracks = this.state.playlistTracks;
-        tracks.forEach(track => {
-            if (playlistTracks.find(savedTrack => savedTrack.id === track.id)) {
-                return;
+    toggleTrack(track) {
+        if (this.state.currentTrack && this.state.currentTrack.id === track.id) {
+            // Pause the current track if it is already playing
+            this.audio.pause();
+            this.setState({ currentTrack: null });
+        } else {
+            // Play the new track
+            if (this.audio) {
+                this.audio.pause();
             }
-            playlistTracks.push(track);
-        });
-        this.setState({playlistTracks: playlistTracks});
+            this.audio = new Audio(track.preview_url);
+            this.audio.play();
+            this.setState({ currentTrack: track });
+        }
     }
 
 
-  removeTrack(track) {
+
+    removeTrack(track) {
     let tracks = this.state.playlistTracks;
     tracks = tracks.filter(currentTrack => currentTrack.id !== track.id);
     this.setState({playlistTracks: tracks});
@@ -193,7 +194,7 @@ class App extends React.Component {
                                     Fetching results...
                                 </div>
                             ) : null}
-                            <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} />
+                            <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} onToggle={this.toggleTrack} currentTrack={this.state.currentTrack} />
                         </div>
                         :
                         <div className="App-playlist">
@@ -203,7 +204,9 @@ class App extends React.Component {
                                 albumArt={this.state.albumArt}
                                 onNameChange={this.updatePlaylistName}
                                 onRemove={this.removeTrack}
-                                onSave={this.savePlaylist}>
+                                onSave={this.savePlaylist}
+                                onToggle={this.toggleTrack}
+                                currentTrack={this.state.currentTrack} >
                                 <img src={this.state.albumArt} alt="Album Art" style={{ width: '1rem', height: '1rem' }} />
                             </Playlist>
                         </div>

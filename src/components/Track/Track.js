@@ -2,42 +2,29 @@ import React from 'react';
 import './Track.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
-import playlist from "../Playlist/Playlist.js";
-
 
 class Track extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      playing: false,
-      audio: new Audio(this.props.track.preview_url)
-    };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
-    this.playPreview = this.playPreview.bind(this);
-    this.pausePreview = this.pausePreview.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   addTrack(event) {
     this.props.onAdd(this.props.track);
-    this.state.audio.pause();
-    this.setState({playing: false});
+    if (this.props.currentTrack && this.props.currentTrack.id === this.props.track.id) {
+      this.props.onToggle(this.props.track);}
   }
 
   removeTrack(event) {
     this.props.onRemove(this.props.track);
-    this.state.audio.pause();
-    this.setState({playing: false});
+    if (this.props.currentTrack && this.props.currentTrack.id === this.props.track.id) {
+      this.props.onToggle(this.props.track);}
   }
 
-  playPreview(event) {
-    this.state.audio.play();
-    this.setState({ playing: true });
-  }
-
-  pausePreview(event) {
-    this.state.audio.pause();
-    this.setState({ playing: false });
+  handleClick() {
+    this.props.onToggle(this.props.track);
   }
 
   renderAction() {
@@ -52,24 +39,30 @@ class Track extends React.Component {
       e.stopPropagation();
     }}>+</button>;
   }
-  render() {
-    return (
-        <div className="Track" onClick={this.state.playing ? this.pausePreview : this.playPreview}>
 
+  render() {
+    const isCurrentTrack = this.props.currentTrack && this.props.currentTrack.id === this.props.track.id;
+    return (
+        <div className="Track" onClick={this.handleClick}>
           <button className="playButton">
-            {this.state.playing ? <FontAwesomeIcon icon={faPause} style={{width: '1rem'}}beat/> : <FontAwesomeIcon icon={faPlay} style={{width: '1rem'}}/>}
+            {isCurrentTrack ? (
+                <FontAwesomeIcon icon={faPause} style={{ width: "1rem" }} />
+            ) : (
+                <FontAwesomeIcon icon={faPlay} style={{ width: "1rem" }} />
+            )}
           </button>
           <div className="Track-image">
-            <img src={this.props.track.image} alt="Album Art" style={{width: '2.5rem'}}/>
+            <img src={this.props.track.image} alt="Album Art" style={{ width: "2.5rem" }} />
           </div>
           <div className="Track-information">
             <h3>{this.props.track.name}</h3>
-            <p>{this.props.track.artist} | {this.props.track.album}</p>
+            <p>
+              {this.props.track.artist} | {this.props.track.album}
+            </p>
           </div>
           {this.renderAction()}
         </div>
     );
-
   }
 }
 

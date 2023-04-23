@@ -14,6 +14,7 @@ class SearchBar extends React.Component {
 
     this.handleTermChange = this.handleTermChange.bind(this);
     this.search = this.search.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
   handleTermChange(event) {
@@ -24,12 +25,20 @@ class SearchBar extends React.Component {
     this.props.onSearch(this.state.term);
   }
 
+  handleKeyDown(event) {
+    if (event.key === 'Enter') {
+      this.search();
+    }
+  }
+
   render() {
     return (
       <div className="SearchBar">
         <input
             placeholder="Describe the vibe you're going for"
-            onChange={this.handleTermChange} />
+            onChange={this.handleTermChange}
+            onKeyDown={this.handleKeyDown}
+            />
         <button onClick={this.search}>
           <FontAwesomeIcon icon={faSearch} />
 
