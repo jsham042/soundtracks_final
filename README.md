@@ -11,7 +11,8 @@ Create, update, and save Spotify playlists.
 Fetch album art for the created playlist using Dall E
 User authentication through Spotify.
 
-**Installation
+****Installation**
+
 **Clone the repository:
 
 bash
