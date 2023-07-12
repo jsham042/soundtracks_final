@@ -4,8 +4,9 @@ import defaultAlbumArt from './DALL·E 2023-03-01 20.07.50 - driving down the 10
 import Playlist from '../Playlist/Playlist.js';
 import SearchBar from '../SearchBar/SearchBar.js';
 import SearchResults from '../SearchResults/SearchResults.js';
+import LoginPage from '../LoginPage/LoginPage.js';
 import Spotify from '../../util/Spotify.js';
-import OpenAiAPIRequest, {generatePlaylistName, generateSongRecommendations} from "../../util/OpenAiAPIRequest.js";
+import OpenAiAPIRequest, {generatePlaylistName, generateSongRecommendations, generateImage,interpretPrompt} from "../../util/OpenAiAPIRequest.js";
 import {faSpinner, faCommentAlt, faSearch,faMusic} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -14,7 +15,8 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      searchResults: [],
+        loggedIn: true,
+        searchResults: [],
       playlistName: 'New Playlist',
       playlistTracks: [],
       isFetching: false,
@@ -32,19 +34,35 @@ class App extends React.Component {
     this.generatePlaylistName = this.generatePlaylistName.bind(this);
     this.setToSearchState = this.setToSearchState.bind(this);
     this.setToPlaylistState=this.setToPlaylistState.bind(this);
-      this.toggleTrack = this.toggleTrack.bind(this);
-
-      Spotify.getAccessToken();
+    this.toggleTrack = this.toggleTrack.bind(this);
+    this.handleLogin= this.toggleTrack.bind(this);
+    this.generateAlbumArt = this.generateAlbumArt.bind(this);
+    this.interpretPrompt= this.interpretPrompt.bind(this);
   }
 
+    async handleLogin() {
+        // Use the Spotify utility to get the access token
+        const accessToken = await Spotify.getAccessToken();
+        // If an access token is obtained, update the loggedIn state
+        if (accessToken) {
+            this.setState({ loggedIn: true });
+        } else {
+            // Handle the case where the access token could not be obtained
+            console.error('Authentication failed');
+        }
+    }
 
-
-  search(term) {
+    search(term) {
     Spotify.search(term).then(searchResults => {
       this.setState({searchResults: searchResults});
     });
   }
-
+    //call interpret prompt
+    interpretPrompt(prompt) {
+      interpretPrompt(prompt).then((response) => {
+            console.log(response);
+        });
+  }
 
     openAiSearch(prompt) {
         this.setState({ isFetching: true });
@@ -122,6 +140,12 @@ class App extends React.Component {
         }
     }
 
+    componentDidMount() {
+        const accessToken = Spotify.getAccessToken();
+        if (accessToken) {
+            this.setState({ loggedIn: true });
+        }
+    }
 
 
     removeTrack(track) {
@@ -156,7 +180,9 @@ class App extends React.Component {
   }
 
     render() {
-
+        if (!this.state.loggedIn) {
+            return <LoginPage onLogin={() => this.handleLogin()}  />;
+        }
         return (
             <div>
                 <div className="Sidebar">

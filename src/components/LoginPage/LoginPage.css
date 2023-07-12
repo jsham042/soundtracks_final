@@ -1,0 +1,37 @@
+.LoginPage {
+    display: flex;
+    background-color: #303133;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.App-logo img {
+    width: 150px;
+    height: 150px;
+}
+.subtitle {
+    color: white;
+    font-size: 1rem;
+    margin: 0;
+}
+.login-button {
+    background-color: #1db954;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 20px 2px;
+    cursor: pointer;
+    border-radius: 20px;
+}
+
+.disclaimer {
+    font-size: 12px;
+    color: #888;
+}

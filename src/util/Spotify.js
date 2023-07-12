@@ -137,7 +137,4 @@ const Spotify = {
   }
 };
 
-//run makeRecommendation with 5 song ids
-
-
 export default Spotify;
