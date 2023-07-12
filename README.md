@@ -1,5 +1,5 @@
 # SoundTracks
-![SoundTracks logo](./public/djboticon.png)
+<img src="./public/djboticon.png" alt="SoundTracks logo" width="200"/>
 
 SoundTracks is a React application that allows users to generate Spotify playlists based on a given prompt. The app uses the Spotify Web API for playlist creation and management, while also using the OpenAI API to interpret prompts and generate unique, creative playlist names.
 
