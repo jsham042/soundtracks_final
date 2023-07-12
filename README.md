@@ -1,5 +1,5 @@
 # SoundTracks
-![SoundTracks logo](./djboticon.png)
+![SoundTracks logo](./public/djboticon.png)
 
 SoundTracks is a React application that allows users to generate Spotify playlists based on a given prompt. The app uses the Spotify Web API for playlist creation and management, while also using the OpenAI API to interpret prompts and generate unique, creative playlist names.
 
@@ -17,19 +17,20 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 Clone the repository:
 ```bash
 git clone https://github.com/username/SoundTracks.git
+```
 
 Change to the project directory:
 
-'''bash
+```bash
 cd SoundTracks
-'''
+```
 
 Install the dependencies:
-'''bash
+```bash
 npm install
-'''
+```
 
 Start application:
-'''bash
+```bash
 npm start
-'''
+```
