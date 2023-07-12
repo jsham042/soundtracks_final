@@ -1,5 +1,5 @@
 const nock = require('nock');
-import { interpretPrompt } from './OpenAiAPIRequest.js';
+import { DetermineAppropriateStrategies } from './OpenAiAPIRequest.js';
 
 describe("interpretPrompt", () => {
     beforeEach(() => {
@@ -21,7 +21,7 @@ describe("interpretPrompt", () => {
             .post('/v1/chat/completions') // adjust path to actual API endpoint
             .reply(200, mockResponse);
 
-        const result = await interpretPrompt(prompt);
+        const result = await DetermineAppropriateStrategies(prompt);
         expect(result).toEqual([1, 2, 3, 5]);
     });
 
@@ -32,7 +32,7 @@ describe("interpretPrompt", () => {
             .post('/v1/chat/completions') // adjust path to actual API endpoint
             .replyWithError('Something went wrong');
 
-        const result = await interpretPrompt(prompt);
+        const result = await DetermineAppropriateStrategies(prompt);
         expect(result).toEqual([5]);
     });
 
@@ -52,7 +52,7 @@ describe("interpretPrompt", () => {
             .post('/v1/chat/completions') // adjust path to actual API endpoint
             .reply(200, mockResponse);
 
-        const result = await interpretPrompt(prompt);
+        const result = await DetermineAppropriateStrategies(prompt);
         expect(result).toEqual([5]);
     });
 });

@@ -4,8 +4,66 @@ const API_URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
 const api_key = process.env.REACT_APP_MY_OPENAI_API_KEY;//API key that Joe got from registering the app
 const API_URL_IMAGE = "https://api.openai.com/v1/images/generations";
 
+
+// Fisher-Yates shuffle algorithm
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+
+// creates song recommendations based on a prompt
+export const generateTotalSongRecommendations = async (prompt) => {
+    // Determine strategies
+    const strategies = await DetermineAppropriateStrategies(prompt);
+
+    // Total recommendations required
+    const totalRecommendations = 25;
+    // Calculate recommendations per strategy
+    const recsPerStrategy = Math.floor(totalRecommendations / strategies.length);
+
+    // Create array of promises for all strategies
+    const strategyPromises = strategies.map(async strategy => {
+        // Modify prompt to include strategy for generating recommendations
+        const strategyPrompt = `Give me ${recsPerStrategy} song recommendations for this prompt: ${prompt}. Use this strategy to make your recommendations ${strategy}. Format the response with this convention: Song Name - Artist Name 2. Song Name - Artist Name`;
+        const strategyRecommendations = await generateSongRecommendations(strategyPrompt, recsPerStrategy);
+
+        // Log the strategy and its recommendations
+        console.log(`Strategy: ${strategy}`, strategyRecommendations);
+
+        return strategyRecommendations;
+    });
+
+    // Resolve all promises concurrently and flatten the resulting array
+    let recommendations = (await Promise.all(strategyPromises)).flat();
+
+    // Remove duplicates by converting to Set and back to array
+    recommendations = [...new Set(recommendations)];
+
+    // Randomize the order of recommendations
+    shuffleArray(recommendations);
+
+    // In case total recommendations are less than 25 due to rounding down, fill up remaining
+    if (recommendations.length < totalRecommendations) {
+        const remainingRecs = totalRecommendations - recommendations.length;
+        const additionalRecs = await generateSongRecommendations(prompt, remainingRecs);
+
+        // Remove potential duplicates again after adding additional recommendations
+        recommendations = [...new Set(recommendations.concat(additionalRecs))];
+
+        // Randomize the order of recommendations again after adding additional recommendations
+        shuffleArray(recommendations);
+    }
+    console.log("Final recommendations: ", recommendations);
+
+    return recommendations;
+}
+
+
 //Interprets prompt to determine which batch strategies make sense given the context of the prompt
-export const interpretPrompt = async (prompt) => {
+export const DetermineAppropriateStrategies = async (prompt) => {
     const batchDescriptions = [
         "1. Literal interpretation of the user's prompt",
         "2. Capturing the mood or theme implied by the user's prompt",
@@ -38,16 +96,16 @@ export const interpretPrompt = async (prompt) => {
                 "Authorization": `Bearer ${api_key}`
             }
         });
-        console.log(response);
         if (response.ok) {
             const jsonResponse = await response.json();
-            console.log(jsonResponse);
             const responseContent = jsonResponse.choices[0].message.content;
+            console.log(responseContent)
             // Extract numbers from GPT-4's response
             const strategies = responseContent.match(/\d+/g);
             if (strategies !== null) {
                 return strategies.map(Number);
             }
+            consol
         }
         else {
         const errorResponse = await response.json();
@@ -166,4 +224,4 @@ export const generateImage = async (prompt) => {
     }
 }
 
-export default {generateSongRecommendations, generatePlaylistName, generateImage, interpretPrompt};
+export default {generateSongRecommendations, generatePlaylistName, generateImage, generateTotalSongRecommendations};

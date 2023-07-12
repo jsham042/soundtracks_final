@@ -6,7 +6,7 @@ import SearchBar from '../SearchBar/SearchBar.js';
 import SearchResults from '../SearchResults/SearchResults.js';
 import LoginPage from '../LoginPage/LoginPage.js';
 import Spotify from '../../util/Spotify.js';
-import OpenAiAPIRequest, {generatePlaylistName, generateSongRecommendations, generateImage,interpretPrompt} from "../../util/OpenAiAPIRequest.js";
+import OpenAiAPIRequest, {generatePlaylistName, generateImage, generateTotalSongRecommendations} from "../../util/OpenAiAPIRequest.js";
 import {faSpinner, faCommentAlt, faSearch,faMusic} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -68,7 +68,7 @@ class App extends React.Component {
 
     openAiSearch(prompt) {
         this.setState({ isFetching: true });
-        generateSongRecommendations(`Give me 25 song recommendations for this prompt: ${prompt}. Format the response with this convention Song Name - Artist Name 2. Song Name - Artist Name`)
+        generateTotalSongRecommendations(prompt)
             .then((response) => {
                 const songList = response.slice(0, 25);
                 const promises = songList.map(song => Spotify.openAiSearch(song));
@@ -78,7 +78,6 @@ class App extends React.Component {
                         this.setState({ searchResults: searchResults});
                         const playlistNamePromise = this.generatePlaylistName(prompt);
                         playlistNamePromise.then((playlistName) => {
-
                             this.generateAlbumArt(playlistName);
                         }).then(() => this.setState({ isFetching: false }));
                     })
@@ -87,6 +86,7 @@ class App extends React.Component {
                     });
             });
     }
+
 
 
     generatePlaylistName(prompt) {
