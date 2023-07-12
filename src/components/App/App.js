@@ -35,7 +35,7 @@ class App extends React.Component {
     this.setToSearchState = this.setToSearchState.bind(this);
     this.setToPlaylistState=this.setToPlaylistState.bind(this);
     this.toggleTrack = this.toggleTrack.bind(this);
-    this.handleLogin= this.toggleTrack.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
     this.generateAlbumArt = this.generateAlbumArt.bind(this);
     this.interpretPrompt= this.interpretPrompt.bind(this);
   }
@@ -56,13 +56,15 @@ class App extends React.Component {
     Spotify.search(term).then(searchResults => {
       this.setState({searchResults: searchResults});
     });
-  }
+    }
+
     //call interpret prompt
     interpretPrompt(prompt) {
-      interpretPrompt(prompt).then((response) => {
+        OpenAiAPIRequest.interpretPrompt(prompt).then((response) => {
             console.log(response);
         });
-  }
+    }
+
 
     openAiSearch(prompt) {
         this.setState({ isFetching: true });
