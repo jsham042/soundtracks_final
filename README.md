@@ -22,11 +22,14 @@ Change to the project directory:
 
 '''bash
 cd SoundTracks
+'''
 
 Install the dependencies:
 '''bash
 npm install
+'''
 
 Start application:
 '''bash
 npm start
+'''
