@@ -16,7 +16,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 Clone the repository:
 ```bash
-git clone https://github.com/username/SoundTracks.git
+git clone https://github.com/jsham042/soundtracks_final
 ```
 
 Change to the project directory:
