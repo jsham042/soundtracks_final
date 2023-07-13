@@ -40,6 +40,7 @@ class App extends React.Component {
     this.interpretPrompt= this.interpretPrompt.bind(this);
   }
 
+    // handle the login
     async handleLogin() {
         // Use the Spotify utility to get the access token
         const accessToken = await Spotify.getAccessToken();
@@ -57,6 +58,7 @@ class App extends React.Component {
       this.setState({searchResults: searchResults});
     });
     }
+
 
     //call interpret prompt
     interpretPrompt(prompt) {

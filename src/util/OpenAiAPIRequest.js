@@ -73,7 +73,8 @@ export const DetermineAppropriateStrategies = async (prompt) => {
     ];
     const context =
     `The user is looking for song recommendations that are appropriate the following prompt: ${prompt}. 
-    Which of these strategies would be suitable for recommending music based on this prompt: ${batchDescriptions}? 
+    Think about what exactly the user is asking for. Are they looking to capture a mood? Are they asking about a specific event or location?
+    Based on this reflection, which of these strategies would be suitable for recommending music based on this prompt: ${batchDescriptions}? 
     List the suitable strategies in an array with the corresponding number for the batch description.
     For example, if the prompt is "I'm feeling sad", then the suitable strategies would be 1, 2, 3, and 5. And you would return [1, 2, 3, 5].`;
     // run an api call to openai to generate the response
