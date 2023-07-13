@@ -34,3 +34,11 @@ Start application:
 ```bash
 npm start
 ```
+
+## Use your environment variables
+Create a `.env` file in the root directory of your project. Add environment-specific variables on new lines in the form of `NAME=VALUE`. For example:
+
+```
+REACT_APP_MY_SPOTIFY_CLIENT_ID=your-spotify-client-id
+REACT_APP_MY_OPENAI_API_KEY = your-openai-api-key
+```
