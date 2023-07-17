@@ -28,4 +28,9 @@ jobs:
         env:
           REACT_APP_SPOTIFY_CLIENT_ID: ${{ secrets.REACT_APP_MY_SPOTIFY_CLIENT_ID }}
           REACT_APP_OPENAI_API_KEY: ${{ secrets.REACT_APP_MY_OPENAI_API_KEY }}
-        run: npm test
+        run: npm test -- --json > test_output.json
+      - name: Upload test output as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-output
+          path: test_output.json
