@@ -2,9 +2,9 @@ name: Build and Test React Application
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master , joystick ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, joystick ]
 
 jobs:
   build_test:
