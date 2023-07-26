@@ -106,7 +106,6 @@ export const DetermineAppropriateStrategies = async (prompt) => {
             if (strategies !== null) {
                 return strategies.map(Number);
             }
-            consol
         }
         else {
         const errorResponse = await response.json();
