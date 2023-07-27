@@ -1,5 +1,5 @@
 .SearchBar {
-  position: relative; /* add this */
+  position: relative; 
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -17,8 +17,10 @@
   color: #010c3f;
   text-align: left;
   font-size: .9rem;
-  position: relative; /* add this */
-  z-index: 1; /* add this */
+  position: relative; 
+  z-index: 1; 
+  font-family: Arial; /* add this */
+  font-weight: bold; /* add this */
 }
 
 .SearchBar input:focus {
@@ -30,7 +32,7 @@
   cursor: pointer;
   padding: .71rem 2.5rem .71rem 2.5rem;
   margin-right: 20%;
-  border-radius: 0 2rem 2rem 0; /* add this */
+  border-radius: 0 2rem 2rem 0; 
   background-color: lightgrey;
   text-align: right;
   font-size: .9rem;
@@ -38,16 +40,14 @@
   border: 1rem;
   color: #000000;
   font-weight: 500;
-  z-index: 2; /* add this */
+  z-index: 2; 
 }
 
 .SearchBar button:hover {
   background-color: darkgray;
 }
 
-
 @media screen and (max-width: 600px) {
-
 
   .SearchBar {
     align-items: center;
@@ -65,14 +65,12 @@
     color: #010c3f;
     text-align: left;
     font-size: .9rem;
-
+    font-family: Arial; /* add this */
+    font-weight: bold; /* add this */
   }
-
 
   .SearchBar button {
     padding: .71rem 1.5rem;
     margin: 0%;
   }
 }
-
-
