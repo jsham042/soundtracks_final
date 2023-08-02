@@ -253,10 +253,24 @@ class App extends React.Component {
                         Playlist
                     </button>
                 </div>
+                <div className="NowPlaying">
+                    <div className="SongInfo">
+                        <p>{this.state.currentTrack ? this.state.currentTrack.name : ""}</p>
+                        <p>{this.state.currentTrack ? this.state.currentTrack.artist : ""}</p>
+                    </div>
+                    <div className="PlaybackControls">
+                        <button onClick={this.toggleTrack}>Play/Pause</button>
+                        <button onClick={this.nextTrack}>Next</button>
+                        <button onClick={this.prevTrack}>Prev</button>
+                    </div>
+                    <div className="ProgressTracker">
+                        <input type="range" min="0" max="100" value={this.state.currentTrack ? this.state.currentTrack.progress : "0"} onChange={this.handleProgressChange} />
+                    </div>
+                </div>
             </div>
         );
     }
-
+}
 
 }
 
