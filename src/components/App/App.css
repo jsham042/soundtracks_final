@@ -113,6 +113,45 @@ h2 {
     overflow-x: hidden;
   }
 
+  .NowPlaying {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #1D1721;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+  }
+
+  .NowPlaying .SongInfo {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .NowPlaying .PlaybackControls {
+    display: flex;
+    align-items: center;
+  }
+
+  .NowPlaying .PlaybackControls button {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    margin: 0 1rem;
+  }
+
+  .NowPlaying .ProgressTracker {
+    flex-grow: 1;
+    padding: 0 1rem;
+  }
+
+  .NowPlaying .ProgressTracker input[type="range"] {
+    width: 100%;
+  }
+}
+
  .App {
     margin-left: 0;
    padding: 0.1% 4% 10% 4%;
