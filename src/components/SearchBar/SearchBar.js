@@ -35,6 +35,7 @@ class SearchBar extends React.Component {
     return (
       <div className="SearchBar">
         <input
+            className="new-placeholder"
             placeholder="Describe the vibe you're going for"
             onChange={this.handleTermChange}
             onKeyDown={this.handleKeyDown}

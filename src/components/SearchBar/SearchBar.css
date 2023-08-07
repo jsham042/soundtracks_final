@@ -21,6 +21,11 @@
   z-index: 1; /* add this */
 }
 
+.SearchBar input::placeholder {
+  font-family: Arial;
+  font-weight: bold;
+}
+
 .SearchBar input:focus {
   outline: none;
 }
