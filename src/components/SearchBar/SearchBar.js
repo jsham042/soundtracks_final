@@ -9,12 +9,15 @@ class SearchBar extends React.Component {
     super(props);
 
     this.state = {
-      term: ''
+      term: '',
+      isHovered: false
     };
 
     this.handleTermChange = this.handleTermChange.bind(this);
     this.search = this.search.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleMouseEnter = this.handleMouseEnter.bind(this);
+    this.handleMouseLeave = this.handleMouseLeave.bind(this);
   }
 
   handleTermChange(event) {
@@ -31,9 +34,20 @@ class SearchBar extends React.Component {
     }
   }
 
+  handleMouseEnter() {
+    this.setState({isHovered: true});
+  }
+
+  handleMouseLeave() {
+    this.setState({isHovered: false});
+  }
+
   render() {
     return (
-      <div className="SearchBar">
+      <div className={`SearchBar ${this.state.isHovered ? 'hovered' : ''}`}
+           onMouseEnter={this.handleMouseEnter}
+           onMouseLeave={this.handleMouseLeave}
+      >
         <input
             placeholder="Describe the vibe you're going for"
             onChange={this.handleTermChange}
