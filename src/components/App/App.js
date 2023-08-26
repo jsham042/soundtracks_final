@@ -67,7 +67,7 @@ class App extends React.Component {
         });
     }
 
-
+    //searches open ai api for song ideas
     openAiSearch(prompt) {
         this.setState({ isFetching: true });
         generateTotalSongRecommendations(prompt)
