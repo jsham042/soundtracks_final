@@ -40,6 +40,7 @@ class App extends React.Component {
     this.handleLogin = this.handleLogin.bind(this);
     this.generateAlbumArt = this.generateAlbumArt.bind(this);
     this.interpretPrompt= this.interpretPrompt.bind(this);
+    this.handleLogin();
   }
     async handleLogin() {
         // Use the Spotify utility to get the access token
@@ -189,8 +190,8 @@ class App extends React.Component {
         return (
             <div>
                 <div className="Sidebar">
-                    <img className="spotify-avatar" src={this.state.spotifyAvatar} alt={'icon'} />
-                    <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
+                    <img src={'/djboticon.png'} alt={'icon'} />
+                    <h1>SOUND<span className="highlight">TRACKS</span></h1>
                     <button onClick={this.setToSearchState}>
                         <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.75em'}} />
                         Search
@@ -199,6 +200,8 @@ class App extends React.Component {
                         <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.75em'}} />
                         Playlist
                     </button>
+                    <img className="spotify-avatar" src={this.state.spotifyAvatar} alt={'icon'} />
+                    <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
                     <div>
                         <a href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
                            className="feedback"
