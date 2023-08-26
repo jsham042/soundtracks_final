@@ -127,13 +127,29 @@ const Spotify = {
       });
     });
   },
-  isLoggedIn() {
+isLoggedIn() {
 
     if (accessToken) {
       return true;
     } else {
       return false;
     }
+  },
+
+  getUserProfile() {
+    const accessToken = Spotify.getAccessToken();
+    return fetch('https://api.spotify.com/v1/me', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }).then(response => {
+      return response.json();
+    }).then(jsonResponse => {
+      return {
+        username: jsonResponse.display_name,
+        avatar: jsonResponse.images[0].url
+      };
+    });
   }
 };
 

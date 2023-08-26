@@ -94,6 +94,18 @@ h2 {
   margin: 1rem 1rem 1rem 1rem;
 }
 
+.Sidebar .userAvatar{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.Sidebar .userName{
+  color: #fff;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+}
+
 .Navigator {
   display: none;
 }
@@ -112,7 +124,6 @@ h2 {
     padding: 0;
     overflow-x: hidden;
   }
-
   .NowPlaying {
     position: fixed;
     bottom: 0;
@@ -213,3 +224,4 @@ h2 {
   }
 
 }
+
