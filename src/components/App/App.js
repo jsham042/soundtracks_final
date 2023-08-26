@@ -6,7 +6,7 @@ import SearchBar from '../SearchBar/SearchBar.js';
 import SearchResults from '../SearchResults/SearchResults.js';
 import LoginPage from '../LoginPage/LoginPage.js';
 import Spotify from '../../util/Spotify.js';
-import OpenAiAPIRequest, {generatePlaylistName, generateImage, generateTotalSongRecommendations} from "../../util/OpenAiAPIRequest.js";
+import OpenAiAPIRequest, {generatePlaylistName, generateImage, generateTotalSongRecommendations} from '../../util/OpenAiAPIRequest.js';
 import {faSpinner, faCommentAlt, faSearch,faMusic} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -17,12 +17,14 @@ class App extends React.Component {
     this.state = {
         loggedIn: true,
         searchResults: [],
-      playlistName: 'New Playlist',
-      playlistTracks: [],
-      isFetching: false,
-      searchState: true,
-      albumArt: defaultAlbumArt,
+        playlistName: 'New Playlist',
+        playlistTracks: [],
+        isFetching: false,
+        searchState: true,
+        albumArt: defaultAlbumArt,
         currentTrack: null,
+        spotifyAvatar: '',
+        spotifyUsername: '',
     };
 
     this.search = this.search.bind(this);
@@ -39,58 +41,55 @@ class App extends React.Component {
     this.generateAlbumArt = this.generateAlbumArt.bind(this);
     this.interpretPrompt= this.interpretPrompt.bind(this);
   }
-
-    // handle the login
-    async handleLogin() {
-        // Use the Spotify utility to get the access token
-        const accessToken = await Spotify.getAccessToken();
-        // If an access token is obtained, update the loggedIn state
-        if (accessToken) {
-            this.setState({ loggedIn: true });
-        } else {
-            // Handle the case where the access token could not be obtained
-            console.error('Authentication failed');
-        }
+async handleLogin() {
+    // Use the Spotify utility to get the access token
+    const accessToken = await Spotify.getAccessToken();
+    // If an access token is obtained, update the loggedIn state
+    if (accessToken) {
+        this.setState({ loggedIn: true });
+        const userInfo = await Spotify.getUserInfo();
+        this.setState({ spotifyAvatar: userInfo.avatar, spotifyUsername: userInfo.username });
+    } else {
+        // Handle the case where the access token could not be obtained
+        console.error('Authentication failed');
     }
+}
 
-    search(term) {
-    Spotify.search(term).then(searchResults => {
-      this.setState({searchResults: searchResults});
+search(term) {
+Spotify.search(term).then(searchResults => {
+  this.setState({searchResults: searchResults});
+});
+}
+
+
+//call interpret prompt
+interpretPrompt(prompt) {
+    OpenAiAPIRequest.interpretPrompt(prompt).then((response) => {
+        console.log(response);
     });
-    }
+}
 
 
-    //call interpret prompt
-    interpretPrompt(prompt) {
-        OpenAiAPIRequest.interpretPrompt(prompt).then((response) => {
-            console.log(response);
+openAiSearch(prompt) {
+    this.setState({ isFetching: true });
+    generateTotalSongRecommendations(prompt)
+        .then((response) => {
+            const songList = response.slice(0, 25);
+            const promises = songList.map(song => Spotify.openAiSearch(song));
+            Promise.all(promises)
+                .then((searchResultsArray) => {
+                    const searchResults = [].concat(...searchResultsArray);
+                    this.setState({ searchResults: searchResults});
+                    const playlistNamePromise = this.generatePlaylistName(prompt);
+                    playlistNamePromise.then((playlistName) => {
+                        this.generateAlbumArt(playlistName);
+                    }).then(() => this.setState({ isFetching: false }));
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         });
-    }
-
-
-    openAiSearch(prompt) {
-        this.setState({ isFetching: true });
-        generateTotalSongRecommendations(prompt)
-            .then((response) => {
-                const songList = response.slice(0, 25);
-                const promises = songList.map(song => Spotify.openAiSearch(song));
-                Promise.all(promises)
-                    .then((searchResultsArray) => {
-                        const searchResults = [].concat(...searchResultsArray);
-                        this.setState({ searchResults: searchResults});
-                        const playlistNamePromise = this.generatePlaylistName(prompt);
-                        playlistNamePromise.then((playlistName) => {
-                            this.generateAlbumArt(playlistName);
-                        }).then(() => this.setState({ isFetching: false }));
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                    });
-            });
-    }
-
-
-
+}
     generatePlaylistName(prompt) {
         return OpenAiAPIRequest.generatePlaylistName(`Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`)
             .then(playlistName => {
@@ -175,23 +174,15 @@ class App extends React.Component {
     });
   }
 
-  setToSearchState(event){
-    this.setState({searchState:true});
-  }
-
-  setToPlaylistState(event){
-    this.setState({searchState:false});
-  }
-
-    render() {
+render() {
         if (!this.state.loggedIn) {
             return <LoginPage onLogin={() => this.handleLogin()}  />;
         }
         return (
             <div>
                 <div className="Sidebar">
-                    <img src={'/djboticon.png'} alt={'icon'} />
-                    <h1>SOUND<span className="highlight">TRACKS</span></h1>
+                    <img className="spotify-avatar" src={this.state.spotifyAvatar} alt={'icon'} />
+                    <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
                     <button onClick={this.setToSearchState}>
                         <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.75em'}} />
                         Search
@@ -261,3 +252,6 @@ class App extends React.Component {
 }
 
 export default App;
+
+
+

@@ -94,6 +94,18 @@ h2 {
   margin: 1rem 1rem 1rem 1rem;
 }
 
+.Sidebar .spotify-avatar{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.Sidebar .spotify-username{
+  color: #fff;
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
 .Navigator {
   display: none;
 }
@@ -112,7 +124,6 @@ h2 {
     padding: 0;
     overflow-x: hidden;
   }
-
  .App {
     margin-left: 0;
    padding: 0.1% 4% 10% 4%;
@@ -174,3 +185,4 @@ h2 {
   }
 
 }
+
