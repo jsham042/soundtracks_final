@@ -41,55 +41,55 @@ class App extends React.Component {
     this.generateAlbumArt = this.generateAlbumArt.bind(this);
     this.interpretPrompt= this.interpretPrompt.bind(this);
   }
-async handleLogin() {
-    // Use the Spotify utility to get the access token
-    const accessToken = await Spotify.getAccessToken();
-    // If an access token is obtained, update the loggedIn state
-    if (accessToken) {
-        this.setState({ loggedIn: true });
-        const userInfo = await Spotify.getUserInfo();
-        this.setState({ spotifyAvatar: userInfo.avatar, spotifyUsername: userInfo.username });
-    } else {
-        // Handle the case where the access token could not be obtained
-        console.error('Authentication failed');
+    async handleLogin() {
+        // Use the Spotify utility to get the access token
+        const accessToken = await Spotify.getAccessToken();
+        // If an access token is obtained, update the loggedIn state
+        if (accessToken) {
+            this.setState({ loggedIn: true });
+            const userInfo = await Spotify.getUserInfo();
+            this.setState({ spotifyAvatar: userInfo.avatar, spotifyUsername: userInfo.username });
+        } else {
+            // Handle the case where the access token could not be obtained
+            console.error('Authentication failed');
+        }
     }
-}
 
-search(term) {
-Spotify.search(term).then(searchResults => {
-  this.setState({searchResults: searchResults});
-});
-}
-
-
-//call interpret prompt
-interpretPrompt(prompt) {
-    OpenAiAPIRequest.interpretPrompt(prompt).then((response) => {
-        console.log(response);
+    search(term) {
+    Spotify.search(term).then(searchResults => {
+      this.setState({searchResults: searchResults});
     });
-}
+    }
 
 
-openAiSearch(prompt) {
-    this.setState({ isFetching: true });
-    generateTotalSongRecommendations(prompt)
-        .then((response) => {
-            const songList = response.slice(0, 25);
-            const promises = songList.map(song => Spotify.openAiSearch(song));
-            Promise.all(promises)
-                .then((searchResultsArray) => {
-                    const searchResults = [].concat(...searchResultsArray);
-                    this.setState({ searchResults: searchResults});
-                    const playlistNamePromise = this.generatePlaylistName(prompt);
-                    playlistNamePromise.then((playlistName) => {
-                        this.generateAlbumArt(playlistName);
-                    }).then(() => this.setState({ isFetching: false }));
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+    //call interpret prompt
+    interpretPrompt(prompt) {
+        OpenAiAPIRequest.interpretPrompt(prompt).then((response) => {
+            console.log(response);
         });
-}
+    }
+
+
+    openAiSearch(prompt) {
+        this.setState({ isFetching: true });
+        generateTotalSongRecommendations(prompt)
+            .then((response) => {
+                const songList = response.slice(0, 25);
+                const promises = songList.map(song => Spotify.openAiSearch(song));
+                Promise.all(promises)
+                    .then((searchResultsArray) => {
+                        const searchResults = [].concat(...searchResultsArray);
+                        this.setState({ searchResults: searchResults});
+                        const playlistNamePromise = this.generatePlaylistName(prompt);
+                        playlistNamePromise.then((playlistName) => {
+                            this.generateAlbumArt(playlistName);
+                        }).then(() => this.setState({ isFetching: false }));
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            });
+    }
     generatePlaylistName(prompt) {
         return OpenAiAPIRequest.generatePlaylistName(`Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`)
             .then(playlistName => {
@@ -115,17 +115,17 @@ openAiSearch(prompt) {
             });
     }
 
-  addTrack(track) {
-    let tracks = this.state.playlistTracks;
-    if (tracks.find(savedTrack => savedTrack.id === track.id)) {
-      return;
-    }
-    tracks.push(track);
-    this.setState({playlistTracks: tracks});
-    let searchResults = this.state.searchResults;
-    searchResults.splice(searchResults.indexOf(track),1);
-    this.setState({searchResults: searchResults })
-  }
+    addTrack(track) {
+        let tracks = this.state.playlistTracks;
+        if (tracks.find(savedTrack => savedTrack.id === track.id)) {
+          return;
+        }
+        tracks.push(track);
+        this.setState({playlistTracks: tracks});
+        let searchResults = this.state.searchResults;
+        searchResults.splice(searchResults.indexOf(track),1);
+        this.setState({searchResults: searchResults })
+      }
 
     toggleTrack(track) {
         if (this.state.currentTrack && this.state.currentTrack.id === track.id) {
@@ -174,7 +174,15 @@ openAiSearch(prompt) {
     });
   }
 
-render() {
+    setToSearchState(event){
+        this.setState({searchState:true});
+    }
+
+    setToPlaylistState(event){
+        this.setState({searchState:false});
+    }
+
+    render() {
         if (!this.state.loggedIn) {
             return <LoginPage onLogin={() => this.handleLogin()}  />;
         }
@@ -247,8 +255,6 @@ render() {
             </div>
         );
     }
-
-
 }
 
 export default App;
