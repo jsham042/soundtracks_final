@@ -52,7 +52,6 @@ h2 {
   color: white;
   text-decoration: none;
   font-size: .9rem;
-
 }
 
 .feedback:hover {
@@ -71,10 +70,19 @@ h2 {
   justify-content: space-between;
 }
 
+.Sidebar .spotify-avatar, .Sidebar .spotify-username {
+  order: 1;
+}
+
+.Sidebar .feedback {
+  order: 2;
+}
 .Sidebar .logged-in-label {
   color: #fff;
   font-size: 0.9rem;
   margin-top: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 .Sidebar button{
   cursor: pointer;
@@ -90,9 +98,6 @@ h2 {
   margin-left: 7.5%;
   border-radius: 6px;
 }
-
-
-
 .Sidebar button:hover{
   background:#D3D3D3 ;
   color: black;
@@ -112,7 +117,7 @@ h2 {
 
 .Sidebar .spotify-username{
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.8rem;
   margin-top: 10px;
 }
 .Navigator {
@@ -194,6 +199,8 @@ h2 {
   }
 
 }
+
+
 
 
 
