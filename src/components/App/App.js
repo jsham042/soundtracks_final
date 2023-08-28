@@ -6,6 +6,7 @@ import SearchBar from '../SearchBar/SearchBar.js';
 import SearchResults from '../SearchResults/SearchResults.js';
 import LoginPage from '../LoginPage/LoginPage.js';
 import Spotify from '../../util/Spotify.js';
+
 import OpenAiAPIRequest, {generatePlaylistName, generateImage, generateTotalSongRecommendations} from '../../util/OpenAiAPIRequest.js';
 import {faSpinner, faCommentAlt, faSearch,faMusic} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -116,6 +117,7 @@ class App extends React.Component {
             });
     }
 
+
     addTrack(track) {
         let tracks = this.state.playlistTracks;
         if (tracks.find(savedTrack => savedTrack.id === track.id)) {
@@ -161,6 +163,7 @@ class App extends React.Component {
     this.setState({searchResults: searchResults })
   }
 
+
   updatePlaylistName(name) {
     this.setState({playlistName: name});
   }
@@ -179,7 +182,8 @@ class App extends React.Component {
         this.setState({searchState:true});
     }
 
-    setToPlaylistState(event){
+
+setToPlaylistState(event){
         this.setState({searchState:false});
     }
 
@@ -200,6 +204,7 @@ class App extends React.Component {
                         <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.75em'}} />
                         Playlist
                     </button>
+                    <p className="logged-in-label">Logged in as:</p>
                     <img className="spotify-avatar" src={this.state.spotifyAvatar} alt={'icon'} />
                     <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
                     <div>
@@ -259,8 +264,8 @@ class App extends React.Component {
         );
     }
 }
-
 export default App;
+
 
 
 
