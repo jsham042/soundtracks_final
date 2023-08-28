@@ -7,6 +7,7 @@ import SearchResults from '../SearchResults/SearchResults.js';
 import LoginPage from '../LoginPage/LoginPage.js';
 import Spotify from '../../util/Spotify.js';
 
+
 import OpenAiAPIRequest, {generatePlaylistName, generateImage, generateTotalSongRecommendations} from '../../util/OpenAiAPIRequest.js';
 import {faSpinner, faCommentAlt, faSearch,faMusic} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -118,6 +119,7 @@ class App extends React.Component {
     }
 
 
+
     addTrack(track) {
         let tracks = this.state.playlistTracks;
         if (tracks.find(savedTrack => savedTrack.id === track.id)) {
@@ -164,6 +166,7 @@ class App extends React.Component {
   }
 
 
+
   updatePlaylistName(name) {
     this.setState({playlistName: name});
   }
@@ -181,6 +184,7 @@ class App extends React.Component {
     setToSearchState(event){
         this.setState({searchState:true});
     }
+
 
 
 setToPlaylistState(event){
@@ -204,7 +208,7 @@ setToPlaylistState(event){
                         <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.75em'}} />
                         Playlist
                     </button>
-                    <p className="logged-in-label">Logged in as:</p>
+                    <p className="logged-in-label">Logged in as: {this.state.spotifyUsername}</p>
                     <img className="spotify-avatar" src={this.state.spotifyAvatar} alt={'icon'} />
                     <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
                     <div>
@@ -265,6 +269,7 @@ setToPlaylistState(event){
     }
 }
 export default App;
+
 
 
 
