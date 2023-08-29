@@ -1,11 +1,9 @@
-const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
-// const redirectUri = 'http://localhost:3000/callback'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
-const redirectUri = 'https://www.soundtracksai.com/'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
+const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID;
+const redirectUri = 'https://www.soundtracksai.com/';
 let accessToken;
 
-
 const Spotify = {
-  getAccessToken() {
+  async getAccessToken() {
     if (accessToken) {
       return accessToken;
     }
@@ -16,14 +14,13 @@ const Spotify = {
       accessToken = accessTokenMatch[1];
       const expiresIn = Number(expiresInMatch[1]);
       window.setTimeout(() => accessToken = '', expiresIn * 1000);
-      window.history.pushState('Access Token', null, '/'); // This clears the parameters, allowing us to grab a new access token when it expires.
+      window.history.pushState('Access Token', null, '/');
       return accessToken;
     } else {
       const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
       window.location = accessUrl;
     }
   },
-
   search(term) {
     const accessToken = Spotify.getAccessToken();
     return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
@@ -154,3 +151,5 @@ const Spotify = {
 };
 
 export default Spotify;
+
+
