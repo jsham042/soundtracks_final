@@ -8,6 +8,8 @@ import LoginPage from '../LoginPage/LoginPage.js';
 import Spotify from '../../util/Spotify.js';
 
 
+
+
 import OpenAiAPIRequest, {generatePlaylistName, generateImage, generateTotalSongRecommendations} from '../../util/OpenAiAPIRequest.js';
 import {faSpinner, faCommentAlt, faSearch,faMusic} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -120,6 +122,8 @@ class App extends React.Component {
 
 
 
+
+
     addTrack(track) {
         let tracks = this.state.playlistTracks;
         if (tracks.find(savedTrack => savedTrack.id === track.id)) {
@@ -167,6 +171,8 @@ class App extends React.Component {
 
 
 
+
+
   updatePlaylistName(name) {
     this.setState({playlistName: name});
   }
@@ -187,6 +193,8 @@ class App extends React.Component {
 
 
 
+
+
 setToPlaylistState(event){
         this.setState({searchState:false});
     }
@@ -200,17 +208,21 @@ setToPlaylistState(event){
                 <div className="Sidebar">
                     <img src={'/djboticon.png'} alt={'icon'} />
                     <h1>SOUND<span className="highlight">TRACKS</span></h1>
-                    <button onClick={this.setToSearchState}>
-                        <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.75em'}} />
-                        Search
-                    </button>
-                    <button onClick={this.setToPlaylistState}>
-                        <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.75em'}} />
-                        Playlist
-                    </button>
-                    <p className="logged-in-label">Logged in as: {this.state.spotifyUsername}</p>
-                    <img className="spotify-avatar" src={this.state.spotifyAvatar} alt={'icon'} />
-                    <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
+                    <div className="ButtonGroup">
+                        <button onClick={this.setToSearchState}>
+                            <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.75em'}} />
+                            Search
+                        </button>
+                        <button onClick={this.setToPlaylistState}>
+                            <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.75em'}} />
+                            Playlist
+                        </button>
+                    </div>
+                    <div>
+                        <p className="logged-in-label">Logged in as: {this.state.spotifyUsername}</p>
+                        <img className="spotify-avatar" src={this.state.spotifyAvatar} alt={'icon'} />
+                        <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
+                    </div>
                     <div>
                         <a href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
                            className="feedback"
@@ -269,6 +281,8 @@ setToPlaylistState(event){
     }
 }
 export default App;
+
+
 
 
 
