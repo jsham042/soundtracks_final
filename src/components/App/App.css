@@ -89,6 +89,7 @@ h2 {
   text-transform: uppercase;
 }
 
+
 .Sidebar button{
   cursor: pointer;
   width: 85%;
@@ -201,11 +202,13 @@ h2 {
     color: black;
   }
   
+
   .App-playlist {
     margin-top: 2rem;
   }
 
 }
+
 
 
 
