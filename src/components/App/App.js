@@ -11,6 +11,7 @@ import Spotify from '../../util/Spotify.js';
 
 
 
+
 import OpenAiAPIRequest, {generatePlaylistName, generateImage, generateTotalSongRecommendations} from '../../util/OpenAiAPIRequest.js';
 import {faSpinner, faCommentAlt, faSearch,faMusic} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -120,6 +121,7 @@ async handleLogin() {
                 console.error(error);
             });
     }
+
 
 
 
@@ -274,6 +276,7 @@ render() {
     );
 }
 export default App;
+
 
 
 
