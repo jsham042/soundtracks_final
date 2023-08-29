@@ -181,29 +181,29 @@ h2 {
     border-radius: 50px;
   }
 
-.Navigator button{
-  cursor: pointer;
-  width: 47%;
-  padding: 3%;
-  text-align: center;
-  font-family: sans-serif;
-  font-size: 1rem;
-  border: none;
-  color: white;
-  background: transparent;
-  border-radius: 50px;
-  margin-right: 3%;
-}
-
-.Navigator button.active{
-
-  background: #BCB967;
-  color: black;
-}
-
-.App-playlist {
-  margin-top: 2rem;
-}
+  .Navigator button{
+    cursor: pointer;
+    width: 47%;
+    padding: 3%;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 1rem;
+    border: none;
+    color: white;
+    background: transparent;
+    border-radius: 50px;
+    margin-right: 3%;
+  }
+  
+  .Navigator button.active{
+  
+    background: #BCB967;
+    color: black;
+  }
+  
+  .App-playlist {
+    margin-top: 2rem;
+  }
 
 }
 
