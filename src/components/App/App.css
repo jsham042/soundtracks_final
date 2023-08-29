@@ -43,7 +43,7 @@ h2 {
 }
 
 .feedback {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
@@ -52,7 +52,6 @@ h2 {
   color: white;
   text-decoration: none;
   font-size: .9rem;
-
 }
 
 .feedback:hover {
@@ -69,13 +68,28 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding-top: 1rem;
+}
+.Sidebar .spotify-avatar, .Sidebar .spotify-username {
+  order: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
+.Sidebar .feedback {
+  order: 2;
+}
 .Sidebar .logged-in-label {
   color: #fff;
   font-size: 0.9rem;
   margin-top: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
+
+
 .Sidebar button{
   cursor: pointer;
   width: 85%;
@@ -86,13 +100,11 @@ h2 {
   background: transparent;
   border: none;
   color: white;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   margin-left: 7.5%;
   border-radius: 6px;
+  margin-right: 7.5%;
 }
-
-
-
 .Sidebar button:hover{
   background:#D3D3D3 ;
   color: black;
@@ -112,7 +124,7 @@ h2 {
 
 .Sidebar .spotify-username{
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.8rem;
   margin-top: 10px;
 }
 .Navigator {
@@ -181,19 +193,24 @@ h2 {
     color: white;
     background: transparent;
     border-radius: 50px;
+    margin-right: 3%;
   }
-
+  
   .Navigator button.active{
-
+  
     background: #BCB967;
     color: black;
   }
+  
 
   .App-playlist {
     margin-top: 2rem;
   }
 
 }
+
+
+
 
 
 

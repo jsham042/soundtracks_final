@@ -7,6 +7,11 @@ import SearchResults from '../SearchResults/SearchResults.js';
 import LoginPage from '../LoginPage/LoginPage.js';
 import Spotify from '../../util/Spotify.js';
 
+
+
+
+
+
 import OpenAiAPIRequest, {generatePlaylistName, generateImage, generateTotalSongRecommendations} from '../../util/OpenAiAPIRequest.js';
 import {faSpinner, faCommentAlt, faSearch,faMusic} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -43,20 +48,20 @@ class App extends React.Component {
     this.interpretPrompt= this.interpretPrompt.bind(this);
     this.handleLogin();
   }
-    async handleLogin() {
-        // Use the Spotify utility to get the access token
-        const accessToken = await Spotify.getAccessToken();
-        // If an access token is obtained, update the loggedIn state
-        if (accessToken) {
-            this.setState({ loggedIn: true });
-            const userInfo = await Spotify.getUserInfo();
-            this.setState({ spotifyAvatar: userInfo.avatar, spotifyUsername: userInfo.username });
-        } else {
-            // Handle the case where the access token could not be obtained
-            console.error('Authentication failed');
-        }
+async handleLogin() {
+    // Use the Spotify utility to get the access token
+    const accessToken = await Spotify.getAccessToken();
+    // If an access token is obtained, update the loggedIn state
+    if (accessToken) {
+        this.setState({ loggedIn: true });
+        const userInfo = await Spotify.getUserInfo();
+        this.setState({ spotifyAvatar: userInfo.avatar, spotifyUsername: userInfo.username });
+    } else {
+        // Handle the case where the access token could not be obtained
+        console.error('Authentication failed');
+        this.setState({ loggedIn: false });
     }
-
+}
     search(term) {
     Spotify.search(term).then(searchResults => {
       this.setState({searchResults: searchResults});
@@ -118,6 +123,11 @@ class App extends React.Component {
     }
 
 
+
+
+
+
+
     addTrack(track) {
         let tracks = this.state.playlistTracks;
         if (tracks.find(savedTrack => savedTrack.id === track.id)) {
@@ -146,24 +156,18 @@ class App extends React.Component {
         }
     }
 
-    componentDidMount() {
-        const accessToken = Spotify.getAccessToken();
-        if (accessToken) {
-            this.setState({ loggedIn: true });
-        }
-    }
+componentDidMount() {
+    this.handleLogin();
+}
 
-
-    removeTrack(track) {
-    let tracks = this.state.playlistTracks;
-    tracks = tracks.filter(currentTrack => currentTrack.id !== track.id);
-    this.setState({playlistTracks: tracks});
-    let searchResults = this.state.searchResults;
-    searchResults.push(track);
-    this.setState({searchResults: searchResults })
-  }
-
-
+removeTrack(track) {
+let tracks = this.state.playlistTracks;
+tracks = tracks.filter(currentTrack => currentTrack.id !== track.id);
+this.setState({playlistTracks: tracks});
+let searchResults = this.state.searchResults;
+searchResults.push(track);
+this.setState({searchResults: searchResults })
+}
   updatePlaylistName(name) {
     this.setState({playlistName: name});
   }
@@ -183,19 +187,24 @@ class App extends React.Component {
     }
 
 
-setToPlaylistState(event){
-        this.setState({searchState:false});
-    }
 
-    render() {
-        if (!this.state.loggedIn) {
-            return <LoginPage onLogin={() => this.handleLogin()}  />;
-        }
-        return (
-            <div>
-                <div className="Sidebar">
-                    <img src={'/djboticon.png'} alt={'icon'} />
-                    <h1>SOUND<span className="highlight">TRACKS</span></h1>
+
+
+
+setToPlaylistState(event){
+    this.setState({searchState:false});
+}
+
+render() {
+    if (!this.state.loggedIn) {
+        return <LoginPage onLogin={this.handleLogin}  />;
+    }
+    return (
+        <div>
+            <div className="Sidebar">
+                <img src={'/djboticon.png'} alt={'icon'} />
+                <h1>SOUND<span className="highlight">TRACKS</span></h1>
+                <div className="ButtonGroup">
                     <button onClick={this.setToSearchState}>
                         <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.75em'}} />
                         Search
@@ -204,67 +213,74 @@ setToPlaylistState(event){
                         <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.75em'}} />
                         Playlist
                     </button>
-                    <p className="logged-in-label">Logged in as:</p>
+                </div>
+                <div>
+                    <p className="logged-in-label">Logged in as: {this.state.spotifyUsername}</p>
                     <img className="spotify-avatar" src={this.state.spotifyAvatar} alt={'icon'} />
                     <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
-                    <div>
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
-                           className="feedback"
-                           target="_blank"
-                           rel="noopener noreferrer"
-                        >
-            <span style={{ paddingRight: "10px" }}>
-              <FontAwesomeIcon icon={faCommentAlt} />
-            </span>
-                            Please Provide Feedback!
-                        </a>
-                    </div>
                 </div>
-
-                <div className="App">
-                    {this.state.searchState ?
-                        <div>
-                            <SearchBar onSearch={this.openAiSearch} />
-                            {this.state.isFetching ? (
-                                <div className="Fetching-sign">
-                                    <FontAwesomeIcon icon={faSpinner} spin />
-                                    Fetching results...
-                                </div>
-                            ) : null}
-                            <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} onToggle={this.toggleTrack} currentTrack={this.state.currentTrack} />
-                        </div>
-                        :
-                        <div className="App-playlist">
-                            <Playlist
-                                playlistName={this.state.playlistName}
-                                playlistTracks={this.state.playlistTracks}
-                                albumArt={this.state.albumArt}
-                                onNameChange={this.updatePlaylistName}
-                                onRemove={this.removeTrack}
-                                onSave={this.savePlaylist}
-                                onToggle={this.toggleTrack}
-                                currentTrack={this.state.currentTrack} >
-                                <img src={this.state.albumArt} alt="Album Art" style={{ width: '1rem', height: '1rem' }} />
-                            </Playlist>
-                        </div>
-                    }
-                </div>
-
-                <div className="Navigator">
-                    <button onClick={this.setToSearchState} className={this.state.searchState ? "active" : ""}>
-                        <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.4em'}} />
-                        Search
-                    </button>
-                    <button onClick={this.setToPlaylistState} className={this.state.searchState ? "" : "active"}>
-                        <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.5em'}} />
-                        Playlist
-                    </button>
+                <div>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
+                       className="feedback"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                    >
+        <span style={{ paddingRight: "10px" }}>
+          <FontAwesomeIcon icon={faCommentAlt} />
+        </span>
+                        Please Provide Feedback!
+                    </a>
                 </div>
             </div>
-        );
-    }
+
+            <div className="App">
+                {this.state.searchState ?
+                    <div>
+                        <SearchBar onSearch={this.openAiSearch} />
+                        {this.state.isFetching ? (
+                            <div className="Fetching-sign">
+                                <FontAwesomeIcon icon={faSpinner} spin />
+                                Fetching results...
+                            </div>
+                        ) : null}
+                        <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} onToggle={this.toggleTrack} currentTrack={this.state.currentTrack} />
+                    </div>
+                    :
+                    <div className="App-playlist">
+                        <Playlist
+                            playlistName={this.state.playlistName}
+                            playlistTracks={this.state.playlistTracks}
+                            albumArt={this.state.albumArt}
+                            onNameChange={this.updatePlaylistName}
+                            onRemove={this.removeTrack}
+                            onSave={this.savePlaylist}
+                            onToggle={this.toggleTrack}
+                            currentTrack={this.state.currentTrack} >
+                            <img src={this.state.albumArt} alt="Album Art" style={{ width: '1rem', height: '1rem' }} />
+                        </Playlist>
+                    </div>
+                }
+            </div>
+
+            <div className="Navigator">
+                <button onClick={this.setToSearchState} className={this.state.searchState ? "active" : ""}>
+                    <FontAwesomeIcon icon={faSearch} style={{marginRight: '0.4em'}} />
+                    Search
+                </button>
+                <button onClick={this.setToPlaylistState} className={this.state.searchState ? "" : "active"}>
+                    <FontAwesomeIcon icon={faMusic} style={{marginRight: '0.5em'}} />
+                    Playlist
+                </button>
+            </div>
+        </div>
+    );
 }
 export default App;
+
+
+
+
+
 
 
 
