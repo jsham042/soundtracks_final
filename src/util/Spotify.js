@@ -1,11 +1,8 @@
-<<<<<<< HEAD
-gitconst clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
 // const redirectUri = 'http://localhost:3000/callback'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 const redirectUri = 'https://www.soundtracksai.com/'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
-=======
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID;
-const redirectUri = 'https://www.soundtracksai.com/';
->>>>>>> 903a8fed0f0ff4d0e4862e0be1feb0b349317224
+
+
 let accessToken;
 
 const Spotify = {
