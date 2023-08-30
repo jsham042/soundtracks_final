@@ -295,5 +295,6 @@ render() {
       </div>
     );
   }
+}
 export default App;
 
