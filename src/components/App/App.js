@@ -7,18 +7,8 @@ import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
 
-import OpenAiAPIRequest, {
-  generatePlaylistName,
-  generateImage,
-  generateTotalSongRecommendations,
-} from "../../util/OpenAiAPIRequest.js";
-import {
-  faSpinner,
-  faCommentAlt,
-  faSearch,
-  faMusic,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+
 
 class App extends React.Component {
   constructor(props) {
@@ -33,8 +23,8 @@ class App extends React.Component {
       searchState: true,
       albumArt: defaultAlbumArt,
       currentTrack: null,
-      spotifyAvatar: "",
-      spotifyUsername: "",
+      spotifyAvatar: null,
+      spotifyUsername: null,
       isLoginMessageDisplayed: false,
     };
 
@@ -54,24 +44,25 @@ class App extends React.Component {
     this.interpretPrompt = this.interpretPrompt.bind(this);
     this.handleLogin();
   }
-  async handleLogin() {
+async handleLogin() {
     // Use the Spotify utility to get the access token
     const accessToken = await Spotify.getAccessToken();
     // If an access token is obtained, update the loggedIn state
     if (accessToken) {
       this.setState({ loggedIn: true, isLoginMessageDisplayed: true });
       const userInfo = await Spotify.getUserInfo();
-      this.setState({
-        spotifyAvatar: userInfo.avatar,
-        spotifyUsername: userInfo.username,
-      });
+      if(userInfo.username && userInfo.avatar) {
+        this.setState({
+          spotifyAvatar: userInfo.avatar,
+          spotifyUsername: userInfo.username,
+        });
+      }
     } else {
       // Handle the case where the access token could not be obtained
       console.error("Authentication failed");
       this.setState({ loggedIn: false });
     }
   }
-
   handleLogout() {
     this.setState({ isLoginMessageDisplayed: false });
   }
@@ -168,8 +159,14 @@ class App extends React.Component {
     }
   }
 
-  componentDidMount() {
+componentDidMount() {
     this.handleLogin();
+    Spotify.getUserInfo().then(userInfo => {
+      this.setState({
+        spotifyAvatar: userInfo.avatar,
+        spotifyUsername: userInfo.username,
+      });
+    });
   }
 
   removeTrack(track) {
@@ -184,7 +181,6 @@ class App extends React.Component {
   updatePlaylistName(name) {
     this.setState({ playlistName: name });
   }
-
   savePlaylist() {
     const trackUris = this.state.playlistTracks.map((track) => track.uri);
     Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
@@ -203,7 +199,7 @@ class App extends React.Component {
     this.setState({ searchState: false });
   }
 
-  render() {
+render() {
     if (!this.state.loggedIn) {
       return <LoginPage onLogin={this.handleLogin} />;
     }
@@ -235,15 +231,19 @@ class App extends React.Component {
             </button>
           </div>
           <div>
-            <p className="logged-in-label">
-              Logged in as: {this.state.spotifyUsername}
-            </p>
-            <img
-              className="spotify-avatar"
-              src={this.state.spotifyAvatar}
-              alt={"icon"}
-            />
-            <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
+            {this.state.spotifyUsername && this.state.spotifyAvatar ? (
+              <>
+                <p className="logged-in-label">
+                  Logged in as: {this.state.spotifyUsername}
+                </p>
+                <img
+                  className="spotify-avatar"
+                  src={this.state.spotifyAvatar}
+                  alt={"icon"}
+                />
+                <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
+              </>
+            ) : null}
           </div>
           <div>
             <a
@@ -318,5 +318,7 @@ class App extends React.Component {
       </div>
     );
   }
-}
 export default App;
+
+
+
