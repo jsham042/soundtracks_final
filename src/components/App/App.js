@@ -7,8 +7,6 @@ import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
 
-
-
 import OpenAiAPIRequest, {
   generatePlaylistName,
   generateImage,
@@ -56,7 +54,7 @@ class App extends React.Component {
     this.interpretPrompt = this.interpretPrompt.bind(this);
     this.handleLogin();
   }
-async handleLogin() {
+  async handleLogin() {
     // Use the Spotify utility to get the access token
     const accessToken = await Spotify.getAccessToken();
     // If an access token is obtained, update the loggedIn state
@@ -187,8 +185,6 @@ async handleLogin() {
     this.setState({ playlistName: name });
   }
 
-
-
   savePlaylist() {
     const trackUris = this.state.playlistTracks.map((track) => track.uri);
     Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
@@ -207,7 +203,7 @@ async handleLogin() {
     this.setState({ searchState: false });
   }
 
-render() {
+  render() {
     if (!this.state.loggedIn) {
       return <LoginPage onLogin={this.handleLogin} />;
     }
@@ -323,7 +319,4 @@ render() {
     );
   }
 }
-
 export default App;
-
-
