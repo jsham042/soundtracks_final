@@ -7,18 +7,7 @@ import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
 
-import OpenAiAPIRequest, {
-  generatePlaylistName,
-  generateImage,
-  generateTotalSongRecommendations,
-} from "../../util/OpenAiAPIRequest.js";
-import {
-  faSpinner,
-  faCommentAlt,
-  faSearch,
-  faMusic,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 
 class App extends React.Component {
   constructor(props) {
@@ -33,8 +22,8 @@ class App extends React.Component {
       searchState: true,
       albumArt: defaultAlbumArt,
       currentTrack: null,
-      spotifyAvatar: "",
-      spotifyUsername: "",
+      spotifyAvatar: null,
+      spotifyUsername: null,
       isLoginMessageDisplayed: false,
     };
 
@@ -52,6 +41,7 @@ class App extends React.Component {
     this.handleLogout = this.handleLogout.bind(this);
     this.generateAlbumArt = this.generateAlbumArt.bind(this);
     this.interpretPrompt = this.interpretPrompt.bind(this);
+    this.checkUserInfo = this.checkUserInfo.bind(this);
     this.handleLogin();
   }
   async handleLogin() {
@@ -72,6 +62,11 @@ class App extends React.Component {
     }
   }
 
+  checkUserInfo() {
+    if (!this.state.spotifyAvatar || !this.state.spotifyUsername) {
+      this.handleLogin();
+    }
+  }
   handleLogout() {
     this.setState({ isLoginMessageDisplayed: false });
   }
@@ -168,8 +163,9 @@ class App extends React.Component {
     }
   }
 
-  componentDidMount() {
+componentDidMount() {
     this.handleLogin();
+    this.checkUserInfo();
   }
 
   removeTrack(track) {
@@ -184,7 +180,6 @@ class App extends React.Component {
   updatePlaylistName(name) {
     this.setState({ playlistName: name });
   }
-
   savePlaylist() {
     const trackUris = this.state.playlistTracks.map((track) => track.uri);
     Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
@@ -203,7 +198,7 @@ class App extends React.Component {
     this.setState({ searchState: false });
   }
 
-  render() {
+render() {
     if (!this.state.loggedIn) {
       return <LoginPage onLogin={this.handleLogin} />;
     }
@@ -236,14 +231,14 @@ class App extends React.Component {
           </div>
           <div>
             <p className="logged-in-label">
-              Logged in as: {this.state.spotifyUsername}
+              Logged in as: {this.state.spotifyUsername ? this.state.spotifyUsername : 'Guest'}
             </p>
-            <img
+            {this.state.spotifyAvatar ? <img
               className="spotify-avatar"
               src={this.state.spotifyAvatar}
               alt={"icon"}
-            />
-            <h1 className="spotify-username">{this.state.spotifyUsername}</h1>
+            /> : null}
+            {this.state.spotifyUsername ? <h1 className="spotify-username">{this.state.spotifyUsername}</h1> : null}
           </div>
           <div>
             <a
@@ -318,5 +313,6 @@ class App extends React.Component {
       </div>
     );
   }
-}
 export default App;
+
+
