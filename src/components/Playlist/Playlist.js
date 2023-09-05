@@ -58,6 +58,7 @@ render() {
       </div>
     );
   }
-export default Playlist;
+}
 
+export default Playlist;
 
