@@ -1,6 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import "./Track.css";
 
 class Track extends React.Component {
   constructor(props) {
@@ -10,12 +11,10 @@ class Track extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  checkArtwork(image) {
-    const originalArtwork = "url_to_original_artwork";
-    if (image !== originalArtwork) {
-      return originalArtwork;
-    }
-    return image;
+  addTrack(event) {
+    this.props.onAdd(this.props.track);
+    if (this.props.currentTrack && this.props.currentTrack.id === this.props.track.id) {
+      this.props.onToggle(this.props.track);}
   }
 
   removeTrack(event) {
@@ -74,7 +73,7 @@ class Track extends React.Component {
         </button>
         <div className="Track-image">
           <img
-            src={this.checkArtwork(this.props.track.image)}
+            src={this.props.track.image}
             alt="Album Art"
             style={{ width: "2.5rem" }}
           />
@@ -84,18 +83,17 @@ class Track extends React.Component {
           <p>
             {this.props.track.artist} | {this.props.track.album}
           </p>
-          <a
-            href={this.props.track.uri}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="spotify-logo.png"
-              alt="Spotify Logo"
-              style={{ width: "1rem" }}
-            />
-          </a>
         </div>
+        <a
+          href={this.props.track.uri}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img className="spotifyLogo-small"
+            src={"/spotify-logo-small.png"}
+            alt="Spotify Logo"
+          />
+        </a>
         {this.renderAction()}
       </div>
     );

@@ -53,7 +53,6 @@
   max-width: calc(100% - 60px); /* Subtract the width of Track-action and Track-preview */
   margin-left: 10px;
   word-wrap: break-word; /* Add this property to allow wrapping of long titles */
-
 }
 
 
@@ -65,6 +64,12 @@
   font-size: .83rem;
   font-weight: 300;
   color: white;
+}
+
+.spotifyLogo-small{
+  width: auto;
+  height: 1.5rem;
+  margin-right: 10px;
 }
 
 .playButton {
