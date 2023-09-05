@@ -212,7 +212,7 @@ class App extends React.Component {
               alt={"icon"}
             />
             <h1>
-              <span> SOUND </span>
+              <span> SOUND</span>
               <span className="highlight">TRACKS</span>
             </h1>
             <button onClick={this.setToSearchState}>
@@ -227,7 +227,8 @@ class App extends React.Component {
               Playlist
             </button>
             <div>
-              <div className="user-info">
+                <div className="user-info-header">Logged in as:</div>
+                <div className="user-info">
                 <img className="avatar" src={this.state.spotifyAvatar || null } alt="avatar" />
                 <h1 className="username"> {this.state.spotifyUsername || null} </h1>
               </div>

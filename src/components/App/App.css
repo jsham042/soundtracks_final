@@ -114,7 +114,18 @@ h2 {
     justify-content: space-between;
     margin: 1rem;
     position: fixed;
-    bottom: 10%;
+    bottom: 2%;
+}
+
+.user-info-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1rem;
+    color: white;
+    position: fixed;
+    font-size: 0.8rem;
+    bottom: 12%;
 }
 
 @media only screen and (min-width: 1020px) {
