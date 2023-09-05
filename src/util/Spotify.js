@@ -2,7 +2,7 @@ const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that 
 
 // const redirectUri = "http://localhost:3000/callback"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 
-const redirectUri = 'https://www.soundtracksai.com/'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
+const redirectUri = "https://www.soundtracksai.com/"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 let accessToken;
 
 const Spotify = {
@@ -65,11 +65,12 @@ const Spotify = {
           album: track.album.name,
           uri: track.uri,
           preview_url: track.preview_url,
-          image: track.album.images.url,
+          image: track.album.images[0].url,
+          spotifyLogo: "spotify-logo.png",
+          spotifyLink: `https://open.spotify.com/track/${track.id}`,
         }));
       });
   },
-
   openAiSearch(term) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
@@ -98,10 +99,11 @@ const Spotify = {
           uri: track.uri,
           preview_url: track.preview_url,
           image: track.album.images[0].url,
+          spotifyLogo: "spotify-logo.png",
+          spotifyLink: `https://open.spotify.com/track/${track.id}`,
         }));
       });
   },
-
   makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
     const accessToken = Spotify.getAccessToken();
     return fetch(
@@ -126,10 +128,11 @@ const Spotify = {
           album: track.album.name,
           uri: track.uri,
           preview_url: track.preview_url,
+          spotifyLogo: "spotify-logo.png",
+          spotifyLink: `https://open.spotify.com/track/${track.id}`,
         }));
       });
   },
-
   savePlaylist(name, trackUris) {
     if (!name || !trackUris.length) {
       return;
