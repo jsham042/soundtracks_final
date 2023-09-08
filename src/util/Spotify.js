@@ -107,7 +107,7 @@ const Spotify = {
   makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
     const accessToken = Spotify.getAccessToken();
     return fetch(
-      `https://api.spotify.com/v1/recommendations?limit=20&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`,
+      `https://api.spotify.com/v1/recommendations?limit=75&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
