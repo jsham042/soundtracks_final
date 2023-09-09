@@ -91,35 +91,38 @@ class App extends React.Component {
     });
   }
   openAiSearch(prompt) {
-    this.setState({ isFetching: true });
-    generateTotalSongRecommendations(prompt).then((response) => {
-      const songList = response.slice(0, 25);
-      const promises = songList.map((song) => Spotify.openAiSearch(song));
-      Promise.all(promises)
-        .then((searchResultsArray) => {
-          const searchResults = [].concat(...searchResultsArray);
-          this.setState({
-            searchResults: this.removeDuplicateTracks(searchResults),
-          });  
-          Spotify.getRecommendations().then((recommendations) => {
+  this.setState({ isFetching: true });
+  generateTotalSongRecommendations(prompt).then((response) => {
+    const songList = response.slice(0, 25);
+    const promises = songList.map((song) => Spotify.openAiSearch(song));
+    Promise.all(promises)
+      .then((searchResultsArray) => {
+        const searchResults = [].concat(...searchResultsArray);
+        this.setState({
+          searchResults: this.removeDuplicateTracks(searchResults),
+        });
+        
+        Spotify.getRecommendations().then((recommendations) => {
           this.setState({
             searchResults: this.removeDuplicateTracks(
-              this.state.searchResults.concat(recommendations),
+              this.state.searchResults.concat(recommendations)
             ),
           });
-        },
-          const playlistNamePromise = this.generatePlaylistName(prompt);
-          playlistNamePromise
-            .then((playlistName) => {
-              this.generateAlbumArt(playlistName);
-            })
-            .then(() => this.setState({ isFetching: false }));
-        })
-        .catch((error) => {
-          console.error(error);
         });
-    });
-  }
+
+        const playlistNamePromise = this.generatePlaylistName(prompt);
+        playlistNamePromise
+          .then((playlistName) => {
+            this.generateAlbumArt(playlistName);
+          })
+          .then(() => this.setState({ isFetching: false }));
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
+}
+
   generatePlaylistName(prompt) {
     return OpenAiAPIRequest.generatePlaylistName(
       `Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`,
