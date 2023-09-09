@@ -21,17 +21,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class App extends React.Component {
-  removeDuplicateTracks(tracks) {
-    const trackIds = new Set();
-    const uniqueTracks = [];
-    for (const track of tracks) {
-      if (!trackIds.has(track.id)) {
-        trackIds.add(track.id);
-        uniqueTracks.push(track);
-      }
-    }
-    return uniqueTracks;
-  }
+  
   constructor(props) {
     super(props);
 
@@ -110,7 +100,14 @@ class App extends React.Component {
           const searchResults = [].concat(...searchResultsArray);
           this.setState({
             searchResults: this.removeDuplicateTracks(searchResults),
+          });  
+          Spotify.getRecommendations().then((recommendations) => {
+          this.setState({
+            searchResults: this.removeDuplicateTracks(
+              this.state.searchResults.concat(recommendations),
+            ),
           });
+        }
           const playlistNamePromise = this.generatePlaylistName(prompt);
           playlistNamePromise
             .then((playlistName) => {
@@ -151,6 +148,18 @@ class App extends React.Component {
       .catch((error) => {
         console.error(error);
       });
+  }
+
+  removeDuplicateTracks(tracks) {
+    const trackIds = new Set();
+    const uniqueTracks = [];
+    for (const track of tracks) {
+      if (!trackIds.has(track.id)) {
+        trackIds.add(track.id);
+        uniqueTracks.push(track);
+      }
+    }
+    return uniqueTracks;
   }
 
   addTrack(track) {
