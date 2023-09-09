@@ -107,7 +107,7 @@ class App extends React.Component {
               this.state.searchResults.concat(recommendations),
             ),
           });
-        }
+        },
           const playlistNamePromise = this.generatePlaylistName(prompt);
           playlistNamePromise
             .then((playlistName) => {
