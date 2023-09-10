@@ -76,7 +76,7 @@ class App extends React.Component {
       this.setState({
         searchResults: this.removeDuplicateTracks(searchResults),
       });
-      Spotify.getRecommendations().then((recommendations) => {
+      Spotify.makeRecommendations().then((recommendations) => {
         this.setState({
           searchResults: this.removeDuplicateTracks(
             this.state.searchResults.concat(recommendations),
@@ -102,7 +102,7 @@ class App extends React.Component {
           searchResults: this.removeDuplicateTracks(searchResults),
         });
         
-        Spotify.getRecommendations().then((recommendations) => {
+        Spotify.makeRecommendations().then((recommendations) => {
           this.setState({
             searchResults: this.removeDuplicateTracks(
               this.state.searchResults.concat(recommendations)
