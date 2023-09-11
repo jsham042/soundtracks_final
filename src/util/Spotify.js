@@ -165,6 +165,9 @@ const Spotify = {
           });
       });
   },
+  logout() {
+    accessToken = "";
+  },
   isLoggedIn() {
     if (accessToken) {
       return true;
