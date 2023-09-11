@@ -21,7 +21,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class App extends React.Component {
-  
   constructor(props) {
     super(props);
 
@@ -49,6 +48,7 @@ class App extends React.Component {
     this.setToPlaylistState = this.setToPlaylistState.bind(this);
     this.toggleTrack = this.toggleTrack.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
     this.generateAlbumArt = this.generateAlbumArt.bind(this);
     this.interpretPrompt = this.interpretPrompt.bind(this);
     this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
@@ -71,6 +71,20 @@ class App extends React.Component {
     }
   }
 
+  handleLogout() {
+    this.setState({
+      loggedIn: false,
+      searchResults: [],
+      playlistName: "New Playlist",
+      playlistTracks: [],
+      isFetching: false,
+      searchState: true,
+      albumArt: defaultAlbumArt,
+      currentTrack: null,
+      spotifyUsername: null,
+      spotifyAvatar: null,
+    });
+  }
   search(term) {
     Spotify.search(term).then((searchResults) => {
       this.setState({
@@ -91,37 +105,37 @@ class App extends React.Component {
     });
   }
   openAiSearch(prompt) {
-  this.setState({ isFetching: true });
-  generateTotalSongRecommendations(prompt).then((response) => {
-    const songList = response.slice(0, 25);
-    const promises = songList.map((song) => Spotify.openAiSearch(song));
-    Promise.all(promises)
-      .then((searchResultsArray) => {
-        const searchResults = [].concat(...searchResultsArray);
-        this.setState({
-          searchResults: this.removeDuplicateTracks(searchResults),
-        });
-        
-        Spotify.makeRecommendation().then((recommendations) => {
+    this.setState({ isFetching: true });
+    generateTotalSongRecommendations(prompt).then((response) => {
+      const songList = response.slice(0, 25);
+      const promises = songList.map((song) => Spotify.openAiSearch(song));
+      Promise.all(promises)
+        .then((searchResultsArray) => {
+          const searchResults = [].concat(...searchResultsArray);
           this.setState({
-            searchResults: this.removeDuplicateTracks(
-              this.state.searchResults.concat(recommendations)
-            ),
+            searchResults: this.removeDuplicateTracks(searchResults),
           });
-        });
 
-        const playlistNamePromise = this.generatePlaylistName(prompt);
-        playlistNamePromise
-          .then((playlistName) => {
-            this.generateAlbumArt(playlistName);
-          })
-          .then(() => this.setState({ isFetching: false }));
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  });
-}
+          Spotify.makeRecommendation().then((recommendations) => {
+            this.setState({
+              searchResults: this.removeDuplicateTracks(
+                this.state.searchResults.concat(recommendations),
+              ),
+            });
+          });
+
+          const playlistNamePromise = this.generatePlaylistName(prompt);
+          playlistNamePromise
+            .then((playlistName) => {
+              this.generateAlbumArt(playlistName);
+            })
+            .then(() => this.setState({ isFetching: false }));
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
+  }
 
   generatePlaylistName(prompt) {
     return OpenAiAPIRequest.generatePlaylistName(
@@ -266,6 +280,9 @@ class App extends React.Component {
                 {" "}
                 {this.state.spotifyUsername || null}{" "}
               </h1>
+              <button className="Logout-button" onClick={this.handleLogout}>
+                Logout
+              </button>
             </div>
             <a
               href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
