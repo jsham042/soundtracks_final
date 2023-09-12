@@ -6,6 +6,7 @@ import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
+import LogoutButton from "../LogoutButton/LogoutButton.js";
 
 import OpenAiAPIRequest, {
   generatePlaylistName,
@@ -280,9 +281,7 @@ class App extends React.Component {
                 {" "}
                 {this.state.spotifyUsername || null}{" "}
               </h1>
-              <button className="Logout-button" onClick={this.handleLogout}>
-                Logout
-              </button>
+              <LogoutButton onLogout={this.handleLogout} />
             </div>
             <a
               href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
