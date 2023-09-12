@@ -95,6 +95,10 @@ h2 {
 
 .Logout-button {
   display: block;
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 80%;
   margin: 1rem auto;
   padding: 0.5rem;
@@ -106,7 +110,6 @@ h2 {
   border-radius: 6px;
   cursor: pointer;
 }
-
 .Logout-button:hover {
   background-color: #a8a466;
 }
