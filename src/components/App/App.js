@@ -7,7 +7,6 @@ import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
 
-
 import OpenAiAPIRequest, {
   generatePlaylistName,
   generateImage,
@@ -49,9 +48,11 @@ class App extends React.Component {
     this.setToPlaylistState = this.setToPlaylistState.bind(this);
     this.toggleTrack = this.toggleTrack.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
     this.generateAlbumArt = this.generateAlbumArt.bind(this);
     this.interpretPrompt = this.interpretPrompt.bind(this);
-    this.handleLogin()
+    this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
+    this.handleLogin();
   }
   async handleLogin() {
     // Use the Spotify utility to get the access token
@@ -70,9 +71,32 @@ class App extends React.Component {
     }
   }
 
+  handleLogout() {
+    this.setState({
+      loggedIn: false,
+      searchResults: [],
+      playlistName: "New Playlist",
+      playlistTracks: [],
+      isFetching: false,
+      searchState: true,
+      albumArt: defaultAlbumArt,
+      currentTrack: null,
+      spotifyUsername: null,
+      spotifyAvatar: null,
+    });
+  }
   search(term) {
     Spotify.search(term).then((searchResults) => {
-      this.setState({ searchResults: searchResults });
+      this.setState({
+        searchResults: this.removeDuplicateTracks(searchResults),
+      });
+      Spotify.makeRecommendation().then((recommendations) => {
+        this.setState({
+          searchResults: this.removeDuplicateTracks(
+            this.state.searchResults.concat(recommendations),
+          ),
+        });
+      });
     });
   }
   interpretPrompt(prompt) {
@@ -80,7 +104,6 @@ class App extends React.Component {
       console.log(response);
     });
   }
-
   openAiSearch(prompt) {
     this.setState({ isFetching: true });
     generateTotalSongRecommendations(prompt).then((response) => {
@@ -89,7 +112,18 @@ class App extends React.Component {
       Promise.all(promises)
         .then((searchResultsArray) => {
           const searchResults = [].concat(...searchResultsArray);
-          this.setState({ searchResults: searchResults });
+          this.setState({
+            searchResults: this.removeDuplicateTracks(searchResults),
+          });
+
+          Spotify.makeRecommendation().then((recommendations) => {
+            this.setState({
+              searchResults: this.removeDuplicateTracks(
+                this.state.searchResults.concat(recommendations),
+              ),
+            });
+          });
+
           const playlistNamePromise = this.generatePlaylistName(prompt);
           playlistNamePromise
             .then((playlistName) => {
@@ -131,6 +165,18 @@ class App extends React.Component {
       .catch((error) => {
         console.error(error);
       });
+  }
+
+  removeDuplicateTracks(tracks) {
+    const trackIds = new Set();
+    const uniqueTracks = [];
+    for (const track of tracks) {
+      if (!trackIds.has(track.id)) {
+        trackIds.add(track.id);
+        uniqueTracks.push(track);
+      }
+    }
+    return uniqueTracks;
   }
 
   addTrack(track) {
@@ -177,7 +223,6 @@ class App extends React.Component {
     this.setState({ searchResults: searchResults });
   }
 
-
   updatePlaylistName(name) {
     this.setState({ playlistName: name });
   }
@@ -201,109 +246,115 @@ class App extends React.Component {
   }
 
   render() {
-      if (!this.state.loggedIn) {
-        return <LoginPage onLogin={() => this.handleLogin()} />;
-      }
-      return (
-        <div>
-          <div className="Sidebar">
-            <img
-              src={"/djboticon.png"}
-              alt={"icon"}
+    if (!this.state.loggedIn) {
+      return <LoginPage onLogin={() => this.handleLogin()} />;
+    }
+    return (
+      <div>
+        <div className="Sidebar">
+          <img src={"/djboticon.png"} alt={"icon"} />
+          <h1>
+            <span> SOUND</span>
+            <span className="highlight">TRACKS</span>
+          </h1>
+          <button onClick={this.setToSearchState}>
+            <FontAwesomeIcon
+              icon={faSearch}
+              style={{ marginRight: "0.75em" }}
             />
-            <h1>
-              <span> SOUND</span>
-              <span className="highlight">TRACKS</span>
-            </h1>
-            <button onClick={this.setToSearchState}>
-              <FontAwesomeIcon
-                icon={faSearch}
-                style={{ marginRight: "0.75em" }}
+            Search
+          </button>
+          <button onClick={this.setToPlaylistState}>
+            <FontAwesomeIcon icon={faMusic} style={{ marginRight: "0.75em" }} />
+            Playlist
+          </button>
+          <div>
+            <div className="user-info-header">Logged in as:</div>
+            <div className="user-info">
+              <img
+                className="avatar"
+                src={this.state.spotifyAvatar || null}
+                alt="avatar"
               />
-              Search
-            </button>
-            <button onClick={this.setToPlaylistState}>
-              <FontAwesomeIcon icon={faMusic} style={{ marginRight: "0.75em" }} />
-              Playlist
-            </button>
-            <div>
-                <div className="user-info-header">Logged in as:</div>
-                <div className="user-info">
-                <img className="avatar" src={this.state.spotifyAvatar || null } alt="avatar" />
-                <h1 className="username"> {this.state.spotifyUsername || null} </h1>
-              </div>
-              <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
-                className="feedback"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span style={{ paddingRight: "10px" }}>
-                  <FontAwesomeIcon icon={faCommentAlt} />
-                </span>
-                Please Provide Feedback!
-              </a>
+              <h1 className="username">
+                {" "}
+                {this.state.spotifyUsername || null}{" "}
+              </h1>
+              <button className="Logout-button" onClick={this.handleLogout}>
+                Logout
+              </button>
             </div>
-          </div>
-
-          <div className="App">
-            {this.state.searchState ? (
-              <div>
-                <SearchBar onSearch={this.openAiSearch} />
-                {this.state.isFetching ? (
-                  <div className="Fetching-sign">
-                    <FontAwesomeIcon icon={faSpinner} spin />
-                    Fetching results...
-                  </div>
-                ) : null}
-                <SearchResults
-                  searchResults={this.state.searchResults}
-                  onAdd={this.addTrack}
-                  onToggle={this.toggleTrack}
-                  currentTrack={this.state.currentTrack}
-                />
-              </div>
-            ) : (
-              <div className="App-playlist">
-                <Playlist
-                  playlistName={this.state.playlistName}
-                  playlistTracks={this.state.playlistTracks}
-                  albumArt={this.state.albumArt}
-                  onNameChange={this.updatePlaylistName}
-                  onRemove={this.removeTrack}
-                  onSave={this.savePlaylist}
-                  onToggle={this.toggleTrack}
-                  currentTrack={this.state.currentTrack}
-                >
-                  <img
-                    src={this.state.albumArt}
-                    alt="Album Art"
-                    style={{ width: "1rem", height: "1rem" }}
-                  />
-                </Playlist>
-              </div>
-            )}
-          </div>
-
-          <div className="Navigator">
-            <button
-              onClick={this.setToSearchState}
-              className={this.state.searchState ? "active" : ""}
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
+              className="feedback"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <FontAwesomeIcon icon={faSearch} style={{ marginRight: "0.4em" }} />
-              Search
-            </button>
-            <button
-              onClick={this.setToPlaylistState}
-              className={this.state.searchState ? "" : "active"}
-            >
-              <FontAwesomeIcon icon={faMusic} style={{ marginRight: "0.5em" }} />
-              Playlist
-            </button>
+              <span style={{ paddingRight: "10px" }}>
+                <FontAwesomeIcon icon={faCommentAlt} />
+              </span>
+              Please Provide Feedback!
+            </a>
           </div>
         </div>
-      );
-    }
+
+        <div className="App">
+          {this.state.searchState ? (
+            <div>
+              <SearchBar onSearch={this.openAiSearch} />
+              {this.state.isFetching ? (
+                <div className="Fetching-sign">
+                  <FontAwesomeIcon icon={faSpinner} spin />
+                  Fetching results...
+                </div>
+              ) : null}
+              <SearchResults
+                searchResults={this.state.searchResults}
+                onAdd={this.addTrack}
+                onToggle={this.toggleTrack}
+                currentTrack={this.state.currentTrack}
+              />
+            </div>
+          ) : (
+            <div className="App-playlist">
+              <Playlist
+                playlistName={this.state.playlistName}
+                playlistTracks={this.state.playlistTracks}
+                albumArt={this.state.albumArt}
+                onNameChange={this.updatePlaylistName}
+                onRemove={this.removeTrack}
+                onSave={this.savePlaylist}
+                onToggle={this.toggleTrack}
+                currentTrack={this.state.currentTrack}
+              >
+                <img
+                  src={this.state.albumArt}
+                  alt="Album Art"
+                  style={{ width: "1rem", height: "1rem" }}
+                />
+              </Playlist>
+            </div>
+          )}
+        </div>
+
+        <div className="Navigator">
+          <button
+            onClick={this.setToSearchState}
+            className={this.state.searchState ? "active" : ""}
+          >
+            <FontAwesomeIcon icon={faSearch} style={{ marginRight: "0.4em" }} />
+            Search
+          </button>
+          <button
+            onClick={this.setToPlaylistState}
+            className={this.state.searchState ? "" : "active"}
+          >
+            <FontAwesomeIcon icon={faMusic} style={{ marginRight: "0.5em" }} />
+            Playlist
+          </button>
+        </div>
+      </div>
+    );
+  }
 }
 export default App;
-
