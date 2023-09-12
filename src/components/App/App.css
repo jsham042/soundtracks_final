@@ -109,6 +109,10 @@ h2 {
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  /* Bootstrap classes added below */
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 .Logout-button:hover {
   background-color: #a8a466;
