@@ -1,8 +1,6 @@
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
 
-const redirectUri = "http://localhost:3000/callback"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
-
-// const redirectUri = "https://www.soundtracksai.com/"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
+const redirectUri = "https://www.soundtracksai.com/"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 let accessToken;
 
 const Spotify = {
@@ -102,7 +100,8 @@ const Spotify = {
           spotifyLogo: "spotify-logo.png",
           spotifyLink: `https://open.spotify.com/track/${track.id}`,
         }));
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.log(error);
       });
   },
@@ -180,5 +179,3 @@ const Spotify = {
 };
 
 export default Spotify;
-
-
