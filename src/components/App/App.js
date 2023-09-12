@@ -90,13 +90,6 @@ class App extends React.Component {
       this.setState({
         searchResults: this.removeDuplicateTracks(searchResults),
       });
-      Spotify.makeRecommendation().then((recommendations) => {
-        this.setState({
-          searchResults: this.removeDuplicateTracks(
-            this.state.searchResults.concat(recommendations),
-          ),
-        });
-      });
     });
   }
   interpretPrompt(prompt) {
@@ -110,32 +103,35 @@ class App extends React.Component {
       const songList = response.slice(0, 25);
       const promises = songList.map((song) => Spotify.openAiSearch(song));
       Promise.all(promises)
-        .then((searchResultsArray) => {
-          const searchResults = [].concat(...searchResultsArray);
-          this.setState({
-            searchResults: this.removeDuplicateTracks(searchResults),
-          });
+          .then((searchResultsArray) => {
+            // Flatten the array and remove duplicates
+            const searchResults = [].concat(...searchResultsArray);
+            const uniqueSearchResults = Array.from(new Set(searchResults));
 
-          Spotify.makeRecommendation().then((recommendations) => {
-            this.setState({
-              searchResults: this.removeDuplicateTracks(
-                this.state.searchResults.concat(recommendations),
-              ),
-            });
-          });
+            // Shuffle the array and pick 5 random tracks
+            const shuffledResults = uniqueSearchResults.sort(() => 0.5 - Math.random());
+            const randomFiveTracks = shuffledResults.slice(0, 5);
 
-          const playlistNamePromise = this.generatePlaylistName(prompt);
-          playlistNamePromise
-            .then((playlistName) => {
-              this.generateAlbumArt(playlistName);
-            })
-            .then(() => this.setState({ isFetching: false }));
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+            // Call the makeRecommendations function with 5 random track IDs
+            Spotify.makeRecommendation(randomFiveTracks)
+                .then(() => {
+                  this.setState({ searchResults: uniqueSearchResults });
+                  return this.generatePlaylistName(prompt);
+                })
+                .then((playlistName) => {
+                  this.generateAlbumArt(playlistName);
+                })
+                .then(() => this.setState({ isFetching: false }))
+                .catch((error) => {
+                  console.error(error);
+                });
+          })
+          .catch((error) => {
+            console.error(error);
+          });
     });
   }
+
 
   generatePlaylistName(prompt) {
     return OpenAiAPIRequest.generatePlaylistName(
