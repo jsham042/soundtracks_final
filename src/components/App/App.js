@@ -87,32 +87,19 @@ class App extends React.Component {
       const songList = response.slice(0, 25);
       const promises = songList.map((song) => Spotify.openAiSearch(song));
       Promise.all(promises)
-          .then((searchResultsArray) => {
-            // Flatten the array and remove duplicates
-            const searchResults = [].concat(...searchResultsArray);
-            const uniqueSearchResults = Array.from(new Set(searchResults));
-
-            // Shuffle the array and pick 5 random tracks
-            const shuffledResults = uniqueSearchResults.sort(() => 0.5 - Math.random());
-            const randomFiveTracks = shuffledResults.slice(0, 5);
-
-            // Call the makeRecommendations function with 5 random track IDs
-            Spotify.makeRecommendation(randomFiveTracks)
-                .then(() => {
-                  this.setState({ searchResults: uniqueSearchResults });
-                  return this.generatePlaylistName(prompt);
-                })
-                .then((playlistName) => {
-                  this.generateAlbumArt(playlistName);
-                })
-                .then(() => this.setState({ isFetching: false }))
-                .catch((error) => {
-                  console.error(error);
-                });
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        .then((searchResultsArray) => {
+          const searchResults = [].concat(...searchResultsArray);
+          this.setState({ searchResults: searchResults });
+          const playlistNamePromise = this.generatePlaylistName(prompt);
+          playlistNamePromise
+            .then((playlistName) => {
+              this.generateAlbumArt(playlistName);
+            })
+            .then(() => this.setState({ isFetching: false }));
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     });
   }
 
