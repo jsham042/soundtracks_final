@@ -75,7 +75,7 @@ h2 {
 .Sidebar .avatar {
   width: 20%;
   border-radius: 50%;
-  margin: 1rem auto;
+  margin: 1rem auto 2rem auto;
   pointer-events: none;
 }
 .Sidebar button {
@@ -96,17 +96,21 @@ h2 {
 .Logout-button {
   display: block;
   width: 80%;
-  margin: 1rem auto;
+  margin: 0 auto;
   padding: 0.5rem;
   text-align: center;
   font-size: 1rem;
   color: #fff;
-  background-color: #bcb967;
+  background-color: #1db954;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  /* Bootstrap classes added below */
+  /* Button styling */
+  class: "btn btn-primary";
+  /* Grid layout */
+  class: "col-md-4";
 }
-
 .Logout-button:hover {
   background-color: #a8a466;
 }
