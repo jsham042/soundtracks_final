@@ -1,8 +1,8 @@
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
 
-// const redirectUri = "http://localhost:3000/callback"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
+const redirectUri = "http://localhost:3000/callback"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 
-const redirectUri = "https://www.soundtracksai.com/"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
+// const redirectUri = "https://www.soundtracksai.com/"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 let accessToken;
 
 const Spotify = {
@@ -102,12 +102,14 @@ const Spotify = {
           spotifyLogo: "spotify-logo.png",
           spotifyLink: `https://open.spotify.com/track/${track.id}`,
         }));
+      }).catch((error) => {
+        console.log(error);
       });
   },
   makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
     const accessToken = Spotify.getAccessToken();
     return fetch(
-      `https://api.spotify.com/v1/recommendations?limit=75&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`,
+      `https://api.spotify.com/v1/recommendations?limit=25&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -178,3 +180,5 @@ const Spotify = {
 };
 
 export default Spotify;
+
+
