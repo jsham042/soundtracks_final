@@ -95,18 +95,25 @@ h2 {
 
 .Logout-button {
   display: block;
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 80%;
   margin: 1rem auto;
   padding: 0.5rem;
   text-align: center;
   font-size: 1rem;
   color: #fff;
-  background-color: #bcb967;
+  background-color: #303133;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  /* Bootstrap classes added below */
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
-
 .Logout-button:hover {
   background-color: #a8a466;
 }
