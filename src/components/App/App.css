@@ -61,7 +61,7 @@ h2 {
   top: 0;
   bottom: 0;
   height: 100%;
-  width: 15rem;
+  width: 100%;
   background: linear-gradient(to bottom, #3b3142, #1d1721);
 }
 
@@ -72,6 +72,11 @@ h2 {
   pointer-events: none;
 }
 
+@media screen and (min-width: 600px) {
+  .Sidebar {
+    width: 15rem;
+  }
+}
 .Sidebar .avatar {
   width: 20%;
   border-radius: 50%;
@@ -172,18 +177,17 @@ h2 {
   }
 
   .Sidebar {
-    display: none;
+    display: block;
   }
 
   .Sidebar .username,
   .Sidebar .avatar {
-    display: none;
+    display: block;
   }
 
   .feedback {
     display: none;
   }
-
   .Navigator {
     position: fixed;
     left: 50%;
