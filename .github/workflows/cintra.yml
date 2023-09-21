@@ -1,0 +1,90 @@
+name: CintraAI Unit Testing Workflow
+
+on:
+  push:
+    branches-ignore:
+      - 'main'
+      - 'master'
+  pull_request:
+    branches-ignore:
+      - 'main'
+      - 'master'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Identify Changed Files and Contributor
+        id: vars
+        run: |
+          changed_js_test_files=$(git diff --name-only HEAD~1 HEAD | grep '.test.js')
+          changed_py_test_files=$(git diff --name-only HEAD~1 HEAD | grep 'test_.*\.py')
+          contributor=$(git log -1 --pretty=format:'%an')
+          echo "Changed JS test files in last commit: $changed_js_test_files"
+          echo "Changed PY test files in last commit: $changed_py_test_files"
+          echo "Last commit by: $contributor"
+          echo "changed_js_test_files=$changed_js_test_files" >> $GITHUB_ENV
+          echo "changed_py_test_files=$changed_py_test_files" >> $GITHUB_ENV
+          echo "contributor=$contributor" >> $GITHUB_ENV
+
+      - name: Conditionally run JavaScript tests
+        if: contains(env.contributor, 'CintraAI') && env.changed_js_test_files != ''
+        run: |
+          echo "Running JavaScript tests for changed test files..."
+
+      - name: Setup Node.js environment
+        if: contains(env.contributor, 'CintraAI') && env.changed_js_test_files != ''
+        uses: actions/setup-node@v2.3.0
+        with:
+          node-version: '14'
+
+      - name: Cache Node.js modules
+        if: contains(env.contributor, 'CintraAI') && env.changed_js_test_files != ''
+        uses: actions/cache@v2.1.6
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+
+      - name: Install Dependencies
+        if: contains(env.contributor, 'CintraAI') && env.changed_js_test_files != ''
+        run: npm install
+
+      - name: Run Jest Tests on Changed Files
+        if: contains(env.contributor, 'CintraAI') && env.changed_js_test_files != ''
+        run: npm test -- ${{ env.changed_js_test_files }}
+
+      - name: Conditionally run Python tests
+        if: contains(env.contributor, 'CintraAI') && env.changed_py_test_files != ''
+        run: |
+          echo "Running Python tests for changed test files..."
+
+      - name: Setup Python environment
+        if: contains(env.contributor, 'CintraAI') && env.changed_py_test_files != ''
+        uses: actions/setup-python@v2.3.1
+        with:
+          python-version: '3.8'
+
+      - name: Cache Python dependencies
+        if: contains(env.contributor, 'CintraAI') && env.changed_py_test_files != ''
+        uses: actions/cache@v2.1.6
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.OS }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.OS }}-pip-
+
+      - name: Install Dependencies
+        if: contains(env.contributor, 'CintraAI') && env.changed_py_test_files != ''
+        run: pip install -r requirements.txt
+
+      - name: Run Pytest Tests on Changed Files
+        if: contains(env.contributor, 'CintraAI') && env.changed_py_test_files != ''
+        run: pytest ${{ env.changed_py_test_files }}
