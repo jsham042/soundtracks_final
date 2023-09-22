@@ -290,6 +290,8 @@ class App extends React.Component {
                 {" "}
                 {this.state.spotifyUsername || null}{" "}
               </h1>
+                </div>
+            <div>
               <button className="Logout-button" onClick={this.handleLogout}>
                 Logout
               </button>
