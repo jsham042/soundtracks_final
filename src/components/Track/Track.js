@@ -13,10 +13,16 @@ class Track extends React.Component {
 
   addTrack(event) {
     this.props.onAdd(this.props.track);
-    if (this.props.currentTrack && this.props.currentTrack.id === this.props.track.id) {
-      this.props.onToggle(this.props.track);}
+    if (
+      this.props.currentTrack &&
+      this.props.currentTrack.id === this.props.track.id
+    ) {
+      this.props.onToggle(this.props.track);
+    }
+    spotifyApi.addTracksToPlaylist(this.props.playlistId, [
+      this.props.track.uri,
+    ]);
   }
-
   removeTrack(event) {
     this.props.onRemove(this.props.track);
     if (
@@ -25,12 +31,14 @@ class Track extends React.Component {
     ) {
       this.props.onToggle(this.props.track);
     }
+    spotifyApi.removeTracksFromPlaylist(this.props.playlistId, [
+      this.props.track.uri,
+    ]);
   }
 
   handleClick() {
     this.props.onToggle(this.props.track);
   }
-
   renderAction() {
     if (this.props.isRemoval) {
       return (
@@ -89,7 +97,8 @@ class Track extends React.Component {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img className="spotifyLogo-small"
+          <img
+            className="spotifyLogo-small"
             src={"/spotify-logo-small.png"}
             alt="Spotify Logo"
           />
