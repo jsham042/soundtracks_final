@@ -1,8 +1,8 @@
 import SpotifyWebApi from "spotify-web-api-js";
 
-const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
+const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID;
 
-const redirectUri = "https://www.soundtracksai.com/"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
+const redirectUri = "https://www.soundtracksai.com/";
 let accessToken;
 
 const Spotify = {
