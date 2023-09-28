@@ -1,6 +1,7 @@
 import React from "react";
 import "./Playlist.css";
 import TrackList from "../TrackList/TrackList.js";
+import Spotify from "../../util/Spotify";
 
 class Playlist extends React.Component {
   constructor(props) {
@@ -10,14 +11,17 @@ class Playlist extends React.Component {
       albumArt: props.albumArt,
     };
     this.handleNameChange = this.handleNameChange.bind(this);
+    this.savePlaylist = this.savePlaylist.bind(this);
   }
-
   handleNameChange(event) {
     this.props.onNameChange(event.target.value);
   }
 
-
-render() {
+  savePlaylist() {
+    const trackUris = this.props.playlistTracks.map((track) => track.uri);
+    Spotify.savePlaylist(this.state.playlistName, trackUris);
+  }
+  render() {
     return (
       <div className="Playlist">
         <div className="Playlist-album">
@@ -27,8 +31,12 @@ render() {
               value={this.state.playlistName}
               onChange={this.handleNameChange}
             />
-            <img className='spotifyLogo' src={"./spotify-logo.png"} alt="Spotify Logo" />
-            <button className="Playlist-save" onClick={this.props.onSave}>
+            <img
+              className="spotifyLogo"
+              src={"./spotify-logo.png"}
+              alt="Spotify Logo"
+            />
+            <button className="Playlist-save" onClick={this.savePlaylist}>
               SAVE TO SPOTIFY
             </button>
           </div>
@@ -44,6 +52,4 @@ render() {
     );
   }
 }
-
 export default Playlist;
-
