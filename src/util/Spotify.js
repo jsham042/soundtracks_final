@@ -26,68 +26,46 @@ const Spotify = {
     }
   },
   getUserInfo() {
-    const accessToken = Spotify.getAccessToken();
-    return fetch("https://api.spotify.com/v1/me", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((jsonResponse) => {
-        if (!jsonResponse) {
-          return { username: null, avatar: null };
-        }
-        return {
-          username: jsonResponse.display_name,
-          avatar: jsonResponse.images[0]?.url || null,
-        };
-      });
+    const spotifyApi = new SpotifyWebApi();
+    spotifyApi.setAccessToken(Spotify.getAccessToken());
+    return spotifyApi.getMe().then((jsonResponse) => {
+      if (!jsonResponse) {
+        return { username: null, avatar: null };
+      }
+      return {
+        username: jsonResponse.display_name,
+        avatar: jsonResponse.images[0]?.url || null,
+      };
+    });
   },
   search(term) {
-    const accessToken = Spotify.getAccessToken();
-    return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((jsonResponse) => {
-        if (!jsonResponse.tracks) {
-          return [];
-        }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          image: track.album.images[0].url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        }));
-      });
+    const spotifyApi = new SpotifyWebApi();
+    spotifyApi.setAccessToken(Spotify.getAccessToken());
+    return spotifyApi.searchTracks(term).then((jsonResponse) => {
+      if (!jsonResponse.tracks) {
+        return [];
+      }
+      return jsonResponse.tracks.items.map((track) => ({
+        id: track.id,
+        name: track.name,
+        artist: track.artists[0].name,
+        album: track.album.name,
+        uri: track.uri,
+        preview_url: track.preview_url,
+        image: track.album.images[0].url,
+        spotifyLogo: "spotify-logo.png",
+        spotifyLink: `https://open.spotify.com/track/${track.id}`,
+      }));
+    });
   },
   openAiSearch(term) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
     const artist = responseArray[1];
-    const accessToken = Spotify.getAccessToken();
-    return fetch(
-      `https://api.spotify.com/v1/search?q=track:${track}+artist:${artist}&type=track&limit=1`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    )
-      .then((response) => {
-        return response.json();
-      })
+    const spotifyApi = new SpotifyWebApi();
+    spotifyApi.setAccessToken(Spotify.getAccessToken());
+    return spotifyApi
+      .searchTracks(`track:${track} artist:${artist}`)
       .then((jsonResponse) => {
         if (!jsonResponse.tracks) {
           return [];
@@ -109,17 +87,13 @@ const Spotify = {
       });
   },
   makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
-    const accessToken = Spotify.getAccessToken();
-    return fetch(
-      `https://api.spotify.com/v1/recommendations?limit=25&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    )
-      .then((response) => {
-        return response.json();
+    const spotifyApi = new SpotifyWebApi();
+    spotifyApi.setAccessToken(Spotify.getAccessToken());
+    return spotifyApi
+      .getRecommendations({
+        seed_tracks: [songId1, songId2, songId3, songId4, songId5],
+        limit: 25,
+        market: "US",
       })
       .then((jsonResponse) => {
         if (!jsonResponse.tracks) {
@@ -142,32 +116,17 @@ const Spotify = {
       return;
     }
 
-    const accessToken = Spotify.getAccessToken();
-    const headers = { Authorization: `Bearer ${accessToken}` };
-    let userId;
-
-    return fetch("https://api.spotify.com/v1/me", { headers: headers })
-      .then((response) => response.json())
-      .then((jsonResponse) => {
-        userId = jsonResponse.id;
-        return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
-          headers: headers,
-          method: "POST",
-          body: JSON.stringify({ name: name }),
-        })
-          .then((response) => response.json())
-          .then((jsonResponse) => {
-            const playlistId = jsonResponse.id;
-            return fetch(
-              `https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`,
-              {
-                headers: headers,
-                method: "POST",
-                body: JSON.stringify({ uris: trackUris }),
-              },
-            );
-          });
-      });
+    const spotifyApi = new SpotifyWebApi();
+    spotifyApi.setAccessToken(Spotify.getAccessToken());
+    return spotifyApi.getMe().then((jsonResponse) => {
+      const userId = jsonResponse.id;
+      return spotifyApi
+        .createPlaylist(userId, { name: name })
+        .then((jsonResponse) => {
+          const playlistId = jsonResponse.id;
+          return spotifyApi.addTracksToPlaylist(playlistId, trackUris);
+        });
+    });
   },
   logout() {
     accessToken = "";
