@@ -1,13 +1,15 @@
-
-import SpotifyWebApi from 'spotify-web-api-js';
+import SpotifyWebApi from "spotify-web-api-js";
 
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
 
 const redirectUri = "https://www.soundtracksai.com/"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 let accessToken;
 
+const spotifyApi = new SpotifyWebApi();
+spotifyApi.setAccessToken(accessToken);
+
 const Spotify = {
-  getAccessToken: function() {
+  getAccessToken: function () {
     if (accessToken) {
       return accessToken;
     }
@@ -25,25 +27,17 @@ const Spotify = {
       window.location = accessUrl;
     }
   },
-  getUserInfo: function() {
-    const accessToken = Spotify.getAccessToken();
-    return fetch("https://api.spotify.com/v1/me", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((jsonResponse) => {
-        if (!jsonResponse) {
-          return { username: null, avatar: null };
-        }
-        return {
-          username: jsonResponse.display_name,
-          avatar: jsonResponse.images[0]?.url || null,
-        };
-      });
+  getUserInfo: function () {
+    return spotifyApi.getMe().then((jsonResponse) => {
+      if (!jsonResponse) {
+        return { username: null, avatar: null };
+      }
+      return {
+        username: jsonResponse.display_name,
+        avatar: jsonResponse.images[0]?.url || null,
+      };
+    });
   },
   // Rest of the code remains the same
+};
 export default Spotify;
