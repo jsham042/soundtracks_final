@@ -16,8 +16,11 @@ class Playlist extends React.Component {
     this.props.onNameChange(event.target.value);
   }
 
-
-render() {
+  savePlaylist() {
+    const trackUris = this.state.playlistTracks.map((track) => track.uri);
+    Spotify.savePlaylist(this.state.playlistName, trackUris);
+  }
+  render() {
     return (
       <div className="Playlist">
         <div className="Playlist-album">
@@ -27,8 +30,12 @@ render() {
               value={this.state.playlistName}
               onChange={this.handleNameChange}
             />
-            <img className='spotifyLogo' src={"./spotify-logo.png"} alt="Spotify Logo" />
-            <button className="Playlist-save" onClick={this.props.onSave}>
+            <img
+              className="spotifyLogo"
+              src={"./spotify-logo.png"}
+              alt="Spotify Logo"
+            />
+            <button className="Playlist-save" onClick={this.savePlaylist}>
               SAVE TO SPOTIFY
             </button>
           </div>
@@ -44,6 +51,4 @@ render() {
     );
   }
 }
-
 export default Playlist;
-
