@@ -5,7 +5,7 @@ import Playlist from "../Playlist/Playlist.js";
 import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
-import Spotify from "../../util/Spotify.js";
+import UpdatedSpotify from "../../util/UpdatedSpotify.js";
 
 import OpenAiAPIRequest, {
   generatePlaylistName,
@@ -56,11 +56,11 @@ class App extends React.Component {
   }
   async handleLogin() {
     // Use the Spotify utility to get the access token
-    const accessToken = await Spotify.getAccessToken();
+    const accessToken = await UpdatedSpotify.getAccessToken();
     // If an access token is obtained, update the loggedIn state
     if (accessToken) {
       this.setState({ loggedIn: true });
-      const userInfo = await Spotify.getUserInfo();
+      const userInfo = await UpdatedSpotify.getUserInfo();
       this.setState({
         spotifyUsername: userInfo.username,
         spotifyAvatar: userInfo.avatar,
@@ -70,7 +70,6 @@ class App extends React.Component {
       console.error("Authentication failed");
     }
   }
-
   handleLogout() {
     this.setState({
       loggedIn: false,
@@ -86,7 +85,7 @@ class App extends React.Component {
     });
   }
   search(term) {
-    Spotify.search(term).then((searchResults) => {
+    UpdatedSpotify.search(term).then((searchResults) => {
       this.setState({
         searchResults: this.removeDuplicateTracks(searchResults),
       });
@@ -101,52 +100,56 @@ class App extends React.Component {
     this.setState({ isFetching: true });
 
     generateTotalSongRecommendations(prompt)
-        .then((response) => {
-          const songList = response.slice(0, 25);
-          const promises = songList.map((song) => Spotify.openAiSearch(song));
-          return Promise.all(promises);
-        })
-        .then((searchResultsArray) => {
-          const searchResults = [].concat(...searchResultsArray);
-          this.setState({
-            searchResults: this.removeDuplicateTracks(searchResults),
-          });
-
-          // Generate 5 random track IDs.
-          const fiveRandomTrackIds = [];
-          for (let i = 0; i < 5; i++) {
-            const randomIndex = Math.floor(
-                Math.random() * this.state.searchResults.length,
-            );
-            fiveRandomTrackIds.push(this.state.searchResults[randomIndex].id);
-          }
-          console.log("Five random track IDs:", fiveRandomTrackIds)
-
-          return Spotify.makeRecommendation(
-                fiveRandomTrackIds[0], fiveRandomTrackIds[1], fiveRandomTrackIds[2], fiveRandomTrackIds[3], fiveRandomTrackIds[4],
-          );
-        })
-        .then((recommendations) => {
-          this.setState(prevState => ({
-            searchResults: this.removeDuplicateTracks(
-                prevState.searchResults.concat(recommendations)
-            ),
-          }));
-
-          return this.generatePlaylistName(prompt);
-        })
-        .then((playlistName) => {
-          return this.generateAlbumArt(playlistName);
-        })
-        .then(() => {
-          this.setState({ isFetching: false });
-        })
-        .catch((error) => {
-          console.error(error);
+      .then((response) => {
+        const songList = response.slice(0, 25);
+        const promises = songList.map((song) =>
+          UpdatedSpotify.openAiSearch(song),
+        );
+        return Promise.all(promises);
+      })
+      .then((searchResultsArray) => {
+        const searchResults = [].concat(...searchResultsArray);
+        this.setState({
+          searchResults: this.removeDuplicateTracks(searchResults),
         });
+
+        // Generate 5 random track IDs.
+        const fiveRandomTrackIds = [];
+        for (let i = 0; i < 5; i++) {
+          const randomIndex = Math.floor(
+            Math.random() * this.state.searchResults.length,
+          );
+          fiveRandomTrackIds.push(this.state.searchResults[randomIndex].id);
+        }
+        console.log("Five random track IDs:", fiveRandomTrackIds);
+
+        return UpdatedSpotify.makeRecommendation(
+          fiveRandomTrackIds[0],
+          fiveRandomTrackIds[1],
+          fiveRandomTrackIds[2],
+          fiveRandomTrackIds[3],
+          fiveRandomTrackIds[4],
+        );
+      })
+      .then((recommendations) => {
+        this.setState((prevState) => ({
+          searchResults: this.removeDuplicateTracks(
+            prevState.searchResults.concat(recommendations),
+          ),
+        }));
+
+        return this.generatePlaylistName(prompt);
+      })
+      .then((playlistName) => {
+        return this.generateAlbumArt(playlistName);
+      })
+      .then(() => {
+        this.setState({ isFetching: false });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
-
-
   generatePlaylistName(prompt) {
     return OpenAiAPIRequest.generatePlaylistName(
       `Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`,
@@ -218,12 +221,11 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    const accessToken = Spotify.getAccessToken();
+    const accessToken = UpdatedSpotify.getAccessToken();
     if (accessToken) {
       this.setState({ loggedIn: true });
     }
   }
-
   removeTrack(track) {
     let tracks = this.state.playlistTracks;
     tracks = tracks.filter((currentTrack) => currentTrack.id !== track.id);
@@ -239,7 +241,7 @@ class App extends React.Component {
 
   savePlaylist() {
     const trackUris = this.state.playlistTracks.map((track) => track.uri);
-    Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
+    UpdatedSpotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
       this.setState({
         playlistName: "[NAME PLAYLIST]",
         playlistTracks: [],
@@ -254,7 +256,6 @@ class App extends React.Component {
   setToPlaylistState(event) {
     this.setState({ searchState: false });
   }
-
   render() {
     if (!this.state.loggedIn) {
       return <LoginPage onLogin={() => this.handleLogin()} />;
@@ -290,7 +291,7 @@ class App extends React.Component {
                 {" "}
                 {this.state.spotifyUsername || null}{" "}
               </h1>
-                </div>
+            </div>
             <div>
               <button className="Logout-button" onClick={this.handleLogout}>
                 Logout
