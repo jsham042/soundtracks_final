@@ -27,7 +27,7 @@ const Spotify = {
 
     return accessToken;
   },
-  getUserInfo: function () {
+  retrieveUserInformation: function () {
     return spotifyApi.getMe().then((jsonResponse) => {
       if (!jsonResponse) {
         return { username: null, avatar: null };
