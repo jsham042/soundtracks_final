@@ -54,6 +54,28 @@ const Spotify = {
       });
     });
   },
+  makeRecommendations: function (seedTracks, seedArtists, seedGenres) {
+    return spotifyApi
+      .getRecommendations({
+        seed_tracks: seedTracks,
+        seed_artists: seedArtists,
+        seed_genres: seedGenres,
+      })
+      .then((jsonResponse) => {
+        if (!jsonResponse) {
+          return [];
+        }
+        return jsonResponse.tracks.map((track) => {
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+          };
+        });
+      });
+  },
   // Rest of the code remains the same
 };
 export default Spotify;
