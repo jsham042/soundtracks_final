@@ -27,6 +27,12 @@ const Spotify = {
 
     return accessToken;
   },
+  logout: function () {
+    // Clear the access token
+    accessToken = "";
+    // Use the Spotify SDK's logout method
+    spotifyApi.logout();
+  },
   retrieveUserInformation: function () {
     return spotifyApi.getMe().then((jsonResponse) => {
       if (!jsonResponse) {
