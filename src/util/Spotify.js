@@ -101,6 +101,5 @@ const Spotify = {
         return spotifyApi.addTracksToPlaylist(playlistId, trackUris);
       });
   },
-  // Rest of the code remains the same
 };
 export default Spotify;
