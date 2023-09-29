@@ -76,6 +76,25 @@ const Spotify = {
         });
       });
   },
+  savePlaylist: function (name, trackUris) {
+    if (!name || !trackUris.length) {
+      return;
+    }
+    const accessToken = Spotify.getAccessToken();
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    let userId;
+
+    return spotifyApi
+      .getMe()
+      .then((response) => {
+        userId = response.id;
+        return spotifyApi.createPlaylist(userId, name, { public: false });
+      })
+      .then((response) => {
+        const playlistId = response.id;
+        return spotifyApi.addTracksToPlaylist(playlistId, trackUris);
+      });
+  },
   // Rest of the code remains the same
 };
 export default Spotify;
