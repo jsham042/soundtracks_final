@@ -1,6 +1,7 @@
 import React from "react";
 import "./Playlist.css";
 import TrackList from "../TrackList/TrackList.js";
+import SearchBar from "../SearchBar/SearchBar.js";
 
 class Playlist extends React.Component {
   constructor(props) {
@@ -11,15 +12,14 @@ class Playlist extends React.Component {
     };
     this.handleNameChange = this.handleNameChange.bind(this);
   }
-
   handleNameChange(event) {
     this.props.onNameChange(event.target.value);
   }
 
-
-render() {
+  render() {
     return (
       <div className="Playlist">
+        <SearchBar style={{ color: "green" }} />
         <div className="Playlist-album">
           <img src={this.state.albumArt} width="200" alt="AI Generated Image" />
           <div className="Playlist-info">
@@ -27,7 +27,11 @@ render() {
               value={this.state.playlistName}
               onChange={this.handleNameChange}
             />
-            <img className='spotifyLogo' src={"./spotify-logo.png"} alt="Spotify Logo" />
+            <img
+              className="spotifyLogo"
+              src={"./spotify-logo.png"}
+              alt="Spotify Logo"
+            />
             <button className="Playlist-save" onClick={this.props.onSave}>
               SAVE TO SPOTIFY
             </button>
@@ -44,6 +48,4 @@ render() {
     );
   }
 }
-
 export default Playlist;
-
