@@ -10,17 +10,16 @@
 
 .SearchBar input {
   width: 80%;
-  padding: .7rem 7rem .7rem 1.5rem;
+  padding: 0.7rem 7rem 0.7rem 1.5rem;
   border: 1px solid #fff;
   border-radius: 2rem;
   margin-right: 20%;
-  color: #010c3f;
+  color: green;
   text-align: left;
-  font-size: .9rem;
+  font-size: 0.9rem;
   position: relative; /* add this */
   z-index: 1; /* add this */
 }
-
 .SearchBar input:focus {
   outline: none;
 }
@@ -28,51 +27,39 @@
 .SearchBar button {
   position: absolute;
   cursor: pointer;
-  padding: .71rem 2.5rem .71rem 2.5rem;
+  padding: 0.71rem 2.5rem 0.71rem 2.5rem;
   margin-right: 20%;
   border-radius: 0 2rem 2rem 0; /* add this */
   background-color: lightgrey;
   text-align: right;
-  font-size: .9rem;
-  transition: background-color .25s;
+  font-size: 0.9rem;
+  transition: background-color 0.25s;
   border: 1rem;
   color: #000000;
   font-weight: 500;
   z-index: 2; /* add this */
 }
 
+Chunk 5:
 .SearchBar button:hover {
   background-color: darkgray;
 }
 
-
 @media screen and (max-width: 600px) {
-
-
   .SearchBar {
     align-items: center;
     justify-content: end;
     margin-bottom: 2rem;
-
-  }
-
-  .SearchBar input {
-    width: 100%;
-    padding: .7rem 0 .7rem 1.5rem;
-    border: 1px solid #fff;
-    border-radius: 2rem;
-    margin-right: 0;
-    color: #010c3f;
-    text-align: left;
-    font-size: .9rem;
-
-  }
-
-
-  .SearchBar button {
-    padding: .71rem 1.5rem;
-    margin: 0%;
   }
 }
 
-
+.SearchBar input {
+  width: 100%;
+  padding: 0.7rem 0 0.7rem 1.5rem;
+  border: 1px solid #fff;
+  border-radius: 2rem;
+  margin-right: 0;
+  color: green;
+  text-align: left;
+  font-size: 0.9rem;
+}
