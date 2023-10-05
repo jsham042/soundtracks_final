@@ -111,20 +111,6 @@ class App extends React.Component {
           this.setState({
             searchResults: this.removeDuplicateTracks(searchResults),
           });
-
-          // Generate 5 random track IDs.
-          const fiveRandomTrackIds = [];
-          for (let i = 0; i < 5; i++) {
-            const randomIndex = Math.floor(
-                Math.random() * this.state.searchResults.length,
-            );
-            fiveRandomTrackIds.push(this.state.searchResults[randomIndex].id);
-          }
-          console.log("Five random track IDs:", fiveRandomTrackIds)
-
-          return Spotify.makeRecommendation(
-                fiveRandomTrackIds[0], fiveRandomTrackIds[1], fiveRandomTrackIds[2], fiveRandomTrackIds[3], fiveRandomTrackIds[4],
-          );
         })
         .then((recommendations) => {
           this.setState(prevState => ({
