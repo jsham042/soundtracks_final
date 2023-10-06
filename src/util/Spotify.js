@@ -106,10 +106,11 @@ const Spotify = {
         console.log(error);
       });
   },
-  makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
+makeRecommendation(songIds) {
     const accessToken = Spotify.getAccessToken();
+    const seed_tracks = songIds.join(',');
     return fetch(
-      `https://api.spotify.com/v1/recommendations?limit=25&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`,
+      `https://api.spotify.com/v1/recommendations?limit=25&market=US&seed_tracks=${seed_tracks}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -117,7 +118,11 @@ const Spotify = {
       },
     )
       .then((response) => {
-        return response.json();
+        if(response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Request failed!');
+        }
       })
       .then((jsonResponse) => {
         if (!jsonResponse.tracks) {
@@ -130,12 +135,15 @@ const Spotify = {
           album: track.album.name,
           uri: track.uri,
           preview_url: track.preview_url,
-          spotifyLogo: "spotify-logo.png",
+          image: track.album.images[0].url,
+          spotifyLogo: 'spotify-logo.png',
           spotifyLink: `https://open.spotify.com/track/${track.id}`,
         }));
+      })
+      .catch((error) => {
+        console.log(error);
       });
   },
-  savePlaylist(name, trackUris) {
     if (!name || !trackUris.length) {
       return;
     }
@@ -167,7 +175,6 @@ const Spotify = {
           });
       });
   },
-  logout() {
     accessToken = "";
   },
   isLoggedIn() {
