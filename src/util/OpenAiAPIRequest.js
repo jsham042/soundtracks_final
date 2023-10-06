@@ -72,7 +72,7 @@ export const DetermineAppropriateStrategies = async (prompt) => {
         "5. Creative interpretation of the user's prompt",
     ];
     const context =
-    `The user is looking for song recommendations that are appropriate the following prompt: ${prompt}. 
+        `The user is looking for song recommendations that are appropriate the following prompt: ${prompt}. 
     Think about what exactly the user is asking for. Are they looking to capture a mood? Are they asking about a specific event or location?
     Based on this reflection, which of these strategies would be suitable for recommending music based on this prompt: ${batchDescriptions}? 
     List the suitable strategies in an array with the corresponding number for the batch description.
@@ -108,9 +108,9 @@ export const DetermineAppropriateStrategies = async (prompt) => {
             }
         }
         else {
-        const errorResponse = await response.json();
-        console.log('Error response:', errorResponse);
-    }
+            const errorResponse = await response.json();
+            console.log('Error response:', errorResponse);
+        }
 
     } catch (error) {
         console.log(error);

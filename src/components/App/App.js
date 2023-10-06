@@ -97,40 +97,35 @@ class App extends React.Component {
       console.log(response);
     });
   }
-  openAiSearch(prompt) {
-    this.setState({ isFetching: true });
 
-    generateTotalSongRecommendations(prompt)
-        .then((response) => {
-          const songList = response.slice(0, 25);
-          const promises = songList.map((song) => Spotify.openAiSearch(song));
-          return Promise.all(promises);
-        })
-        .then((searchResultsArray) => {
-          const searchResults = [].concat(...searchResultsArray);
-          this.setState({
-            searchResults: this.removeDuplicateTracks(searchResults),
-          });
-        })
-        .then((recommendations) => {
-          this.setState(prevState => ({
-            searchResults: this.removeDuplicateTracks(
-                prevState.searchResults.concat(recommendations)
-            ),
-          }));
+  async openAiSearch(prompt) {
+    try {
+      this.setState({ isFetching: true });
 
-          return this.generatePlaylistName(prompt);
-        })
-        .then((playlistName) => {
-          return this.generateAlbumArt(playlistName);
-        })
-        .then(() => {
-          this.setState({ isFetching: false });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      const response = await generateTotalSongRecommendations(prompt);
+      const songList = response.slice(0, 25);
+
+      const promises = songList.map((song) => Spotify.openAiSearch(song));
+      const searchResultsArray = await Promise.all(promises);
+      const flattenedSearchResults = [].concat(...searchResultsArray);
+      const uniqueSearchResults = this.removeDuplicateTracks(flattenedSearchResults);
+
+      this.setState({
+        searchResults: uniqueSearchResults,
+      });
+
+      this.setState({ isFetching: false });  // Stop fetching here
+
+      const playlistName = await this.generatePlaylistName(prompt);
+      await this.generateAlbumArt(playlistName);
+
+    } catch (error) {
+      console.error(error);
+      this.setState({ isFetching: false });  // Ensure isFetching is set to false in case of error
+    }
   }
+
+
 
 
   generatePlaylistName(prompt) {
