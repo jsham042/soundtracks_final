@@ -25,10 +25,12 @@ class SearchResults extends React.Component {
     addAll() {
         this.props.onAdd(this.props.searchResults);
     }
-    render() {
+render() {
+    let buttonVisibility = this.props.searchResults.length > 0 ? 'visible' : 'hidden';
     return (
       <div className="SearchResults">
         <h2>Results</h2>
+        <button style={{visibility: buttonVisibility}} onClick={this.props.onGenerateMoreRecommendations} className='generate-more-button'>Create More Recommendations</button>
         <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle}  currentTrack={this.props.currentTrack}/>
       </div>
     );
