@@ -86,18 +86,19 @@ class App extends React.Component {
     });
   }
   search(term) {
+    // Retrieve the search term from the local storage
+    const localStorageTerm = localStorage.getItem("searchTerm");
+    if (localStorageTerm) {
+      term = localStorageTerm;
+    }
     Spotify.search(term).then((searchResults) => {
       this.setState({
         searchResults: this.removeDuplicateTracks(searchResults),
       });
+      // Store the search term in the local storage
+      localStorage.setItem("searchTerm", term);
     });
   }
-  interpretPrompt(prompt) {
-    OpenAiAPIRequest.interpretPrompt(prompt).then((response) => {
-      console.log(response);
-    });
-  }
-
   async openAiSearch(prompt) {
     try {
       this.setState({ isFetching: true });
@@ -108,25 +109,23 @@ class App extends React.Component {
       const promises = songList.map((song) => Spotify.openAiSearch(song));
       const searchResultsArray = await Promise.all(promises);
       const flattenedSearchResults = [].concat(...searchResultsArray);
-      const uniqueSearchResults = this.removeDuplicateTracks(flattenedSearchResults);
+      const uniqueSearchResults = this.removeDuplicateTracks(
+        flattenedSearchResults,
+      );
 
       this.setState({
         searchResults: uniqueSearchResults,
       });
 
-      this.setState({ isFetching: false });  // Stop fetching here
+      this.setState({ isFetching: false }); // Stop fetching here
 
       const playlistName = await this.generatePlaylistName(prompt);
       await this.generateAlbumArt(playlistName);
-
     } catch (error) {
       console.error(error);
-      this.setState({ isFetching: false });  // Ensure isFetching is set to false in case of error
+      this.setState({ isFetching: false }); // Ensure isFetching is set to false in case of error
     }
   }
-
-
-
 
   generatePlaylistName(prompt) {
     return OpenAiAPIRequest.generatePlaylistName(
@@ -271,7 +270,7 @@ class App extends React.Component {
                 {" "}
                 {this.state.spotifyUsername || null}{" "}
               </h1>
-                </div>
+            </div>
             <div>
               <button className="Logout-button" onClick={this.handleLogout}>
                 Logout
@@ -350,4 +349,3 @@ class App extends React.Component {
     );
   }
 }
-export default App;
