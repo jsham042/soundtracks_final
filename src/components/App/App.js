@@ -108,25 +108,23 @@ class App extends React.Component {
       const promises = songList.map((song) => Spotify.openAiSearch(song));
       const searchResultsArray = await Promise.all(promises);
       const flattenedSearchResults = [].concat(...searchResultsArray);
-      const uniqueSearchResults = this.removeDuplicateTracks(flattenedSearchResults);
+      const uniqueSearchResults = this.removeDuplicateTracks(
+        flattenedSearchResults,
+      );
 
       this.setState({
         searchResults: uniqueSearchResults,
       });
 
-      this.setState({ isFetching: false });  // Stop fetching here
+      this.setState({ isFetching: false }); // Stop fetching here
 
       const playlistName = await this.generatePlaylistName(prompt);
       await this.generateAlbumArt(playlistName);
-
     } catch (error) {
       console.error(error);
-      this.setState({ isFetching: false });  // Ensure isFetching is set to false in case of error
+      this.setState({ isFetching: false }); // Ensure isFetching is set to false in case of error
     }
   }
-
-
-
 
   generatePlaylistName(prompt) {
     return OpenAiAPIRequest.generatePlaylistName(
@@ -203,8 +201,11 @@ class App extends React.Component {
     if (accessToken) {
       this.setState({ loggedIn: true });
     }
+    const searchTerm = localStorage.getItem("searchTerm");
+    if (searchTerm) {
+      this.search(searchTerm);
+    }
   }
-
   removeTrack(track) {
     let tracks = this.state.playlistTracks;
     tracks = tracks.filter((currentTrack) => currentTrack.id !== track.id);
@@ -271,7 +272,7 @@ class App extends React.Component {
                 {" "}
                 {this.state.spotifyUsername || null}{" "}
               </h1>
-                </div>
+            </div>
             <div>
               <button className="Logout-button" onClick={this.handleLogout}>
                 Logout
@@ -350,4 +351,3 @@ class App extends React.Component {
     );
   }
 }
-export default App;
