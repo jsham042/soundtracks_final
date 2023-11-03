@@ -5,11 +5,11 @@ import { faSearch} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class SearchBar extends React.Component {
-  constructor(props) {
+constructor(props) {
     super(props);
 
     this.state = {
-      term: ''
+      term: localStorage.getItem('searchTerm') || ''
     };
 
     this.handleTermChange = this.handleTermChange.bind(this);
@@ -22,6 +22,34 @@ class SearchBar extends React.Component {
   }
 
   search() {
+    localStorage.setItem('searchTerm', this.state.term);
+    this.props.onSearch(this.state.term);
+  }
+    if (event.key === 'Enter') {
+      this.search();
+    }
+  }
+
+  render() {
+    return (
+      <div className="SearchBar">
+        <input
+            placeholder="Describe the vibe you're going for"
+            onChange={this.handleTermChange}
+            onKeyDown={this.handleKeyDown}
+            />
+        <button onClick={this.search}>
+          <FontAwesomeIcon icon={faSearch} />
+
+        </button>
+      </div>
+    );
+  }
+}
+
+export default SearchBar;
+search() {
+    localStorage.setItem('searchTerm', this.state.term);
     this.props.onSearch(this.state.term);
   }
 
