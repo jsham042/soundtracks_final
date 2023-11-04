@@ -196,12 +196,12 @@ class App extends React.Component {
     }
   }
 
-  componentDidMount() {
+componentDidMount() {
     const accessToken = Spotify.getAccessToken();
     if (accessToken) {
       this.setState({ loggedIn: true });
     }
-    const searchTerm = localStorage.getItem("searchTerm");
+    const searchTerm = localStorage.getItem('searchTerm');
     if (searchTerm) {
       this.search(searchTerm);
     }
@@ -237,7 +237,6 @@ class App extends React.Component {
     this.setState({ searchState: false });
   }
 
-  render() {
     if (!this.state.loggedIn) {
       return <LoginPage onLogin={() => this.handleLogin()} />;
     }
