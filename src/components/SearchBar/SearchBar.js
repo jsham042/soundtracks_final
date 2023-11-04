@@ -20,8 +20,7 @@ constructor(props) {
   handleTermChange(event) {
     this.setState({term: event.target.value});
   }
-
-search() {
+  search() {
     localStorage.setItem('searchTerm', this.state.term);
     this.props.onSearch(this.state.term);
   }
