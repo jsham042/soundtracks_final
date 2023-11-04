@@ -21,16 +21,11 @@ constructor(props) {
     this.setState({term: event.target.value});
   }
 
-  search() {
+search() {
     localStorage.setItem('searchTerm', this.state.term);
     this.props.onSearch(this.state.term);
   }
-    if (event.key === 'Enter') {
-      this.search();
-    }
-  }
-
-  render() {
+render() {
     return (
       <div className="SearchBar">
         <input
@@ -46,6 +41,12 @@ constructor(props) {
     );
   }
 }
+
+handleKeyDown(event) {
+    if (event.key === 'Enter') {
+      this.search();
+    }
+  }
 
 export default SearchBar;
 search() {
