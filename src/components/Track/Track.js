@@ -31,7 +31,7 @@ class Track extends React.Component {
     this.props.onToggle(this.props.track);
   }
 
-  renderAction() {
+renderAction() {
     if (this.props.isRemoval) {
       return (
         <button
@@ -62,6 +62,7 @@ class Track extends React.Component {
     const isCurrentTrack =
       this.props.currentTrack &&
       this.props.currentTrack.id === this.props.track.id;
+    const genreDisplay = this.props.track.genres.join(', ');
     return (
       <div className="Track" onClick={this.handleClick}>
         <button className="playButton">
@@ -83,6 +84,9 @@ class Track extends React.Component {
           <p>
             {this.props.track.artist} | {this.props.track.album}
           </p>
+          <p className="Track-genre">
+            {genreDisplay}
+          </p>
         </div>
         <a
           href={this.props.track.uri}
@@ -99,5 +103,3 @@ class Track extends React.Component {
     );
   }
 }
-
-export default Track;
