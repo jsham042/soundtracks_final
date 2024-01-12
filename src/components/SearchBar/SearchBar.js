@@ -48,32 +48,3 @@ constructor(props) {
 }
 
 export default SearchBar;
-search() {
-    localStorage.setItem('searchTerm', this.state.term);
-    this.props.onSearch(this.state.term);
-  }
-
-  handleKeyDown(event) {
-    if (event.key === 'Enter') {
-      this.search();
-    }
-  }
-
-  render() {
-    return (
-      <div className="SearchBar">
-        <input
-            placeholder="Describe the vibe you're going for"
-            onChange={this.handleTermChange}
-            onKeyDown={this.handleKeyDown}
-            />
-        <button onClick={this.search}>
-          <FontAwesomeIcon icon={faSearch} />
-
-        </button>
-      </div>
-    );
-  }
-}
-
-export default SearchBar;
