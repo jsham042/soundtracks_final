@@ -1,7 +1,7 @@
 // Information to reach API
 const API_URL_COMPLETIONS = "https://api.openai.com/v1/completions";
 const API_URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
-const api_key = process.env.REACT_APP_MY_OPENAI_API_KEY;//API key that Joe got from registering the app
+const api_key = process.env.REACT_APP_MY_OPENAI_API_KEY;
 const API_URL_IMAGE = "https://api.openai.com/v1/images/generations";
 
 
@@ -159,17 +159,18 @@ export const generateSongRecommendations = async (prompt) => {
 
 export const generatePlaylistName = async(prompt) => {
     const data = JSON.stringify({
-        model: "text-davinci-003",
-        prompt: prompt,
-        temperature: 0.5,
-        max_tokens: 500,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
+        model: "gpt-3.5-turbo",
+        messages: [{
+            role: "system",
+            content: "You are a helpful assistant."
+        },{
+            role: "user",
+            content: prompt
+        }]
     });
 
     try {
-        const response = await fetch(API_URL_COMPLETIONS, {
+        const response = await fetch(API_URL_CHAT_COMPLETIONS, {
             method: "POST",
             body: data,
             headers: {
@@ -179,19 +180,22 @@ export const generatePlaylistName = async(prompt) => {
         });
         if(response.ok){
             const jsonResponse = await response.json();
-            const textResponse = jsonResponse.choices[0].text
+            const textResponse = jsonResponse.choices[0].message.content;
             return(textResponse);
+        } else {
+            console.error(`Failed to generate playlist name: ${response.status}`);
+            return null;
         }
     } catch (error) {
-        console.log(error);
+        console.error(`Error generating playlist name: ${error}`);
+        return null;
     }
-
 }
 
 
 export const generateImage = async (prompt) => {
     const data = JSON.stringify({
-        "model": "image-alpha-001",
+        "model": "dall-e-2",
         "prompt": prompt,
         "num_images": 1,
         "size": "512x512",
