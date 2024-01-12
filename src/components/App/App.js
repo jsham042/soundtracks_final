@@ -37,7 +37,6 @@ class App extends React.Component {
       spotifyAvatar: null,
     };
 
-    this.search = this.search.bind(this);
     this.openAiSearch = this.openAiSearch.bind(this);
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
@@ -85,13 +84,7 @@ class App extends React.Component {
       spotifyAvatar: null,
     });
   }
-  search(term) {
-    Spotify.search(term).then((searchResults) => {
-      this.setState({
-        searchResults: this.removeDuplicateTracks(searchResults),
-      });
-    });
-  }
+
   interpretPrompt(prompt) {
     OpenAiAPIRequest.interpretPrompt(prompt).then((response) => {
       console.log(response);
@@ -201,10 +194,7 @@ class App extends React.Component {
     if (accessToken) {
       this.setState({ loggedIn: true });
     }
-    const searchTerm = localStorage.getItem("searchTerm");
-    if (searchTerm) {
-      this.search(searchTerm);
-    }
+  
   }
   removeTrack(track) {
     let tracks = this.state.playlistTracks;
@@ -351,3 +341,5 @@ class App extends React.Component {
     );
   }
 }
+
+export default App;
