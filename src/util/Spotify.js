@@ -43,34 +43,7 @@ const Spotify = {
         };
       });
   },
-search(term, genre) {
-    const accessToken = Spotify.getAccessToken();
-    return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}&genre=${genre}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((jsonResponse) => {
-        if (!jsonResponse.tracks) {
-          return [];
-        }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          image: track.album.images[0].url,
-          genre: genre, // New property added
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`
-        }));
-      });
-  },
+
   openAiSearch(term) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
@@ -136,7 +109,8 @@ search(term, genre) {
         }));
       });
   },
-if (!name || !trackUris.length) {
+  savePlaylist(name, trackUris) {
+    if (!name || !trackUris.length) {
       return;
     }
 
@@ -165,17 +139,18 @@ if (!name || !trackUris.length) {
               },
             );
           });
-      }),
-    clearAccessToken() {
-      accessToken = "";
-    },
-    isLoggedIn() {
-      if (accessToken) {
-        return true;
-      } else {
-        return false;
-      }
-    },
+      });
+  },
+  logout() {
+    accessToken = "";
+  },
+  isLoggedIn() {
+    if (accessToken) {
+      return true;
+    } else {
+      return false;
+    }
+  },
 };
 
 export default Spotify;
