@@ -43,7 +43,7 @@ const Spotify = {
       });
   },
 
-  openAiSearch(term) {
+openAiSearch(term) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
     const artist = responseArray[1];
@@ -63,17 +63,21 @@ const Spotify = {
         if (!jsonResponse.tracks) {
           return [];
         }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          image: track.album.images[0].url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        }));
+        return jsonResponse.tracks.items.map((track) => {
+          const genre = track.artists[0].genres ? track.artists[0].genres[0] : 'Unknown';
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            preview_url: track.preview_url,
+            image: track.album.images[0].url,
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+            genre: genre
+          };
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -108,8 +112,7 @@ const Spotify = {
         }));
       });
   },
-  savePlaylist(name, trackUris) {
-    if (!name || !trackUris.length) {
+if (!name || !trackUris.length) {
       return;
     }
 
@@ -140,7 +143,7 @@ const Spotify = {
           });
       });
   },
-  logout() {
+  clearAccessToken() {
     accessToken = "";
   },
   isLoggedIn() {
