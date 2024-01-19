@@ -41,4 +41,5 @@ Create a `.env` file in the root directory of your project. Add environment-spec
 ```
 REACT_APP_MY_SPOTIFY_CLIENT_ID=your-spotify-client-id
 REACT_APP_MY_OPENAI_API_KEY = your-openai-api-key
+REACT_APP_MY_SPOTIFY_REDIRECT_URI=http://localhost:3000/callback
 ```
