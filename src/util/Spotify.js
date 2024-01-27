@@ -43,41 +43,24 @@ const Spotify = {
       });
   },
 
-  openAiSearch(term) {
-    const responseArray = term.split("-").map((item) => item.trim());
-    const track = responseArray[0];
-    const artist = responseArray[1];
+getTrackGenre(trackId) {
     const accessToken = Spotify.getAccessToken();
-    return fetch(
-      `https://api.spotify.com/v1/search?q=track:${track}+artist:${artist}&type=track&limit=1`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((jsonResponse) => {
-        if (!jsonResponse.tracks) {
-          return [];
-        }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          image: track.album.images[0].url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        }));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    return fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    .then(response => response.json())
+    .then(jsonResponse => {
+      if (!jsonResponse) {
+        return [];
+      }
+      const genres = jsonResponse.genres;
+      return genres ? genres : [];
+    })
+    .catch(error => {
+      console.log(error);
+    });
   },
   makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
     const accessToken = Spotify.getAccessToken();
@@ -108,8 +91,7 @@ const Spotify = {
         }));
       });
   },
-  savePlaylist(name, trackUris) {
-    if (!name || !trackUris.length) {
+if (!name || !trackUris.length) {
       return;
     }
 
@@ -140,7 +122,7 @@ const Spotify = {
           });
       });
   },
-  logout() {
+  clearAccessToken() {
     accessToken = "";
   },
   isLoggedIn() {
