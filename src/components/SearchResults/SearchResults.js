@@ -13,7 +13,7 @@ class SearchResults extends React.Component {
     }
 
     //add the top five tracks to the playlist
-    addTopFive() {
+addTopFive() {
         this.props.onAdd(this.props.searchResults.slice(0, 5));
     }
 
@@ -25,11 +25,41 @@ class SearchResults extends React.Component {
     addAll() {
         this.props.onAdd(this.props.searchResults);
     }
+
     render() {
+      return (
+        <div className="SearchResults">
+          <h2>Results</h2>
+          <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle} currentTrack={this.props.currentTrack} includeGenre={true}/>
+        </div>
+      );
+    }
+  }
+
+  export default SearchResults;
+  constructor(props) {
+    super(props);
+    this.addTopFive = this.addTopFive.bind(this);
+    this.addTopTen = this.addTopTen.bind(this);
+    this.addAll = this.addAll.bind(this);
+  }
+
+  addTopFive() {
+    this.props.onAdd(this.props.searchResults.slice(0, 5));
+  }
+
+  addTopTen() {
+    this.props.onAdd(this.props.searchResults.slice(0, 10));
+  }
+
+    this.props.onAdd(this.props.searchResults);
+  }
+
+  render() {
     return (
       <div className="SearchResults">
         <h2>Results</h2>
-        <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle}  currentTrack={this.props.currentTrack}/>
+        <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle} currentTrack={this.props.currentTrack} includeGenre={true}/>
       </div>
     );
   }
