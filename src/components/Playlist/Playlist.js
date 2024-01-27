@@ -39,11 +39,8 @@ render() {
           onRemove={this.props.onRemove}
           onToggle={this.props.onToggle}
           currentTrack={this.props.currentTrack}
+          includeGenre={true}
         />
       </div>
     );
   }
-}
-
-export default Playlist;
-
