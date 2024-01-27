@@ -4,7 +4,7 @@ const redirectUri= process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI
 let accessToken;
 
 const Spotify = {
-  getAccessToken() {
+getAccessToken() {
     if (accessToken) {
       return accessToken;
     }
@@ -18,7 +18,7 @@ const Spotify = {
       window.history.pushState("Access Token", null, "/"); // This clears the parameters, allowing us to grab a new access token when it expires.
       return accessToken;
     } else {
-      const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
+      const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public%20user-library-read&redirect_uri=${redirectUri}`;
       window.location = accessUrl;
     }
   },
@@ -108,8 +108,7 @@ const Spotify = {
         }));
       });
   },
-  savePlaylist(name, trackUris) {
-    if (!name || !trackUris.length) {
+if (!name || !trackUris.length) {
       return;
     }
 
@@ -140,7 +139,7 @@ const Spotify = {
           });
       });
   },
-  logout() {
+  clearAccessToken() {
     accessToken = "";
   },
   isLoggedIn() {
