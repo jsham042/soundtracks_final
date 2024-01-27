@@ -4,7 +4,7 @@ const redirectUri= process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI
 let accessToken;
 
 const Spotify = {
-getAccessToken() {
+  getAccessToken() {
     if (accessToken) {
       return accessToken;
     }
@@ -18,31 +18,32 @@ getAccessToken() {
       window.history.pushState("Access Token", null, "/"); // This clears the parameters, allowing us to grab a new access token when it expires.
       return accessToken;
     } else {
-      const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public%20user-library-read&redirect_uri=${redirectUri}`;
+      const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
       window.location = accessUrl;
     }
   },
-  getUserInfo() {
+getTrackGenres(trackIds) {
     const accessToken = Spotify.getAccessToken();
-    return fetch("https://api.spotify.com/v1/me", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((jsonResponse) => {
-        if (!jsonResponse) {
-          return { username: null, avatar: null };
-        }
-        return {
-          username: jsonResponse.display_name,
-          avatar: jsonResponse.images[0]?.url || null,
-        };
-      });
+    return Promise.all(
+      trackIds.map(trackId =>
+        fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        })
+        .then(response => response.json())
+        .then(jsonResponse => {
+          if (!jsonResponse) {
+            return { trackId: trackId, genres: [] };
+          }
+          return { trackId: trackId, genres: jsonResponse.genres };
+        })
+      )
+    ).then(genresInfo => {
+      return genresInfo.reduce((acc, current) => {
+        acc[current.trackId] = current.genres;
+        return acc;
+      }, {});
+    });
   },
-
   openAiSearch(term) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
