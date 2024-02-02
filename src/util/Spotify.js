@@ -43,7 +43,7 @@ const Spotify = {
       });
   },
 
-  openAiSearch(term) {
+openAiSearch(term) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
     const artist = responseArray[1];
@@ -71,6 +71,7 @@ const Spotify = {
           uri: track.uri,
           preview_url: track.preview_url,
           image: track.album.images[0].url,
+          genre: track.album.genres.join(', '), // Added genre information
           spotifyLogo: "spotify-logo.png",
           spotifyLink: `https://open.spotify.com/track/${track.id}`,
         }));
@@ -108,8 +109,7 @@ const Spotify = {
         }));
       });
   },
-  savePlaylist(name, trackUris) {
-    if (!name || !trackUris.length) {
+if (!name || !trackUris.length) {
       return;
     }
 
@@ -140,7 +140,6 @@ const Spotify = {
           });
       });
   },
-  logout() {
     accessToken = "";
   },
   isLoggedIn() {
