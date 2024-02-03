@@ -13,6 +13,7 @@ class SearchResults extends React.Component {
     }
 
     //add the top five tracks to the playlist
+//add the top five tracks to the playlist
     addTopFive() {
         this.props.onAdd(this.props.searchResults.slice(0, 5));
     }
@@ -22,11 +23,17 @@ class SearchResults extends React.Component {
         this.props.onAdd(this.props.searchResults.slice(0, 10));
     }
 
-render() {
+    //add all tracks to the playlist
+    addAll() {
+        this.props.onAdd(this.props.searchResults);
+    }
+
+    render() {
         return (
-          <div className="SearchResults">
-            <h2>Results</h2>
-            <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle} currentTrack={this.props.currentTrack} genre={this.props.genre}/>
-          </div>
+            <div className="SearchResults">
+                <h2>Results</h2>
+                <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle} currentTrack={this.props.currentTrack} />
+            </div>
         );
     }
+}
