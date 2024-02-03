@@ -51,7 +51,7 @@ makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      },
+      }
     )
       .then((response) => {
         return response.json();
