@@ -2,11 +2,7 @@ import React from 'react';
 
 import './TrackList.css';
 
-import Track from '../Track/Track.js';
-
 class TrackList extends React.Component {
-
-
 
   render() {
     return (
@@ -14,6 +10,7 @@ class TrackList extends React.Component {
         {
           this.props.tracks.map(track => {
             return <Track track={track}
+                          genre={track.genre}
                           key={track.id}
                           onAdd={this.props.onAdd}
                           isRemoval={this.props.isRemoval}
@@ -26,5 +23,3 @@ class TrackList extends React.Component {
     );
   }
 }
-
-export default TrackList;
