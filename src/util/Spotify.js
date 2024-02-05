@@ -65,7 +65,7 @@ openAiSearch(term) {
         }
         const trackIds = jsonResponse.tracks.items.map(track => track.id);
         return fetch(
-          `https://api.spotify.com/v1/tracks?ids=${trackIds.join(",")}`, // Fetching additional track details including genre
+          `https://api.spotify.com/v1/audio-features?ids=${trackIds.join(",")}`, // Fetching audio features to get the genre
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -73,58 +73,43 @@ openAiSearch(term) {
           }
         )
         .then(response => response.json())
-        .then(fullTracksResponse => {
-          return fullTracksResponse.tracks.map((track, index) => ({
-            id: track.id,
-            name: track.name,
-            artist: track.artists[0].name,
-            album: track.album.name,
-            uri: track.uri,
-            preview_url: track.preview_url,
-            image: track.album.images[0].url,
-            genre: track.album.genres[0], // Assuming genre information is available in the album object
-            spotifyLogo: "spotify-logo.png",
-            spotifyLink: `https://open.spotify.com/track/${track.id}`
-          }));
+        .then(featuresResponse => {
+          const genres = featuresResponse.audio_features.map(feature => feature.genre);
+          return fetch(
+            `https://api.spotify.com/v1/tracks?ids=${trackIds.join(",")}`, // Fetching additional track details
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(response => response.json())
+          .then(fullTracksResponse => {
+            return fullTracksResponse.tracks.map((track, index) => ({
+              id: track.id,
+              name: track.name,
+              artist: track.artists[0].name,
+              album: track.album.name,
+              uri: track.uri,
+              preview_url: track.preview_url,
+              image: track.album.images[0].url,
+              genre: genres[index], // Adding genre information to each track object
+              spotifyLogo: "spotify-logo.png",
+              spotifyLink: `https://open.spotify.com/track/${track.id}`
+            }));
+          });
         });
       })
       .catch((error) => {
         console.log(error);
       });
   },
-  makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
-    const accessToken = Spotify.getAccessToken();
-    return fetch(
-      `https://api.spotify.com/v1/recommendations?limit=25&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((jsonResponse) => {
-        if (!jsonResponse.tracks) {
-          return [];
-        }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        }));
-      });
-  },
-if (!name || !trackUris.length) {
+const Spotify = {
+  // ... other methods ...
+  savePlaylist(name, trackUris) {
+    if (!name || !trackUris.length) {
       return;
     }
-
     const accessToken = Spotify.getAccessToken();
     const headers = { Authorization: `Bearer ${accessToken}` };
     let userId;
@@ -152,15 +137,7 @@ if (!name || !trackUris.length) {
           });
       });
   },
-    accessToken = "";
-  },
-  isLoggedIn() {
-    if (accessToken) {
-      return true;
-    } else {
-      return false;
-    }
-  },
+  // ... other methods ...
 };
 
 export default Spotify;
