@@ -43,7 +43,7 @@ const Spotify = {
       });
   },
 
-  openAiSearch(term) {
+openAiSearch(term) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
     const artist = responseArray[1];
@@ -63,17 +63,30 @@ const Spotify = {
         if (!jsonResponse.tracks) {
           return [];
         }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          image: track.album.images[0].url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        }));
+        const trackIds = jsonResponse.tracks.items.map(track => track.id);
+        return fetch(
+          `https://api.spotify.com/v1/tracks?ids=${trackIds.join(",")}`, // Fetching additional track details including genre
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        .then(response => response.json())
+        .then(fullTracksResponse => {
+          return fullTracksResponse.tracks.map((track, index) => ({
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            preview_url: track.preview_url,
+            image: track.album.images[0].url,
+            genre: track.album.genres[0], // Assuming genre information is available in the album object
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`
+          }));
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -108,8 +121,7 @@ const Spotify = {
         }));
       });
   },
-  savePlaylist(name, trackUris) {
-    if (!name || !trackUris.length) {
+if (!name || !trackUris.length) {
       return;
     }
 
@@ -140,7 +152,6 @@ const Spotify = {
           });
       });
   },
-  logout() {
     accessToken = "";
   },
   isLoggedIn() {
