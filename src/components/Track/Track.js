@@ -31,7 +31,7 @@ class Track extends React.Component {
     this.props.onToggle(this.props.track);
   }
 
-  renderAction() {
+renderAction() {
     if (this.props.isRemoval) {
       return (
         <button
@@ -83,6 +83,9 @@ class Track extends React.Component {
           <p>
             {this.props.track.artist} | {this.props.track.album}
           </p>
+          <p className="Track-genre">
+            {this.props.track.genre}
+          </p>
         </div>
         <a
           href={this.props.track.uri}
@@ -99,5 +102,3 @@ class Track extends React.Component {
     );
   }
 }
-
-export default Track;
