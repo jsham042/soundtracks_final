@@ -7,6 +7,47 @@ import TrackList from '../TrackList/TrackList.js';
 class SearchResults extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            searchResults: []
+        };
+        this.updateSearchResults = this.updateSearchResults.bind(this);
+    }
+
+import React from 'react';
+
+import './SearchResults.css';
+
+import TrackList from '../TrackList/TrackList.js';
+
+class SearchResults extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            searchResults: []
+        };
+        this.updateSearchResults = this.updateSearchResults.bind(this);
+    }
+
+    updateSearchResults(track) {
+        this.setState(prevState => ({
+            searchResults: [...prevState.searchResults, track]
+        }));
+    }
+
+    render() {
+        return (
+            <div className="SearchResults">
+                <h2>Results</h2>
+                <TrackList tracks={this.state.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle} currentTrack={this.props.currentTrack}/>
+            </div>
+        );
+    }
+}
+
+export default SearchResults;
+class SearchResults extends React.Component {
+    constructor(props) {
+        super(props);
         this.addTopFive = this.addTopFive.bind(this);
         this.addTopTen = this.addTopTen.bind(this);
         this.addAll = this.addAll.bind(this);
@@ -25,14 +66,15 @@ class SearchResults extends React.Component {
     addAll() {
         this.props.onAdd(this.props.searchResults);
     }
+
     render() {
-    return (
-      <div className="SearchResults">
-        <h2>Results</h2>
-        <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle}  currentTrack={this.props.currentTrack}/>
-      </div>
-    );
-  }
+        return (
+            <div className="SearchResults">
+                <h2>Results</h2>
+                <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle}  currentTrack={this.props.currentTrack}/>
+            </div>
+        );
+    }
 }
 
 export default SearchResults;
