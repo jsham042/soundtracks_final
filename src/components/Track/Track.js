@@ -31,6 +31,70 @@ class Track extends React.Component {
     this.props.onToggle(this.props.track);
   }
 
+renderAction() {
+    if (this.props.isRemoval) {
+      return (
+        <button
+          className="Track-action"
+          onClick={(e) => {
+            this.removeTrack();
+            e.stopPropagation();
+          }}
+        >
+          -
+        </button>
+      );
+    }
+    return (
+      <button
+        className="Track-action"
+        onClick={(e) => {
+          this.addTrack();
+          e.stopPropagation();
+        }}
+      >
+        +
+      </button>
+    );
+  }
+import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import "./Track.css";
+import { getTrackGenre } from 'src/util/Spotify.js';
+
+class Track extends React.Component {
+  constructor(props) {
+    super(props);
+    this.addTrack = this.addTrack.bind(this);
+    this.removeTrack = this.removeTrack.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.state = { genre: '' };
+  }
+
+  componentDidMount() {
+    getTrackGenre(this.props.track.id).then(genre => this.setState({ genre }));
+  }
+
+  addTrack(event) {
+    this.props.onAdd(this.props.track);
+    if (this.props.currentTrack && this.props.currentTrack.id === this.props.track.id) {
+      this.props.onToggle(this.props.track);
+    }
+  }
+
+  removeTrack(event) {
+    this.props.onRemove(this.props.track);
+    if (
+      this.props.currentTrack &&
+      this.props.currentTrack.id === this.props.track.id
+    ) {
+      this.props.onToggle(this.props.track);
+    }
+  }
+
+  handleClick() {
+    this.props.onToggle(this.props.track);
+  }
+
   renderAction() {
     if (this.props.isRemoval) {
       return (
@@ -58,7 +122,6 @@ class Track extends React.Component {
     );
   }
 
-  render() {
     const isCurrentTrack =
       this.props.currentTrack &&
       this.props.currentTrack.id === this.props.track.id;
@@ -81,7 +144,7 @@ class Track extends React.Component {
         <div className="Track-information">
           <h3>{this.props.track.name}</h3>
           <p>
-            {this.props.track.artist} | {this.props.track.album}
+            {this.props.track.artist} | {this.props.track.album} | {this.state.genre}
           </p>
         </div>
         <a
