@@ -46,7 +46,7 @@ const Spotify = {
 makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
     const accessToken = Spotify.getAccessToken();
     return fetch(
-      `https://api.spotify.com/v1/recommendations?limit=25&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`,
+      `https://api.spotify.com/v1/recommendations?limit=25&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`, 
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -60,7 +60,7 @@ makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
         if (!jsonResponse.tracks) {
           return [];
         }
-        return jsonResponse.tracks.items.map((track) => ({
+        return jsonResponse.tracks.map((track) => ({
           id: track.id,
           name: track.name,
           artist: track.artists[0].name,
@@ -69,11 +69,11 @@ makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
           preview_url: track.preview_url,
           spotifyLogo: "spotify-logo.png",
           spotifyLink: `https://open.spotify.com/track/${track.id}`,
+          genre: track.album.genres[0] || 'Unknown' // Extract genre from the album object
         }));
       });
   },
-savePlaylist(name, trackUris) {
-    if (!name || !trackUris.length) {
+if (!name || !trackUris.length) {
       return;
     }
 
@@ -103,13 +103,5 @@ savePlaylist(name, trackUris) {
             );
           });
       });
+    // Removed 'return true;' and 'return false;' as they were outside of any function or conditional block
   },
-    if (accessToken) {
-      return true;
-    } else {
-      return false;
-    }
-  },
-};
-
-export default Spotify;
