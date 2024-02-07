@@ -5,13 +5,7 @@ import './SearchResults.css';
 import TrackList from '../TrackList/TrackList.js';
 
 class SearchResults extends React.Component {
-import React from 'react';
 
-import './SearchResults.css';
-
-import TrackList from '../TrackList/TrackList.js';
-
-class SearchResults extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -41,6 +35,33 @@ class SearchResults extends React.Component {
 }
 
 export default SearchResults;
+    constructor(props) {
+        super(props);
+        this.state = {
+            searchResults: []
+        };
+        this.updateSearchResults = this.updateSearchResults.bind(this);
+    }
+
+updateSearchResults(track) {
+    // Check if the track already exists in the searchResults state
+    const trackExists = this.state.searchResults.some(existingTrack => existingTrack.id === track.id);
+    if (!trackExists) {
+        this.setState(prevState => ({
+            searchResults: [...prevState.searchResults, track]
+        }));
+    }
+}
+    render() {
+        return (
+            <div className="SearchResults">
+                <h2>Results</h2>
+                <TrackList tracks={this.state.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle} currentTrack={this.props.currentTrack}/>
+            </div>
+        );
+    }
+}
+
 updateSearchResults(track) {
     // Check if the track already exists in the searchResults state
     const trackExists = this.state.searchResults.some(existingTrack => existingTrack.id === track.id);
@@ -60,7 +81,6 @@ render() {
     }
 }
 
-export default SearchResults;
 constructor(props) {
         super(props);
         this.addTopFive = this.addTopFive.bind(this);
