@@ -43,7 +43,7 @@ const Spotify = {
       });
   },
 
-  openAiSearch(term) {
+openAiSearch(term, callback) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
     const artist = responseArray[1];
@@ -63,7 +63,7 @@ const Spotify = {
         if (!jsonResponse.tracks) {
           return [];
         }
-        return jsonResponse.tracks.items.map((track) => ({
+        const tracks = jsonResponse.tracks.items.map((track) => ({
           id: track.id,
           name: track.name,
           artist: track.artists[0].name,
@@ -74,6 +74,10 @@ const Spotify = {
           spotifyLogo: "spotify-logo.png",
           spotifyLink: `https://open.spotify.com/track/${track.id}`,
         }));
+        if (callback && typeof callback === 'function') {
+          tracks.forEach(track => callback(track));
+        }
+        return tracks;
       })
       .catch((error) => {
         console.log(error);
@@ -108,7 +112,7 @@ const Spotify = {
         }));
       });
   },
-  savePlaylist(name, trackUris) {
+savePlaylist(name, trackUris) {
     if (!name || !trackUris.length) {
       return;
     }
@@ -140,10 +144,6 @@ const Spotify = {
           });
       });
   },
-  logout() {
-    accessToken = "";
-  },
-  isLoggedIn() {
     if (accessToken) {
       return true;
     } else {
