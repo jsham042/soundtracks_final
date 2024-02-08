@@ -22,27 +22,25 @@ const Spotify = {
       window.location = accessUrl;
     }
   },
-  getUserInfo() {
+getTrackGenre(trackId) {
     const accessToken = Spotify.getAccessToken();
-    return fetch("https://api.spotify.com/v1/me", {
+    return fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+        Authorization: `Bearer ${accessToken}`
+      }
     })
-      .then((response) => {
-        return response.json();
-      })
-      .then((jsonResponse) => {
-        if (!jsonResponse) {
-          return { username: null, avatar: null };
-        }
-        return {
-          username: jsonResponse.display_name,
-          avatar: jsonResponse.images[0]?.url || null,
-        };
-      });
+    .then(response => response.json())
+    .then(jsonResponse => {
+      if (!jsonResponse) {
+        return '';
+      }
+      const genres = jsonResponse.genres;
+      return genres.length > 0 ? genres[0] : '';
+    })
+    .catch(error => {
+      console.log(error);
+    });
   },
-
   openAiSearch(term) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
@@ -108,7 +106,7 @@ const Spotify = {
         }));
       });
   },
-  savePlaylist(name, trackUris) {
+savePlaylist(name, trackUris) {
     if (!name || !trackUris.length) {
       return;
     }
@@ -140,10 +138,6 @@ const Spotify = {
           });
       });
   },
-  logout() {
-    accessToken = "";
-  },
-  isLoggedIn() {
     if (accessToken) {
       return true;
     } else {
