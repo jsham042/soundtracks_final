@@ -17,7 +17,7 @@ class Track extends React.Component {
       this.props.onToggle(this.props.track);}
   }
 
-  removeTrack(event) {
+removeTrack(event) {
     this.props.onRemove(this.props.track);
     if (
       this.props.currentTrack &&
@@ -58,8 +58,7 @@ class Track extends React.Component {
     );
   }
 
-  render() {
-    const isCurrentTrack =
+const isCurrentTrack =
       this.props.currentTrack &&
       this.props.currentTrack.id === this.props.track.id;
     return (
@@ -82,6 +81,7 @@ class Track extends React.Component {
           <h3>{this.props.track.name}</h3>
           <p>
             {this.props.track.artist} | {this.props.track.album}
+            {this.props.track.genre ? ` | Genre: ${this.props.track.genre}` : ''}
           </p>
         </div>
         <a
@@ -98,6 +98,68 @@ class Track extends React.Component {
       </div>
     );
   }
-}
+    if (this.props.isRemoval) {
+      return (
+        <button
+          className="Track-action"
+          onClick={(e) => {
+            this.removeTrack();
+            e.stopPropagation();
+          }}
+        >
+          -
+        </button>
+      );
+    }
+    return (
+      <button
+        className="Track-action"
+        onClick={(e) => {
+          this.addTrack();
+          e.stopPropagation();
+        }}
+      >
+        +
+      </button>
+    );
+  }
 
-export default Track;
+const isCurrentTrack =
+      this.props.currentTrack &&
+      this.props.currentTrack.id === this.props.track.id;
+    return (
+      <div className="Track" onClick={this.handleClick}>
+        <button className="playButton">
+          {isCurrentTrack ? (
+            <FontAwesomeIcon icon={faPause} style={{ width: "1rem" }} />
+          ) : (
+            <FontAwesomeIcon icon={faPlay} style={{ width: "1rem" }} />
+          )}
+        </button>
+        <div className="Track-image">
+          <img
+            src={this.props.track.image}
+            alt="Album Art"
+            style={{ width: "2.5rem" }}
+          />
+        </div>
+        <div className="Track-information">
+          <h3>{this.props.track.name}</h3>
+          <p>
+            {this.props.track.artist} | {this.props.track.album}
+            {this.props.track.genre ? ` | Genre: ${this.props.track.genre}` : ''}
+          </p>
+        </div>
+        <a
+          href={this.props.track.uri}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img className="spotifyLogo-small"
+            src={"/spotify-logo-small.png"}
+            alt="Spotify Logo"
+          />
+        </a>
+        {this.renderAction()}
+      </div>
+    );
