@@ -1,14 +1,14 @@
-import React from 'react';
-import './SearchBar.css';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from "react";
+import "./SearchBar.css";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class SearchBar extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      term: localStorage.getItem('searchTerm') || ''
+      term: localStorage.getItem("searchTerm") || "",
     };
 
     this.handleTermChange = this.handleTermChange.bind(this);
@@ -21,12 +21,15 @@ class SearchBar extends React.Component {
   }
 
   search() {
-    localStorage.setItem('searchTerm', this.state.term);
+    localStorage.setItem("searchTerm", this.state.term);
+    localStorage.setItem(
+      "searchResults",
+      JSON.stringify(this.props.searchResults),
+    );
     this.props.onSearch(this.state.term);
   }
-
   handleKeyDown(event) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       this.search();
     }
   }
