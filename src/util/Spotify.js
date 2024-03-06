@@ -1,6 +1,6 @@
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
 // const redirectUri = "https://www.soundtracksai.com/"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
-const redirectUri= process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI
+const redirectUri = process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI;
 let accessToken;
 
 const Spotify = {
@@ -43,7 +43,23 @@ const Spotify = {
       });
   },
 
-  openAiSearch(term) {
+  openAiSearch(term, genre = "all") {
+    const responseArray = term.split("-").map((item) => item.trim());
+    const track = responseArray[0];
+    const artist = responseArray[1];
+    const accessToken = Spotify.getAccessToken();
+    let searchQuery = `q=track:${track}+artist:${artist}`;
+    if (genre !== "all") {
+      searchQuery += `+genre:${genre}`;
+    }
+    return fetch(
+      `https://api.spotify.com/v1/search?${searchQuery}&type=track&limit=1`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
     const artist = responseArray[1];
