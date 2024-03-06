@@ -13,8 +13,12 @@ class Track extends React.Component {
 
   addTrack(event) {
     this.props.onAdd(this.props.track);
-    if (this.props.currentTrack && this.props.currentTrack.id === this.props.track.id) {
-      this.props.onToggle(this.props.track);}
+    if (
+      this.props.currentTrack &&
+      this.props.currentTrack.id === this.props.track.id
+    ) {
+      this.props.onToggle(this.props.track);
+    }
   }
 
   removeTrack(event) {
@@ -62,6 +66,9 @@ class Track extends React.Component {
     const isCurrentTrack =
       this.props.currentTrack &&
       this.props.currentTrack.id === this.props.track.id;
+    const genreDisplay = this.props.track.genre
+      ? `Genre: ${this.props.track.genre}`
+      : "Genre: N/A";
     return (
       <div className="Track" onClick={this.handleClick}>
         <button className="playButton">
@@ -83,13 +90,15 @@ class Track extends React.Component {
           <p>
             {this.props.track.artist} | {this.props.track.album}
           </p>
+          <p>{genreDisplay}</p>
         </div>
         <a
           href={this.props.track.uri}
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img className="spotifyLogo-small"
+          <img
+            className="spotifyLogo-small"
             src={"/spotify-logo-small.png"}
             alt="Spotify Logo"
           />
@@ -99,5 +108,3 @@ class Track extends React.Component {
     );
   }
 }
-
-export default Track;
