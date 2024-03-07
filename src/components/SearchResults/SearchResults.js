@@ -32,7 +32,7 @@ class SearchResults extends React.Component {
         <TrackList
           tracks={this.props.searchResults.map((track) => ({
             ...track,
-            genre: track.genre, // Assuming each track object has a 'genre' property
+            genre: track.genre, // Ensuring genre information is included and passed to each Track component
           }))}
           onAdd={this.props.onAdd}
           onToggle={this.props.onToggle}
