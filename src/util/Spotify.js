@@ -72,7 +72,7 @@ const Spotify = {
           image: track.album.images[0].url,
           spotifyLogo: "spotify-logo.png",
           spotifyLink: `https://open.spotify.com/track/${track.id}`,
-          genre: genre, // Added genre information to each track object
+          genre: genre, // Genre information is included in each track object
         }));
       })
       .catch((error) => {
