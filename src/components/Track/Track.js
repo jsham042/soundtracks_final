@@ -87,7 +87,7 @@ class Track extends React.Component {
           <p>
             {this.props.track.artist} | {this.props.track.album}
           </p>
-          <p>{this.props.track.genre}</p>
+          <p className="genre">{this.props.track.genre}</p>
         </div>
         <a
           href={this.props.track.uri}
