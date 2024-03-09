@@ -1,6 +1,13 @@
-const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
-// const redirectUri = "https://www.soundtracksai.com/"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
-const redirectUri= process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI
+const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID;
+const awsPullRequestId = process.env.AWS_PULL_REQUEST_ID;
+const awsAppId = process.env.AWS_APP_ID;
+const domain = process.env.REACT_APP_DOMAIN;
+const previewUri = awsPullRequestId && awsAppId && domain
+    ? `https://pr-${awsPullRequestId}.${awsAppId}.${domain}`
+    : undefined;
+const developmentProductionUri = process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI;
+const redirectUri = previewUri || developmentProductionUri;
+
 let accessToken;
 
 const Spotify = {
@@ -15,7 +22,7 @@ const Spotify = {
       accessToken = accessTokenMatch[1];
       const expiresIn = Number(expiresInMatch[1]);
       window.setTimeout(() => (accessToken = ""), expiresIn * 1000);
-      window.history.pushState("Access Token", null, "/"); // This clears the parameters, allowing us to grab a new access token when it expires.
+      window.history.pushState("Access Token", null, "/");
       return accessToken;
     } else {
       const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
@@ -43,7 +50,7 @@ const Spotify = {
       });
   },
 
-  openAiSearch(term) {
+  openAiSearch(term, genre) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
     const artist = responseArray[1];
@@ -73,6 +80,7 @@ const Spotify = {
           image: track.album.images[0].url,
           spotifyLogo: "spotify-logo.png",
           spotifyLink: `https://open.spotify.com/track/${track.id}`,
+          genre: genre, // Genre information is included in each track object
         }));
       })
       .catch((error) => {
