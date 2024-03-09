@@ -1,5 +1,13 @@
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID;
-const redirectUri = process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI;
+const awsPullRequestId = process.env.AWS_PULL_REQUEST_ID;
+const awsAppId = process.env.AWS_APP_ID;
+const domain = process.env.REACT_APP_DOMAIN;
+const previewUri = awsPullRequestId && awsAppId && domain
+    ? `https://pr-${awsPullRequestId}.${awsAppId}.${domain}`
+    : undefined;
+const developmentProductionUri = process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI;
+const redirectUri = previewUri || developmentProductionUri;
+
 let accessToken;
 
 const Spotify = {
