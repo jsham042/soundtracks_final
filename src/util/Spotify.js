@@ -1,6 +1,5 @@
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
-// const redirectUri = "https://www.soundtracksai.com/"; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
-const redirectUri= process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI
+const redirectUri = process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI;
 let accessToken;
 
 const Spotify = {
@@ -63,17 +62,23 @@ const Spotify = {
         if (!jsonResponse.tracks) {
           return [];
         }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          image: track.album.images[0].url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        }));
+        return jsonResponse.tracks.items.map((track) => {
+          const genre = track.artists[0].genres
+            ? track.artists[0].genres.join(", ")
+            : "Unknown";
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            preview_url: track.preview_url,
+            image: track.album.images[0].url,
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+            genre: genre,
+          };
+        });
       })
       .catch((error) => {
         console.log(error);
