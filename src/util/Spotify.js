@@ -1,7 +1,8 @@
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
 const awsPullRequestId = process.env.AWS_PULL_REQUEST_ID;
 const awsAppId = process.env.AWS_APP_ID;
-const previewUri = awsPullRequestId && awsAppId && domain
+const previewUri =
+  awsPullRequestId && awsAppId && domain
     ? `https://pr-${awsPullRequestId}.${awsAppId}.amplifyapp.com`
     : undefined;
 const developmentProductionUri = process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI;
@@ -69,17 +70,21 @@ const Spotify = {
         if (!jsonResponse.tracks) {
           return [];
         }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          image: track.album.images[0].url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        }));
+        return jsonResponse.tracks.items.map((track) => {
+          const genre = track.album.genres ? track.album.genres[0] : "Unknown"; // Assuming the genre information is available in the album object
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            preview_url: track.preview_url,
+            image: track.album.images[0].url,
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+            genre: genre, // Adding genre to the track object
+          };
+        });
       })
       .catch((error) => {
         console.log(error);
