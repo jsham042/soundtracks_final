@@ -1,7 +1,8 @@
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
 const awsPullRequestId = process.env.AWS_PULL_REQUEST_ID;
 const awsAppId = process.env.AWS_APP_ID;
-const previewUri = awsPullRequestId && awsAppId && domain
+const previewUri =
+  awsPullRequestId && awsAppId && domain
     ? `https://pr-${awsPullRequestId}.${awsAppId}.amplifyapp.com`
     : undefined;
 const developmentProductionUri = process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI;
@@ -69,17 +70,48 @@ const Spotify = {
         if (!jsonResponse.tracks) {
           return [];
         }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          image: track.album.images[0].url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        }));
+        const tracks = jsonResponse.tracks.items;
+        const artistPromises = tracks.map((track) =>
+          fetch(`https://api.spotify.com/v1/artists/${track.artists[0].id}`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+            .then((response) => response.json())
+            .then((artistInfo) => {
+              const mainGenre = artistInfo.genres[0] || "Unknown Genre";
+              return {
+                id: track.id,
+                name: track.name,
+                artist: track.artists[0].name,
+                album: track.album.name,
+                uri: track.uri,
+                preview_url: track.preview_url,
+                image: track.album.images[0].url,
+                spotifyLogo: "spotify-logo.png",
+                spotifyLink: `https://open.spotify.com/track/${track.id}`,
+                genre: mainGenre,
+              };
+            })
+            .catch((error) => {
+              console.log(
+                `Error fetching artist info for ${track.artists[0].name}: ${error}`,
+              );
+              return {
+                id: track.id,
+                name: track.name,
+                artist: track.artists[0].name,
+                album: track.album.name,
+                uri: track.uri,
+                preview_url: track.preview_url,
+                image: track.album.images[0].url,
+                spotifyLogo: "spotify-logo.png",
+                spotifyLink: `https://open.spotify.com/track/${track.id}`,
+                genre: "Unknown Genre",
+              };
+            }),
+        );
+        return Promise.all(artistPromises);
       })
       .catch((error) => {
         console.log(error);
