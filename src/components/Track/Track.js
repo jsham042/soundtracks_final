@@ -85,13 +85,9 @@ class Track extends React.Component {
         <div className="Track-information">
           <h3>{this.props.track.name}</h3>
           <p>
-            {this.props.track.artist} | {this.props.track.album}
+            {this.props.track.artist} | {this.props.track.album} | {this.props.track.genre}
           </p>
-          {this.props.track.genre && (
-            <p className="Track-genre">
-              Genre: {this.props.track.genre.join(", ")}
-            </p>
-          )}
+
         </div>
         <a
           href={this.props.track.uri}
