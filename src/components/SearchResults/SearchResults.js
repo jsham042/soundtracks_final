@@ -25,14 +25,21 @@ class SearchResults extends React.Component {
     addAll() {
         this.props.onAdd(this.props.searchResults);
     }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.searchResults !== this.props.searchResults) {
+            localStorage.setItem('searchResults', JSON.stringify(this.props.searchResults));
+        }
+    }
+
     render() {
-    return (
-      <div className="SearchResults">
-        <h2>Results</h2>
-        <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle}  currentTrack={this.props.currentTrack}/>
-      </div>
-    );
-  }
+        return (
+            <div className="SearchResults">
+                <h2>Results</h2>
+                <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle} currentTrack={this.props.currentTrack}/>
+            </div>
+        );
+    }
 }
 
 export default SearchResults;
