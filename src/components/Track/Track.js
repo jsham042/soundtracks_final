@@ -13,8 +13,12 @@ class Track extends React.Component {
 
   addTrack(event) {
     this.props.onAdd(this.props.track);
-    if (this.props.currentTrack && this.props.currentTrack.id === this.props.track.id) {
-      this.props.onToggle(this.props.track);}
+    if (
+      this.props.currentTrack &&
+      this.props.currentTrack.id === this.props.track.id
+    ) {
+      this.props.onToggle(this.props.track);
+    }
   }
 
   removeTrack(event) {
@@ -81,15 +85,17 @@ class Track extends React.Component {
         <div className="Track-information">
           <h3>{this.props.track.name}</h3>
           <p>
-            {this.props.track.artist} | {this.props.track.album}
+            {this.props.track.artist} | {this.props.track.album} | {this.props.track.genre}
           </p>
+
         </div>
         <a
           href={this.props.track.uri}
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img className="spotifyLogo-small"
+          <img
+            className="spotifyLogo-small"
             src={"/spotify-logo-small.png"}
             alt="Spotify Logo"
           />

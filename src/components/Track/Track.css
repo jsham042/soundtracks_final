@@ -4,13 +4,11 @@
   border-bottom: 1px solid rgba(256, 256, 256, 0.8);
 }
 
-.Track:hover{
+.Track:hover {
   background: #800080;
-  color: #FFFFF0;
+  color: #fffff0;
   cursor: pointer;
 }
-
-
 
 .Track-action {
   display: inline-flex;
@@ -20,9 +18,9 @@
   height: 2.5rem;
   border-radius: 50%;
   margin: 0 0.25rem;
-  border: 1px solid #C5C6C7;
-  background-color: #C5C6C7;
-  color:rgba(0, 0, 0, 1);
+  border: 1px solid #c5c6c7;
+  background-color: #c5c6c7;
+  color: rgba(0, 0, 0, 1);
   font-size: 1.5rem;
   transition: all 0.25s ease-in-out;
   min-width: 2.5rem; /* Add this property to ensure the width of the preview button */
@@ -35,7 +33,6 @@
 }
 
 .Track-action::before {
-
   font-weight: bold;
   font-size: 1.5rem;
   line-height: 1;
@@ -50,23 +47,33 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100% - 60px); /* Subtract the width of Track-action and Track-preview */
+  max-width: calc(
+    100% - 60px
+  ); /* Subtract the width of Track-action and Track-preview */
   margin-left: 10px;
   word-wrap: break-word; /* Add this property to allow wrapping of long titles */
 }
 
-
 .Track-information h3 {
-  margin-bottom: .22rem;
+  margin-bottom: 0.22rem;
 }
 
 .Track-information p {
-  font-size: .83rem;
+  font-size: 0.83rem;
   font-weight: 300;
   color: white;
 }
 
-.spotifyLogo-small{
+/* Added styles for genre information */
+.Track-genre {
+  font-size: 0.75rem;
+  font-weight: 200;
+  color: #c5c6c7;
+  margin-top: 0.22rem;
+
+}
+
+.spotifyLogo-small {
   width: auto;
   height: 1.5rem;
   margin-right: 10px;
@@ -74,9 +81,9 @@
 
 .playButton {
   cursor: pointer;
-  padding: .5rem;
+  padding: 0.5rem;
   font-size: 1.05rem;
-  transition: color .25s;
+  transition: color 0.25s;
   border: transparent;
   background-color: transparent;
   color: white;
@@ -84,23 +91,18 @@
 }
 
 @media screen and (max-width: 600px) {
-
-
   .Track-action {
-
     width: 2rem;
     height: 2rem;
     min-width: 2rem; /* Add this property to ensure the width of the preview button */
     min-height: 2rem;
-
   }
-  .Track-hover{
+  .Track-hover {
     background: transparent;
   }
   .playButton {
-    font-size: .75rem;
+    font-size: 0.75rem;
     margin-right: 10px;
     padding: 0.1rem;
   }
-
 }
