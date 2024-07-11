@@ -8,12 +8,19 @@ class SearchBar extends React.Component {
     super(props);
 
     this.state = {
-      term: localStorage.getItem('searchTerm') || ''
+      term: ''
     };
 
     this.handleTermChange = this.handleTermChange.bind(this);
     this.search = this.search.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
+
+  componentDidMount() {
+    const storedSearchTerm = localStorage.getItem('searchTerm');
+    if (storedSearchTerm) {
+      this.setState({ term: storedSearchTerm });
+    }
   }
 
   handleTermChange(event) {
@@ -37,6 +44,7 @@ class SearchBar extends React.Component {
       <div className="SearchBar">
         <input
           placeholder="Describe the vibe you're going for"
+          value={this.state.term}
           onChange={this.handleTermChange}
           onKeyDown={this.handleKeyDown}
         />
