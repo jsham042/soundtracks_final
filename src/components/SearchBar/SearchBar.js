@@ -21,8 +21,9 @@ class SearchBar extends React.Component {
   }
 
   search() {
-    localStorage.setItem('searchTerm', this.state.term);
-    this.props.onSearch(this.state.term);
+    const searchTerm = this.state.term;
+    localStorage.setItem('searchTerm', searchTerm);
+    this.props.onSearch(searchTerm);
   }
 
   handleKeyDown(event) {
