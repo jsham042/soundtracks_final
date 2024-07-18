@@ -27,11 +27,38 @@ export const generateTotalSongRecommendations = async (prompt) => {
     // Create array of promises for all strategies
     const strategyPromises = strategies.map(async strategy => {
         // Modify prompt to include strategy for generating recommendations
-        const strategyPrompt = `Give me ${recsPerStrategy} song recommendations for this prompt: ${prompt}. Use this strategy to make your recommendations ${strategy}. Format the response with this convention: Song Name - Artist Name 2. Song Name - Artist Name`;
+        const strategyPrompt = `The user has requested that you curate a playlist based on this description:
+        ${prompt} 
+        
+        Based on the prompt, it is best to follow this strategy for curating the playlist:
+        ${strategy}
+        
+        Give me ${recsPerStrategy} song recommendations in JSON format with the following structure:
+        {
+          "recommendations": [
+            {
+              "song": "song 1",
+              "artist": "artist 1"
+            },
+            {
+              "song": "song 2",
+              "artist": "artist 2"
+            },
+            ...
+          ]
+        }
+        `;
+
         const strategyRecommendations = await generateSongRecommendations(strategyPrompt, recsPerStrategy);
 
         // Log the strategy and its recommendations
         console.log(`Strategy: ${strategy}`, strategyRecommendations);
+
+        // Parse the recommendations as JSON
+        strategyRecommendations = JSON.parse(strategyRecommendations);
+
+        // Grab the recommendations array
+        strategyRecommendations = strategyRecommendations.recommendations;
 
         return strategyRecommendations;
     });
@@ -125,6 +152,7 @@ export const DetermineAppropriateStrategies = async (prompt) => {
 export const generateSongRecommendations = async (prompt) => {
     const data = JSON.stringify({
         model: "gpt-4",
+        response_format: { type: "json_object" },
         messages: [{
             role: "system",
             content: "You are a music recommendation engine."

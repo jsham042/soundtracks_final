@@ -126,7 +126,10 @@ class App extends React.Component {
         )
             .then((playlistName) => {
                 console.log("Generated playlist name:", playlistName);
+
                 this.setState({ playlistName: playlistName });
+
+                localStorage.setItem('playlistName', playlistName);
                 return playlistName;
             })
             .catch((error) => {
@@ -143,6 +146,7 @@ class App extends React.Component {
             .then((albumArt) => {
                 console.log("API response:", albumArt);
                 this.setState({ albumArt: albumArt });
+                localStorage.setItem('albumArt', albumArt);
                 return albumArt;
             })
             .catch((error) => {
