@@ -1,0 +1,58 @@
+/* Base styles for the Sidebar component */
+.Sidebar {
+  width: 250px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #f4f4f4;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+/* Collapsed state styles */
+.Sidebar.collapsed {
+  width: 50px;
+}
+
+/* Expanded state styles */
+.Sidebar.expanded {
+  width: 250px;
+}
+
+/* Sidebar content styling */
+.Sidebar-content {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .Sidebar {
+    width: 100%;
+  }
+
+  .Sidebar.collapsed {
+    width: 0;
+    overflow: hidden;
+  }
+
+  .Sidebar.expanded {
+    width: 100%;
+  }
+}
+
+/* Smooth transition for sidebar elements */
+.Sidebar a {
+  display: block;
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.Sidebar a:hover {
+  color: #007bff;
+}
