@@ -21,13 +21,16 @@ h2 {
 }
 
 .App {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   min-height: 100vh;
   padding: 0 2%;
   background-color: #303133;
   font-family: "Work Sans", sans-serif;
   font-weight: 500;
   color: #fff;
-  margin-left: 15rem; /* add this */
+  margin-left: 15rem;
 }
 
 .Fetching-sign {
@@ -37,7 +40,13 @@ h2 {
 }
 
 .App-playlist {
-  display: block;
+  flex: 1;
+  margin-right: 2%;
+}
+
+.SearchResults {
+  flex: 1;
+  margin-left: 2%;
 }
 
 .feedback {
@@ -78,6 +87,7 @@ h2 {
   margin: 1rem auto;
   pointer-events: none;
 }
+
 .Sidebar button {
   cursor: pointer;
   width: 85%;
@@ -110,6 +120,7 @@ h2 {
 .Logout-button:hover {
   background-color: #a8a466;
 }
+
 .Sidebar button:hover {
   background: #d3d3d3;
   color: black;
@@ -146,6 +157,10 @@ h2 {
 }
 
 @media only screen and (min-width: 1020px) {
+  .App {
+    flex-direction: row;
+  }
+
   .App-playlist {
     display: flex;
     justify-content: space-between;
@@ -161,6 +176,7 @@ h2 {
   }
 
   .App {
+    flex-direction: column;
     margin-left: 0;
     padding: 0.1% 4% 10% 4%;
   }
@@ -200,6 +216,7 @@ h2 {
     box-shadow: 0px 4px 20px #3b3142;
     border-radius: 50px;
   }
+
   .Navigator button {
     cursor: pointer;
     width: 47%;
