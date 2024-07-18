@@ -3,14 +3,11 @@
   align-items: center;
   border-bottom: 1px solid rgba(256, 256, 256, 0.8);
   width: 100%;
-
 }
 
 .Track:hover {
-
-  background: #800080;
+  background: #333333;
   color: #fffff0;
-
   cursor: pointer;
 }
 
@@ -25,10 +22,10 @@
   color: rgba(0, 0, 0, 1);
   font-size: 1.5rem;
   transition: all 0.25s ease-in-out;
-  width: 2rem; /* Ensure the button is a perfect circle */
-  height: 2rem; /* Ensure the button is a perfect circle */
-  min-width: 2rem; /* Ensure the width of the preview button */
-  min-height: 2rem;
+  width: 1.5rem; /* Ensure the button is a perfect circle */
+  height: 1.5rem; /* Ensure the button is a perfect circle */
+  min-width: 1.5rem; /* Ensure the width of the preview button */
+  min-height: 1.5rem;
 }
 
 .Track-action:hover {
@@ -44,15 +41,11 @@
 }
 
 .Track-information {
-  padding: 0rem;
+  padding: 0.6rem;
   flex-grow: 1;
   display: flex;
-
   flex-direction: column;
-
   justify-content: center;
-  height: 72px;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
