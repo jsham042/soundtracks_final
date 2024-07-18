@@ -28,6 +28,8 @@ h2 {
   font-weight: 500;
   color: #fff;
   margin-left: 15rem; /* add this */
+  display: flex;
+  flex-direction: column;
 }
 
 .Fetching-sign {
@@ -146,9 +148,20 @@ h2 {
 }
 
 @media only screen and (min-width: 1020px) {
+  .App {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "searchResults playlist";
+  }
+
   .App-playlist {
     display: flex;
     justify-content: space-between;
+    grid-area: playlist;
+  }
+
+  .SearchResults {
+    grid-area: searchResults;
   }
 }
 
@@ -163,6 +176,8 @@ h2 {
   .App {
     margin-left: 0;
     padding: 0.1% 4% 10% 4%;
+    display: flex;
+    flex-direction: column;
   }
 
   h1 {
