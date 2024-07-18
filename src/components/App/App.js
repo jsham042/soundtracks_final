@@ -238,109 +238,75 @@ class App extends React.Component {
         }
         return (
             <div>
-                <div className="Sidebar">
-                    <img src={"/djboticon.png"} alt={"icon"} />
-                    <h1>
+                <div className="Header">
+                    <div className="Header-left">
+                        <img src={"/djboticon.png"} alt={"icon"} />
+                        <h1>
                         <span> SOUND</span>
                         <span className="highlight">TRACKS</span>
                     </h1>
-                    <button onClick={this.setToSearchState}>
-                        <FontAwesomeIcon
-                            icon={faSearch}
-                            style={{ marginRight: "0.75em" }}
-                        />
-                        Search
-                    </button>
-                    <button onClick={this.setToPlaylistState}>
-                        <FontAwesomeIcon icon={faMusic} style={{ marginRight: "0.75em" }} />
-                        Playlist
-                    </button>
-                    <div>
-                        <div className="user-info-header">Logged in as:</div>
-                        <div className="user-info">
-                            <img
-                                className="avatar"
-                                src={this.state.spotifyAvatar || null}
-                                alt="avatar"
-                            />
-                            <h1 className="username">
-                                {" "}
-                                {this.state.spotifyUsername || null}{" "}
-                            </h1>
-                        </div>
-                        <div>
-                            <button className="Logout-button" onClick={this.handleLogout}>
-                                Logout
-                            </button>
-                        </div>
-                        <a
-                            href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
-                            className="feedback"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <span style={{ paddingRight: "10px" }}>
-                                <FontAwesomeIcon icon={faCommentAlt} />
-                            </span>
-                            Please Provide Feedback!
-                        </a>
                     </div>
+                    <div className="user-info">
+                        <img
+                            className="avatar"
+                            src={this.state.spotifyAvatar || null}
+                            alt="avatar"
+                        />
+                        <h1 className="username">
+                            {" "}
+                            {this.state.spotifyUsername || null}{" "}
+                        </h1>
+                        <button className="Logout-button" onClick={this.handleLogout}>
+                            Logout
+                        </button>
+                    </div>
+                    <a
+                        href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
+                        className="feedback"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <span style={{ paddingRight: "10px" }}>
+                            <FontAwesomeIcon icon={faCommentAlt} />
+                        </span>
+                        Please Provide Feedback!
+                    </a>
                 </div>
 
                 <div className="App">
-                    {this.state.searchState ? (
-                        <div>
-                            <SearchBar onSearch={this.openAiSearch} />
-                            {this.state.isFetching ? (
-                                <div className="Fetching-sign">
-                                    <FontAwesomeIcon icon={faSpinner} spin />
-                                    Fetching results...
-                                </div>
-                            ) : null}
-                            <SearchResults
-                                searchResults={this.state.searchResults}
-                                onAdd={this.addTrack}
-                                onToggle={this.toggleTrack}
-                                currentTrack={this.state.currentTrack}
+                    <div className="SearchSection">
+                        <SearchBar onSearch={this.openAiSearch} />
+                        {this.state.isFetching ? (
+                            <div className="Fetching-sign">
+                                <FontAwesomeIcon icon={faSpinner} spin />
+                                Fetching results...
+                            </div>
+                        ) : null}
+                        <SearchResults
+                            searchResults={this.state.searchResults}
+                            onAdd={this.addTrack}
+                            onToggle={this.toggleTrack}
+                            currentTrack={this.state.currentTrack}
+                        />
+                    </div>
+                    <div className="PlaylistSection">
+                        <Playlist
+                            playlistName={this.state.playlistName}
+                            playlistTracks={this.state.playlistTracks}
+                            albumArt={this.state.albumArt}
+                            onNameChange={this.updatePlaylistName}
+                            onRemove={this.removeTrack}
+                            onSave={this.savePlaylist}
+                            onToggle={this.toggleTrack}
+                            currentTrack={this.state.currentTrack}
+                        >
+                            <img
+                                src={this.state.albumArt}
+                                alt="Album Art"
+                                style={{ width: "1rem", height: "1rem" }}
                             />
-                        </div>
-                    ) : (
-                        <div className="App-playlist">
-                            <Playlist
-                                playlistName={this.state.playlistName}
-                                playlistTracks={this.state.playlistTracks}
-                                albumArt={this.state.albumArt}
-                                onNameChange={this.updatePlaylistName}
-                                onRemove={this.removeTrack}
-                                onSave={this.savePlaylist}
-                                onToggle={this.toggleTrack}
-                                currentTrack={this.state.currentTrack}
-                            >
-                                <img
-                                    src={this.state.albumArt}
-                                    alt="Album Art"
-                                    style={{ width: "1rem", height: "1rem" }}
-                                />
-                            </Playlist>
-                        </div>
-                    )}
-                </div>
-
-                <div className="Navigator">
-                    <button
-                        onClick={this.setToSearchState}
-                        className={this.state.searchState ? "active" : ""}
-                    >
-                        <FontAwesomeIcon icon={faSearch} style={{ marginRight: "0.4em" }} />
-                        Search
-                    </button>
-                    <button
-                        onClick={this.setToPlaylistState}
-                        className={this.state.searchState ? "" : "active"}
-                    >
-                        <FontAwesomeIcon icon={faMusic} style={{ marginRight: "0.5em" }} />
-                        Playlist
-                    </button>
+                        </Playlist>
+                    </div>
                 </div>
             </div>
         );
