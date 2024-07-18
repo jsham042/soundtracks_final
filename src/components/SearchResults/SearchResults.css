@@ -1,20 +1,12 @@
 .SearchResults {
-  width: 90%;
-  height: 85vh;
-  overflow-y: scroll;
-  padding: .88rem;
+  overflow-y: auto;
+  padding: 1rem;
   background-color: #1E1E20;
-  border: #C5C6C7;
+  height: 100%;
+
 }
 
 ::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
-}
-
-@media only screen and (max-width: 1020px) {
-  .SearchResults {
-    width: 90%;
-    margin-bottom: 2rem;
-  }
+  width: 0px;
+  background: transparent;
 }

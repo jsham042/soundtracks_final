@@ -1,12 +1,5 @@
 html {
-  font-size: 1.125rem;
-}
-
-.Header-left {
-  margin-left: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  font-size: 1rem;
 }
 
 h1 {
@@ -29,14 +22,15 @@ h2 {
 
 .App {
   height: 100vh;
-  padding: 0 2%;
   background-color: #303133;
   font-family: "Work Sans", sans-serif;
-  font-weight: 500;
   color: #fff;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Ensure no overflow */
+  width: 100vw;
 }
+
 
 .Fetching-sign {
   font-family: "Poppins", sans-serif;
@@ -116,68 +110,30 @@ h2 {
   background-color: #a8a466;
 }
 
-.SearchSection,
-.PlaylistSection {
-  flex: 1;
-  padding: 1rem;
-}
-
-.App {
+.SearchAndPlaylist {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  gap: 2rem;
 }
 
-@media only screen and (min-width: 1020px) {
-  .App {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .SearchSection,
-  .PlaylistSection {
-    flex: 1;
-    padding: 1rem;
-  }
+.SearchSection,
+.PlaylistSection {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  height: 88vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-@media screen and (max-width: 600px) {
-  html,
-  body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-  }
 
-  .App {
-    flex-direction: column;
-  }
-
-  h1 {
-    padding: 2% 2%;
-    text-align: center;
-    font-size: 0.5rem;
-  }
-
-  .Header {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .user-info {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .user-info .avatar {
-    margin-bottom: 0.5rem;
-  }
-
-  .SearchSection,
-  .PlaylistSection {
-    padding: 0.1% 4% 10% 4%;
-  }
-
-  .App-playlist {
-    margin-top: 2rem;
-  }
+.SearchSectionHeader, .PlaylistSectionHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  justify-content: space-between;
 }
