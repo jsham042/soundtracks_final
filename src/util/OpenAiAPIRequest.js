@@ -115,8 +115,13 @@ export const generateAISongRecommendations = async (userSearchInput) => {
         // Grab the recommendations array
         additionalRecs = additionalRecsDict.recommendations;
 
-        // Remove potential duplicates again after adding additional recommendations
+        // Combine with other recs
         recommendations = [...new Set(recommendations.concat(additionalRecs))];
+        
+        //Remove potential duplicates again after adding additional recommendations
+        recommendations = recommendations.filter((song, index, self) =>
+            index === self.findIndex((t) => t.song === song.song && t.artist === song.artist)
+        );
 
         // Randomize the order of recommendations again after adding additional recommendations
         shuffleArray(recommendations);
