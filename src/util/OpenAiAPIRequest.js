@@ -21,7 +21,7 @@ export const generateAISongRecommendations = async (userSearchInput) => {
     const strategies = await DetermineAppropriateStrategies(userSearchInput);
 
     // Total recommendations required NOTE this is our decision
-    const totalRecommendations = 25;
+    const totalRecommendations = 50;
 
     // Calculate the number of recommendations per strategy to total the targeted amount
     const recsPerStrategy = Math.floor(totalRecommendations / strategies.length);
@@ -53,36 +53,30 @@ export const generateAISongRecommendations = async (userSearchInput) => {
 
         let strategyRecommendations = await generateSongRecommendations(strategyPrompt, recsPerStrategy);
 
-        // Log the strategy and its recommendations
-        console.log(`Strategy: ${strategy}`, strategyRecommendations);
-
         // Parse the recommendations as JSON
         let strategyRecommendationsDict = JSON.parse(strategyRecommendations);
 
         // Grab the recommendations array
         strategyRecommendations = strategyRecommendationsDict.recommendations;
 
-        console.log("Recommendations: ", strategyRecommendations);
 
         return strategyRecommendations;
     });
 
     // Resolve all promises concurrently and flatten the resulting array
     let recommendations = (await Promise.all(songRecommendations)).flat();
-    console.log("Recommendations before dupes: ", recommendations);
-
+    
     const uniqueRecommendations = recommendations.filter((song, index, self) =>
         index === self.findIndex((t) => t.song === song.song && t.artist === song.artist)
     );
     const removedCount =    recommendations.length - uniqueRecommendations.length;
-    console.log(`Number of duplicate recommendations removed: ${removedCount}`);
-
+    
     recommendations = Array.from(uniqueRecommendations.values());
 
     // Randomize the order of recommendations
     shuffleArray(recommendations);
 
-    // In case total recommendations are less than 25 due to rounding down, fill up remaining
+    // In case total recommendations are less than target due to rounding down, fill up remaining
     if (recommendations.length < totalRecommendations) {
         const recommendationContents = recommendations.map(rec => `${rec.song} by ${rec.artist}`).join(", ");
         const remainingRecs = totalRecommendations - recommendations.length;

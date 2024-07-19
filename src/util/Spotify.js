@@ -51,9 +51,8 @@ const Spotify = {
   },
 
   async openAiSearch(term) {
-    const responseArray = term.split("-").map((item) => item.trim());
-    const track = responseArray[0];
-    const artist = responseArray[1];
+    const track = term.song;
+    const artist = term.artist;
     const accessToken = Spotify.getAccessToken();
     return fetch(
       `https://api.spotify.com/v1/search?q=track:${track}+artist:${artist}&type=track&limit=1`,
@@ -117,7 +116,7 @@ const Spotify = {
         console.log(error);
       });
   },
-  makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
+  async makeRecommendation(songId1, songId2, songId3, songId4, songId5) {
     const accessToken = Spotify.getAccessToken();
     return fetch(
       `https://api.spotify.com/v1/recommendations?limit=25&market=US&seed_tracks=${songId1},${songId2},${songId3},${songId4},${songId5}`,

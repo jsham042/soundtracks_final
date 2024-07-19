@@ -95,9 +95,7 @@ class App extends React.Component {
         try {
             this.setState({ isFetching: true });
 
-            const response = await generateAISongRecommendations(userSearchInput);
-            const songList = response.slice(0, 25);
-
+            const songList = await generateAISongRecommendations(userSearchInput);
             const promises = songList.map((song) => Spotify.openAiSearch(song));
             const searchResultsArray = await Promise.all(promises);
             const flattenedSearchResults = [].concat(...searchResultsArray);
@@ -107,6 +105,7 @@ class App extends React.Component {
                 searchResults: uniqueSearchResults,
             });
 
+            console.log("Total length of search results: ", uniqueSearchResults.length);
             // Save results to local storage
             localStorage.setItem('searchResults', JSON.stringify(uniqueSearchResults));
 
