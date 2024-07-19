@@ -120,24 +120,23 @@ class App extends React.Component {
         }
     }
 
-    generatePlaylistName(prompt) {
-        return OpenAiAPIRequest.generatePlaylistName(
-            `Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`,
-        )
-            .then((playlistName) => {
-                console.log("Generated playlist name:", playlistName);
-
-                this.setState({ playlistName: playlistName });
-
-                localStorage.setItem('playlistName', playlistName);
-                return playlistName;
-            })
-            .catch((error) => {
-                console.error(error);
+    async generatePlaylistName(prompt) {
+        try {
+            const playlistName = await OpenAiAPIRequest.generatePlaylistName(
+                `Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`
+            );
+            console.log("Generated playlist name:", playlistName);
+            this.setState({ playlistName: playlistName }, () => {
+                console.log("State updated with playlist name:", this.state.playlistName);
             });
+            localStorage.setItem('playlistName', playlistName);
+            return playlistName;
+        } catch (error) {
+            console.error(error);
+        }
     }
 
-    generateAlbumArt(playlistName) {
+    async generateAlbumArt(playlistName) {
         console.log(
             "Playlist name:",
             `Sigma 75mm lens capturing this: ${playlistName}. No words, just the image.`,
@@ -146,6 +145,7 @@ class App extends React.Component {
             .then((albumArt) => {
                 console.log("API response:", albumArt);
                 this.setState({ albumArt: albumArt });
+                localStorage.setItem('albumArt', albumArt);
                 localStorage.setItem('albumArt', albumArt);
                 return albumArt;
             })
@@ -173,9 +173,11 @@ class App extends React.Component {
         }
         tracks.push(track);
         this.setState({ playlistTracks: tracks });
+        localStorage.setItem('playlistTracks', JSON.stringify(tracks));
         let searchResults = this.state.searchResults;
         searchResults.splice(searchResults.indexOf(track), 1);
         this.setState({ searchResults: searchResults });
+        localStorage.setItem('searchResults', JSON.stringify(searchResults));
     }
 
     toggleTrack(track) {
@@ -199,6 +201,18 @@ class App extends React.Component {
         if (storedResults) {
             this.setState({ searchResults: JSON.parse(storedResults) });
         }
+        const storedPlaylistName = localStorage.getItem('playlistName');
+        if (storedPlaylistName) {
+            this.setState({ playlistName: storedPlaylistName });
+        }
+        const storedAlbumArt = localStorage.getItem('albumArt');
+        if (storedAlbumArt) {
+            this.setState({ albumArt: storedAlbumArt });
+        }
+        const storedPlaylistTracks = localStorage.getItem('playlistTracks');
+        if (storedPlaylistTracks) {
+            this.setState({ playlistTracks: JSON.parse(storedPlaylistTracks) });
+        }
         const accessToken = Spotify.getAccessToken();
         if (accessToken) {
             this.setState({ loggedIn: true });
@@ -209,13 +223,16 @@ class App extends React.Component {
         let tracks = this.state.playlistTracks;
         tracks = tracks.filter((currentTrack) => currentTrack.id !== track.id);
         this.setState({ playlistTracks: tracks });
+        localStorage.setItem('playlistTracks', JSON.stringify(tracks));
         let searchResults = this.state.searchResults;
         searchResults.push(track);
         this.setState({ searchResults: searchResults });
+        localStorage.setItem('searchResults', JSON.stringify(searchResults));
     }
 
     updatePlaylistName(name) {
         this.setState({ playlistName: name });
+        localStorage.setItem('playlistName', name);
     }
 
     savePlaylist() {
@@ -237,114 +254,80 @@ class App extends React.Component {
     }
 
     render() {
+        console.log("Rendering with playlist name:", this.state.playlistName);
+        console.log("Rendering with album art:", this.state.albumArt);
+        console.log("Rendering with playlist tracks:", this.state.playlistTracks);
+        console.log("Rendering with search results:", this.state.searchResults);
         if (!this.state.loggedIn) {
             return <LoginPage onLogin={() => this.handleLogin()} />;
         }
         return (
-            <div>
-                <div className="Sidebar">
-                    <img src={"/djboticon.png"} alt={"icon"} />
-                    <h1>
+            <div className="App">
+                <div className="Header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem',marginLeft:'1rem' }}>
+                        <img src={"/djboticon.png"} alt={"icon"} />
+                        <h1>
                         <span> SOUND</span>
                         <span className="highlight">TRACKS</span>
                     </h1>
-                    <button onClick={this.setToSearchState}>
-                        <FontAwesomeIcon
-                            icon={faSearch}
-                            style={{ marginRight: "0.75em" }}
-                        />
-                        Search
-                    </button>
-                    <button onClick={this.setToPlaylistState}>
-                        <FontAwesomeIcon icon={faMusic} style={{ marginRight: "0.75em" }} />
-                        Playlist
-                    </button>
-                    <div>
-                        <div className="user-info-header">Logged in as:</div>
-                        <div className="user-info">
-                            <img
-                                className="avatar"
-                                src={this.state.spotifyAvatar || null}
-                                alt="avatar"
-                            />
-                            <h1 className="username">
-                                {" "}
-                                {this.state.spotifyUsername || null}{" "}
-                            </h1>
-                        </div>
-                        <div>
-                            <button className="Logout-button" onClick={this.handleLogout}>
-                                Logout
-                            </button>
-                        </div>
-                        <a
-                            href="https://docs.google.com/forms/d/e/1FAIpQLSeL0vWrUM-qIHzhfjeZUQE2ZwRRzQ74z0K1Mj4G7En2lo3-xQ/viewform?usp=sf_link"
-                            className="feedback"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <span style={{ paddingRight: "10px" }}>
-                                <FontAwesomeIcon icon={faCommentAlt} />
-                            </span>
-                            Please Provide Feedback!
-                        </a>
                     </div>
+                    <div className="user-info">
+                        <img
+                            className="avatar"
+                            src={this.state.spotifyAvatar || null}
+                            alt="avatar"
+                        />
+                        <h1 className="username">
+                            {" "}
+                            {this.state.spotifyUsername || null}{" "}
+                        </h1>
+                        <button className="Logout-button" onClick={this.handleLogout}>
+                            Logout
+                        </button>
+                    </div>
+                    
                 </div>
 
-                <div className="App">
-                    {this.state.searchState ? (
-                        <div>
-                            <SearchBar onSearch={this.openAiSearch} />
-                            {this.state.isFetching ? (
-                                <div className="Fetching-sign">
-                                    <FontAwesomeIcon icon={faSpinner} spin />
-                                    Fetching results...
-                                </div>
-                            ) : null}
-                            <SearchResults
-                                searchResults={this.state.searchResults}
-                                onAdd={this.addTrack}
-                                onToggle={this.toggleTrack}
-                                currentTrack={this.state.currentTrack}
+                <div className="SearchAndPlaylist">
+                    <div className="SearchSection">
+                        <div className="SearchSectionHeader">
+                            <h1 style={{ margin: 0 }}>Search</h1>
+                                <SearchBar onSearch={this.openAiSearch} />
+                        </div>
+                        {this.state.isFetching ? (
+                            <div className="Fetching-sign">
+                                <FontAwesomeIcon icon={faSpinner} spin />
+                                Fetching results...
+                            </div>
+                        ) : null}
+                        <SearchResults
+                            searchResults={this.state.searchResults}
+                            onAdd={this.addTrack}
+                            onToggle={this.toggleTrack}
+                            currentTrack={this.state.currentTrack}
+                        />
+                    </div>
+                    <div className="PlaylistSection">
+                        <div className="PlaylistSectionHeader">
+                            <h1 style={{ margin: 0 }}>Playlist</h1>
+                        </div>
+                        <Playlist
+                            playlistName={this.state.playlistName}
+                            playlistTracks={this.state.playlistTracks}
+                            albumArt={this.state.albumArt}
+                            onNameChange={this.updatePlaylistName}
+                            onRemove={this.removeTrack}
+                            onSave={this.savePlaylist}
+                            onToggle={this.toggleTrack}
+                            currentTrack={this.state.currentTrack}
+                        >
+                            <img
+                                src={this.state.albumArt}
+                                alt="Album Art"
+                                style={{ width: "1rem", height: "1rem" }}
                             />
-                        </div>
-                    ) : (
-                        <div className="App-playlist">
-                            <Playlist
-                                playlistName={this.state.playlistName}
-                                playlistTracks={this.state.playlistTracks}
-                                albumArt={this.state.albumArt}
-                                onNameChange={this.updatePlaylistName}
-                                onRemove={this.removeTrack}
-                                onSave={this.savePlaylist}
-                                onToggle={this.toggleTrack}
-                                currentTrack={this.state.currentTrack}
-                            >
-                                <img
-                                    src={this.state.albumArt}
-                                    alt="Album Art"
-                                    style={{ width: "1rem", height: "1rem" }}
-                                />
-                            </Playlist>
-                        </div>
-                    )}
-                </div>
-
-                <div className="Navigator">
-                    <button
-                        onClick={this.setToSearchState}
-                        className={this.state.searchState ? "active" : ""}
-                    >
-                        <FontAwesomeIcon icon={faSearch} style={{ marginRight: "0.4em" }} />
-                        Search
-                    </button>
-                    <button
-                        onClick={this.setToPlaylistState}
-                        className={this.state.searchState ? "" : "active"}
-                    >
-                        <FontAwesomeIcon icon={faMusic} style={{ marginRight: "0.5em" }} />
-                        Playlist
-                    </button>
+                        </Playlist>
+                    </div>
                 </div>
             </div>
         );

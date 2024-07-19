@@ -89,17 +89,7 @@ class Track extends React.Component {
           </p>
 
         </div>
-        <a
-          href={this.props.track.uri}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            className="spotifyLogo-small"
-            src={"/spotify-logo-small.png"}
-            alt="Spotify Logo"
-          />
-        </a>
+       
         {this.renderAction()}
       </div>
     );

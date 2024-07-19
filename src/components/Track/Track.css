@@ -2,10 +2,11 @@
   display: flex;
   align-items: center;
   border-bottom: 1px solid rgba(256, 256, 256, 0.8);
+  width: 100%;
 }
 
 .Track:hover {
-  background: #800080;
+  background: #333333;
   color: #fffff0;
   cursor: pointer;
 }
@@ -14,8 +15,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
   border-radius: 50%;
   margin: 0 0.25rem;
   border: 1px solid #c5c6c7;
@@ -23,7 +22,10 @@
   color: rgba(0, 0, 0, 1);
   font-size: 1.5rem;
   transition: all 0.25s ease-in-out;
-  min-width: 2.5rem; /* Add this property to ensure the width of the preview button */
+  width: 1.5rem; /* Ensure the button is a perfect circle */
+  height: 1.5rem; /* Ensure the button is a perfect circle */
+  min-width: 1.5rem; /* Ensure the width of the preview button */
+  min-height: 1.5rem;
 }
 
 .Track-action:hover {
@@ -39,19 +41,18 @@
 }
 
 .Track-information {
+  padding: 0.6rem;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 72px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(
-    100% - 60px
-  ); /* Subtract the width of Track-action and Track-preview */
+  max-width: calc(100% - 5rem); /* Adjusted to subtract the width of Track-action */
   margin-left: 10px;
-  word-wrap: break-word; /* Add this property to allow wrapping of long titles */
+  word-wrap: break-word; /* Allow wrapping of long titles */
+
 }
 
 .Track-information h3 {
@@ -60,6 +61,7 @@
 
 .Track-information p {
   font-size: 0.83rem;
+
   font-weight: 300;
   color: white;
 }
@@ -77,32 +79,46 @@
   width: auto;
   height: 1.5rem;
   margin-right: 10px;
+
 }
 
 .playButton {
+
   cursor: pointer;
   padding: 0.5rem;
+
   font-size: 1.05rem;
   transition: color 0.25s;
   border: transparent;
   background-color: transparent;
+
   color: white;
   margin-right: 10px;
 }
 
 @media screen and (max-width: 600px) {
   .Track-action {
-    width: 2rem;
-    height: 2rem;
-    min-width: 2rem; /* Add this property to ensure the width of the preview button */
+
+    width: 2rem; /* Ensure the button is a perfect circle on smaller screens */
+    height: 2rem; /* Ensure the button is a perfect circle on smaller screens */
+    min-width: 2rem; /* Ensure the width of the preview button */
+
     min-height: 2rem;
+  }
+
+  .Track-information {
+
+    max-width: calc(100% - 4rem); /* Adjusted for smaller screen sizes */
   }
   .Track-hover {
     background: transparent;
+
   }
   .playButton {
     font-size: 0.75rem;
     margin-right: 10px;
     padding: 0.1rem;
+
   }
+
 }
