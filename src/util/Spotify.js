@@ -29,7 +29,7 @@ const Spotify = {
       window.location = accessUrl;
     }
   },
-  getUserInfo() {
+  async getUserInfo() {
     const accessToken = Spotify.getAccessToken();
     return fetch("https://api.spotify.com/v1/me", {
       headers: {
@@ -50,7 +50,7 @@ const Spotify = {
       });
   },
 
-  openAiSearch(term) {
+  async openAiSearch(term) {
     const responseArray = term.split("-").map((item) => item.trim());
     const track = responseArray[0];
     const artist = responseArray[1];

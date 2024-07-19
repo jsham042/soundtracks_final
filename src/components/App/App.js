@@ -10,7 +10,7 @@ import Spotify from "../../util/Spotify.js";
 import OpenAiAPIRequest, {
     generatePlaylistName,
     generateImage,
-    generateTotalSongRecommendations,
+    generateAISongRecommendations,
 } from "../../util/OpenAiAPIRequest.js";
 import {
     faSpinner,
@@ -91,11 +91,11 @@ class App extends React.Component {
         });
     }
 
-    async openAiSearch(prompt) {
+    async openAiSearch(userSearchInput) {
         try {
             this.setState({ isFetching: true });
 
-            const response = await generateTotalSongRecommendations(prompt);
+            const response = await generateAISongRecommendations(userSearchInput);
             const songList = response.slice(0, 25);
 
             const promises = songList.map((song) => Spotify.openAiSearch(song));
@@ -112,7 +112,7 @@ class App extends React.Component {
 
             this.setState({ isFetching: false });
 
-            const playlistName = await this.generatePlaylistName(prompt);
+            const playlistName = await this.generatePlaylistName(userSearchInput);
             await this.generateAlbumArt(playlistName);
         } catch (error) {
             console.error(error);
@@ -254,10 +254,6 @@ class App extends React.Component {
     }
 
     render() {
-        console.log("Rendering with playlist name:", this.state.playlistName);
-        console.log("Rendering with album art:", this.state.albumArt);
-        console.log("Rendering with playlist tracks:", this.state.playlistTracks);
-        console.log("Rendering with search results:", this.state.searchResults);
         if (!this.state.loggedIn) {
             return <LoginPage onLogin={() => this.handleLogin()} />;
         }

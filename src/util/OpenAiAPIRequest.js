@@ -15,22 +15,24 @@ const shuffleArray = (array) => {
 
 
 // creates song recommendations based on a prompt
-export const generateTotalSongRecommendations = async (prompt) => {
-    // Determine strategies
-    const strategies = await DetermineAppropriateStrategies(prompt);
+export const generateAISongRecommendations = async (userSearchInput) => {
+    
+    // First, determine the right strategies (e.g. think literally vs. based on mood) to tell the AI to use
+    const strategies = await DetermineAppropriateStrategies(userSearchInput);
 
-    // Total recommendations required
+    // Total recommendations required NOTE this is our decision
     const totalRecommendations = 25;
-    // Calculate recommendations per strategy
+
+    // Calculate the number of recommendations per strategy to total the targeted amount
     const recsPerStrategy = Math.floor(totalRecommendations / strategies.length);
 
-    // Create array of promises for all strategies
-    const strategyPromises = strategies.map(async strategy => {
+    // Generate the song recommendations by calling the AI with the different strategies
+    const songRecommendations = strategies.map(async strategy => {
         // Modify prompt to include strategy for generating recommendations
         const strategyPrompt = `The user has requested that you curate a playlist based on this description:
-        ${prompt} 
+        ${userSearchInput} 
         
-        Based on the prompt, it is best to follow this strategy for curating the playlist:
+        Based on the user's description, it is best to follow this strategy for curating the playlist:
         ${strategy}
         
         Give me ${recsPerStrategy} song recommendations in JSON format with the following structure:
@@ -49,33 +51,69 @@ export const generateTotalSongRecommendations = async (prompt) => {
         }
         `;
 
-        const strategyRecommendations = await generateSongRecommendations(strategyPrompt, recsPerStrategy);
+        let strategyRecommendations = await generateSongRecommendations(strategyPrompt, recsPerStrategy);
 
         // Log the strategy and its recommendations
         console.log(`Strategy: ${strategy}`, strategyRecommendations);
 
         // Parse the recommendations as JSON
-        strategyRecommendations = JSON.parse(strategyRecommendations);
+        let strategyRecommendationsDict = JSON.parse(strategyRecommendations);
 
         // Grab the recommendations array
-        strategyRecommendations = strategyRecommendations.recommendations;
+        strategyRecommendations = strategyRecommendationsDict.recommendations;
+
+        console.log("Recommendations: ", strategyRecommendations);
 
         return strategyRecommendations;
     });
 
     // Resolve all promises concurrently and flatten the resulting array
-    let recommendations = (await Promise.all(strategyPromises)).flat();
+    let recommendations = (await Promise.all(songRecommendations)).flat();
+    console.log("Recommendations before dupes: ", recommendations);
 
-    // Remove duplicates by converting to Set and back to array
-    recommendations = [...new Set(recommendations)];
+    const uniqueRecommendations = recommendations.filter((song, index, self) =>
+        index === self.findIndex((t) => t.song === song.song && t.artist === song.artist)
+    );
+    const removedCount =    recommendations.length - uniqueRecommendations.length;
+    console.log(`Number of duplicate recommendations removed: ${removedCount}`);
+
+    recommendations = Array.from(uniqueRecommendations.values());
 
     // Randomize the order of recommendations
     shuffleArray(recommendations);
 
     // In case total recommendations are less than 25 due to rounding down, fill up remaining
     if (recommendations.length < totalRecommendations) {
+        const recommendationContents = recommendations.map(rec => `${rec.song} by ${rec.artist}`).join(", ");
         const remainingRecs = totalRecommendations - recommendations.length;
-        const additionalRecs = await generateSongRecommendations(prompt, remainingRecs);
+        const prompt = `The user has requested that you curate a playlist based on this description:
+        ${userSearchInput} 
+
+        The following songs have already been added to the playlist:
+        ${recommendationContents}
+        
+        Give me ${remainingRecs} new song recommendations in JSON format with the following structure:
+        {
+          "recommendations": [
+            {
+              "song": "song 1",
+              "artist": "artist 1"
+            },
+            {
+              "song": "song 2",
+              "artist": "artist 2"
+            },
+            ...
+          ]
+        }
+        `
+        let additionalRecs = await generateSongRecommendations(prompt, remainingRecs);
+
+        // Parse the recommendations as JSON
+        let additionalRecsDict = JSON.parse(additionalRecs);
+
+        // Grab the recommendations array
+        additionalRecs = additionalRecsDict.recommendations;
 
         // Remove potential duplicates again after adding additional recommendations
         recommendations = [...new Set(recommendations.concat(additionalRecs))];
@@ -90,26 +128,26 @@ export const generateTotalSongRecommendations = async (prompt) => {
 
 
 //Interprets prompt to determine which batch strategies make sense given the context of the prompt
-export const DetermineAppropriateStrategies = async (prompt) => {
+export const DetermineAppropriateStrategies = async (userSearchInput) => {
     const batchDescriptions = [
-        "1. Literal interpretation of the user's prompt",
-        "2. Capturing the mood or theme implied by the user's prompt",
-        "3. Selecting songs from different genres that would fit the context of the user's prompt",
-        "4. Suggesting songs from different eras or time periods that align with the user's prompt",
-        "5. Creative interpretation of the user's prompt",
+        "1. Interpret the user's prompt literally.",
+        "2. Capture the mood or theme implied by the user's prompt.",
+        "3. Select songs from different genres that fit the context of the user's prompt.",
+        "4. Suggest songs from different eras or time periods that align with the user's prompt.",
+        "5. Interpret the user's prompt creatively.",
     ];
     const context =
-        `The user is looking for song recommendations that are appropriate the following prompt: ${prompt}. 
+        `The user is looking for song recommendations that are appropriate the following description: ${userSearchInput}. 
     Think about what exactly the user is asking for. Are they looking to capture a mood? Are they asking about a specific event or location?
     Based on this reflection, which of these strategies would be suitable for recommending music based on this prompt: ${batchDescriptions}? 
     List the suitable strategies in an array with the corresponding number for the batch description.
     For example, if the prompt is "I'm feeling sad", then the suitable strategies would be 1, 2, 3, and 5. And you would return [1, 2, 3, 5].`;
     // run an api call to openai to generate the response
     const data = JSON.stringify({
-        model: "gpt-4",
+        model: "gpt-4o-mini",
         messages: [{
             role: "system",
-            content: "You are a prompt interpreter. Based on a prompt you will categorize which music recommendation strategies to use."
+            content: "Based on a prompt you will categorize which music recommendation strategies to use."
         }, {
             role: "user",
             content: context
@@ -128,10 +166,11 @@ export const DetermineAppropriateStrategies = async (prompt) => {
             const jsonResponse = await response.json();
             const responseContent = jsonResponse.choices[0].message.content;
             console.log(responseContent)
-            // Extract numbers from GPT-4's response
-            const strategies = responseContent.match(/\d+/g);
+            // Extract numbers from GPT-4's response in a unique set
+            const strategies = [...new Set(responseContent.match(/\d+/g))];
             if (strategies !== null) {
-                return strategies.map(Number);
+                const strategyDescriptions = strategies.map(num => batchDescriptions[num - 1]);
+                return strategyDescriptions;
             }
         }
         else {
@@ -151,7 +190,7 @@ export const DetermineAppropriateStrategies = async (prompt) => {
 //Asynchronous functions
 export const generateSongRecommendations = async (prompt) => {
     const data = JSON.stringify({
-        model: "gpt-4",
+        model: "gpt-4o-mini",
         response_format: { type: "json_object" },
         messages: [{
             role: "system",
@@ -174,11 +213,8 @@ export const generateSongRecommendations = async (prompt) => {
 
         if (response.ok) {
             const jsonResponse = await response.json();
-            const responseArray = jsonResponse.choices[0].message.content.split(/\d+\.\s/g);
-            const filteredResponse = responseArray.map((element) => {
-                return element.replace(/\n|\d+\./g, "").trim();
-            }).filter((element) => element !== "");
-            return (filteredResponse);
+            const responseArray = jsonResponse.choices[0].message.content
+            return responseArray
         }
     } catch (error) {
         console.log(error);
@@ -256,4 +292,4 @@ export const generateImage = async (prompt) => {
     }
 }
 
-export default {generateSongRecommendations, generatePlaylistName, generateImage, generateTotalSongRecommendations};
+export default {generateSongRecommendations, generatePlaylistName, generateImage, generateTotalSongRecommendations: generateAISongRecommendations};
