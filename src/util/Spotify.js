@@ -138,16 +138,23 @@ const Spotify = {
         if (!jsonResponse.tracks) {
           return [];
         }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        }));
+        return jsonResponse.tracks.items.map((track) => {
+          if (!track.preview_url) {
+            console.error(
+              `Missing or invalid preview URL for track ID: ${track.id}, track name: ${track.name}`,
+            );
+          }
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            preview_url: track.preview_url || "No preview available",
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+          };
+        });
       });
   },
   savePlaylist(name, trackUris) {
