@@ -32,7 +32,11 @@ class Track extends React.Component {
   }
 
   handleClick() {
-    this.props.onToggle(this.props.track);
+    if (!this.props.track.preview_url || this.props.track.preview_url === "") {
+      console.error("Invalid or missing preview URL");
+    } else {
+      this.props.onToggle(this.props.track);
+    }
   }
 
   renderAction() {
@@ -85,11 +89,11 @@ class Track extends React.Component {
         <div className="Track-information">
           <h3>{this.props.track.name}</h3>
           <p>
-            {this.props.track.artist} | {this.props.track.album} | {this.props.track.genre}
+            {this.props.track.artist} | {this.props.track.album} |{" "}
+            {this.props.track.genre}
           </p>
-
         </div>
-       
+
         {this.renderAction()}
       </div>
     );

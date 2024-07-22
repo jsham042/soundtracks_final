@@ -79,13 +79,18 @@ const Spotify = {
             .then((response) => response.json())
             .then((artistInfo) => {
               const mainGenre = artistInfo.genres[0] || "Unknown Genre";
+              if (!track.preview_url) {
+                console.error(
+                  `Missing preview URL for track: ${track.name} by ${track.artists[0].name}`,
+                );
+              }
               return {
                 id: track.id,
                 name: track.name,
                 artist: track.artists[0].name,
                 album: track.album.name,
                 uri: track.uri,
-                preview_url: track.preview_url,
+                preview_url: track.preview_url || "No preview available",
                 image: track.album.images[0].url,
                 spotifyLogo: "spotify-logo.png",
                 spotifyLink: `https://open.spotify.com/track/${track.id}`,
@@ -133,16 +138,23 @@ const Spotify = {
         if (!jsonResponse.tracks) {
           return [];
         }
-        return jsonResponse.tracks.items.map((track) => ({
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        }));
+        return jsonResponse.tracks.items.map((track) => {
+          if (!track.preview_url) {
+            console.error(
+              `Missing or invalid preview URL for track ID: ${track.id}, track name: ${track.name}`,
+            );
+          }
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            preview_url: track.preview_url || "No preview available",
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+          };
+        });
       });
   },
   savePlaylist(name, trackUris) {
