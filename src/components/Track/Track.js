@@ -33,7 +33,9 @@ class Track extends React.Component {
 
   handleClick() {
     if (!this.props.track.preview_url || this.props.track.preview_url === "") {
-      console.error("Invalid or missing preview URL");
+      this.props.onToast(
+        `Sorry, the audio for ${this.props.track.name} isn't available.`,
+      );
     } else {
       this.props.onToggle(this.props.track);
     }
@@ -73,11 +75,14 @@ class Track extends React.Component {
     return (
       <div className="Track" onClick={this.handleClick}>
         <button className="playButton">
-          {isCurrentTrack ? (
-            <FontAwesomeIcon icon={faPause} style={{ width: "1rem" }} />
-          ) : (
-            <FontAwesomeIcon icon={faPlay} style={{ width: "1rem" }} />
-          )}
+          {
+            (isCurrent,
+            Track ? (
+              <FontAwesomeIcon icon={faPause} style={{ width: "1rem" }} />
+            ) : (
+              <FontAwesomeIcon icon={faPlay} style={{ width: "1rem" }} />
+            ))
+          }
         </button>
         <div className="Track-image">
           <img
