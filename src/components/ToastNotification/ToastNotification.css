@@ -1,0 +1,41 @@
+/* Base styling for ToastNotification component */
+.ToastNotification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #323232; /* Dark background for better visibility */
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Ensure it's on top of other elements */
+  transition:
+    transform 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+/* Animation for showing the toast */
+.ToastNotification.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Styling for the close button inside the toast */
+.ToastNotification .close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Text styling inside the toast */
+.ToastNotification .message {
+  font-size: 16px;
+  line-height: 1.4;
+}
