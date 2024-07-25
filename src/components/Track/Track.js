@@ -33,7 +33,9 @@ class Track extends React.Component {
 
   handleClick() {
     if (!this.props.track.preview_url || this.props.track.preview_url === "") {
-      console.error("Invalid or missing preview URL");
+      this.props.onToastNotification(
+        `Sorry, the audio for ${this.props.track.name} isn't available.`,
+      );
     } else {
       this.props.onToggle(this.props.track);
     }
