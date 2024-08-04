@@ -1,14 +1,14 @@
-import React from 'react';
-import './SearchBar.css';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from "react";
+import "./SearchBar.css";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class SearchBar extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      term: localStorage.getItem('searchTerm') || ''
+      term: "",
     };
 
     this.handleTermChange = this.handleTermChange.bind(this);
@@ -16,17 +16,25 @@ class SearchBar extends React.Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
+  componentDidMount() {
+    const storedSearchTerm = localStorage.getItem("searchTerm");
+    if (storedSearchTerm) {
+      this.setState({ term: storedSearchTerm });
+    }
+  }
+
   handleTermChange(event) {
     this.setState({ term: event.target.value });
   }
 
   search() {
-    localStorage.setItem('searchTerm', this.state.term);
-    this.props.onSearch(this.state.term);
+    const userSearchInput = this.state.term;
+    localStorage.setItem("searchTerm", userSearchInput);
+    this.props.onSearch(userSearchInput);
   }
 
   handleKeyDown(event) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       this.search();
     }
   }
@@ -36,6 +44,7 @@ class SearchBar extends React.Component {
       <div className="SearchBar">
         <input
           placeholder="Describe the vibe you're going for"
+          value={this.state.term}
           onChange={this.handleTermChange}
           onKeyDown={this.handleKeyDown}
         />
