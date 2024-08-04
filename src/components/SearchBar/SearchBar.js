@@ -14,6 +14,7 @@ class SearchBar extends React.Component {
     this.handleTermChange = this.handleTermChange.bind(this);
     this.search = this.search.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.clearSearch = this.clearSearch.bind(this);
   }
 
   componentDidMount() {
@@ -39,6 +40,13 @@ class SearchBar extends React.Component {
     }
   }
 
+  clearSearch() {
+    localStorage.removeItem("searchTerm");
+    localStorage.removeItem("searchResults");
+    this.setState({ term: "" });
+    this.props.onSearch("");
+  }
+
   render() {
     return (
       <div className="SearchBar">
@@ -51,6 +59,7 @@ class SearchBar extends React.Component {
         <button onClick={this.search}>
           <FontAwesomeIcon icon={faSearch} />
         </button>
+        <button onClick={this.clearSearch}>Clear Search</button>
       </div>
     );
   }
