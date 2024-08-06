@@ -1,17 +1,18 @@
-import React from "react";
+﻿import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import "./Track.css";
+import type { TrackProps, TrackState } from "./Track-js.types";
 
-class Track extends React.Component {
-  constructor(props) {
+class Track extends React.Component<TrackProps, TrackState> {
+  constructor(props: TrackProps) {
     super(props);
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
     this.handleClick = this.handleClick.bind(this);
   }
 
-  addTrack(event) {
+  addTrack(event: React.MouseEvent<HTMLButtonElement>) {
     this.props.onAdd(this.props.track);
     if (
       this.props.currentTrack &&
@@ -21,7 +22,7 @@ class Track extends React.Component {
     }
   }
 
-  removeTrack(event) {
+  removeTrack(event: React.MouseEvent<HTMLButtonElement>) {
     this.props.onRemove(this.props.track);
     if (
       this.props.currentTrack &&
@@ -45,7 +46,7 @@ class Track extends React.Component {
         <button
           className="Track-action"
           onClick={(e) => {
-            this.removeTrack();
+            this.removeTrack(e);
             e.stopPropagation();
           }}
         >
@@ -57,7 +58,7 @@ class Track extends React.Component {
       <button
         className="Track-action"
         onClick={(e) => {
-          this.addTrack();
+          this.addTrack(e);
           e.stopPropagation();
         }}
       >
