@@ -1,5 +1,6 @@
-const nock = require('nock');
-import { DetermineAppropriateStrategies } from './OpenAiAPIRequest.js';
+﻿import nock from 'nock';
+import { DetermineAppropriateStrategies } from './OpenAiAPIRequest';
+import type { MockResponse, Prompt } from './OpenAI.test-js.types';
 
 describe("interpretPrompt", () => {
     beforeEach(() => {
@@ -7,8 +8,8 @@ describe("interpretPrompt", () => {
     });
 
     // it("should return array of strategies when API call is successful", async () => {
-    //     const prompt = "I'm feeling sad";
-    //     const mockResponse = {
+    //     const prompt: Prompt = "I'm feeling sad";
+    //     const mockResponse: MockResponse = {
     //         "choices": [
     //             {
     //                 "message": {
@@ -26,7 +27,7 @@ describe("interpretPrompt", () => {
     // });
 
     it("should return fallback array when API call is not successful", async () => {
-        const prompt = "I'm feeling sad";
+        const prompt: Prompt = "I'm feeling sad";
 
         nock('http://api.openai.com')
             .post('/v1/chat/completions') // adjust path to actual API endpoint
@@ -37,8 +38,8 @@ describe("interpretPrompt", () => {
     });
 
     it("should return fallback array when API response is not as expected", async () => {
-        const prompt = "I'm feeling sad";
-        const mockResponse = {
+        const prompt: Prompt = "I'm feeling sad";
+        const mockResponse: MockResponse = {
             "choices": [
                 {
                     "message": {
