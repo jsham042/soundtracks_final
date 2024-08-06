@@ -1,4 +1,4 @@
-// In production, we register a service worker to serve assets from local cache.
+﻿// In production, we register a service worker to serve assets from local cache.
 
 // This lets the app load faster on subsequent visits in production, and gives
 // it offline capabilities. However, it also means that developers (and users)
@@ -8,43 +8,47 @@
 // To learn more about the benefits of this model, read https://goo.gl/KwvDNy.
 // This link also includes instructions on opting out of this behavior.
 
-export default function register() {
+import type { ServiceWorkerRegistration, ServiceWorker } from './registerServiceWorker-js.types';
+
+export default function register(): void {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+      const swUrl: string = `${process.env.PUBLIC_URL}/service-worker.js`;
       navigator.serviceWorker
         .register(swUrl)
-        .then(registration => {
+        .then((registration: ServiceWorkerRegistration) => {
           registration.onupdatefound = () => {
-            const installingWorker = registration.installing;
-            installingWorker.onstatechange = () => {
-              if (installingWorker.state === 'installed') {
-                if (navigator.serviceWorker.controller) {
-                  // At this point, the old content will have been purged and
-                  // the fresh content will have been added to the cache.
-                  // It's the perfect time to display a "New content is
-                  // available; please refresh." message in your web app.
-                  console.log('New content is available; please refresh.');
-                } else {
-                  // At this point, everything has been precached.
-                  // It's the perfect time to display a
-                  // "Content is cached for offline use." message.
-                  console.log('Content is cached for offline use.');
+            const installingWorker: ServiceWorker | null = registration.installing;
+            if (installingWorker) {
+              installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed') {
+                  if (navigator.serviceWorker.controller) {
+                    // At this point, the old content will have been purged and
+                    // the fresh content will have been added to the cache.
+                    // It's the perfect time to display a "New content is
+                    // available; please refresh." message in your web app.
+                    console.log('New content is available; please refresh.');
+                  } else {
+                    // At this point, everything has been precached.
+                    // It's the perfect time to display a
+                    // "Content is cached for offline use." message.
+                    console.log('Content is cached for offline use.');
+                  }
                 }
-              }
-            };
+              };
+            }
           };
         })
-        .catch(error => {
+        .catch((error: Error) => {
           console.error('Error during service worker registration:', error);
         });
     });
   }
 }
 
-export function unregister() {
+export function unregister(): void {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then(registration => {
+    navigator.serviceWorker.ready.then((registration: ServiceWorkerRegistration) => {
       registration.unregister();
     });
   }
