@@ -1,17 +1,17 @@
-import React from "react";
+﻿import React from "react";
 import "./App.css";
 import defaultAlbumArt from "./DALL·E 2023-03-01 20.07.50 - driving down the 101 with the top down.png";
-import Playlist from "../Playlist/Playlist.js";
-import SearchBar from "../SearchBar/SearchBar.js";
-import SearchResults from "../SearchResults/SearchResults.js";
-import LoginPage from "../LoginPage/LoginPage.js";
-import Spotify from "../../util/Spotify.js";
+import Playlist from "../Playlist/Playlist";
+import SearchBar from "../SearchBar/SearchBar";
+import SearchResults from "../SearchResults/SearchResults";
+import LoginPage from "../LoginPage/LoginPage";
+import Spotify from "../../util/Spotify";
 
 import OpenAiAPIRequest, {
     generatePlaylistName,
     generateImage,
     generateAISongRecommendations,
-} from "../../util/OpenAiAPIRequest.js";
+} from "../../util/OpenAiAPIRequest";
 import {
     faSpinner,
     faCommentAlt,
@@ -19,9 +19,12 @@ import {
     faMusic,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { AppState, Track, UserInfo } from "./App-js.types";
 
-class App extends React.Component {
-    constructor(props) {
+class App extends React.Component<{}, AppState> {
+    private audio: HTMLAudioElement | null = null;
+
+    constructor(props: {}) {
         super(props);
 
         this.state = {
@@ -53,19 +56,17 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.handleLogin();
     }
+
     async handleLogin() {
-        // Use the Spotify utility to get the access token
         const accessToken = await Spotify.getAccessToken();
-        // If an access token is obtained, update the loggedIn state
         if (accessToken) {
             this.setState({ loggedIn: true });
-            const userInfo = await Spotify.getUserInfo();
+            const userInfo: UserInfo = await Spotify.getUserInfo();
             this.setState({
                 spotifyUsername: userInfo.username,
                 spotifyAvatar: userInfo.avatar,
             });
         } else {
-            // Handle the case where the access token could not be obtained
             console.error("Authentication failed");
         }
     }
@@ -85,13 +86,13 @@ class App extends React.Component {
         });
     }
 
-    interpretPrompt(prompt) {
+    interpretPrompt(prompt: string) {
         OpenAiAPIRequest.interpretPrompt(prompt).then((response) => {
             console.log(response);
         });
     }
 
-    async openAiSearch(userSearchInput) {
+    async openAiSearch(userSearchInput: string) {
         try {
             this.setState({ isFetching: true });
 
@@ -106,7 +107,6 @@ class App extends React.Component {
             });
 
             console.log("Total length of search results: ", uniqueSearchResults.length);
-            // Save results to local storage
             localStorage.setItem('searchResults', JSON.stringify(uniqueSearchResults));
 
             this.setState({ isFetching: false });
@@ -119,7 +119,7 @@ class App extends React.Component {
         }
     }
 
-    async generatePlaylistName(prompt) {
+    async generatePlaylistName(prompt: string) {
         try {
             const playlistName = await OpenAiAPIRequest.generatePlaylistName(
                 `Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`
@@ -135,7 +135,7 @@ class App extends React.Component {
         }
     }
 
-    async generateAlbumArt(playlistName) {
+    async generateAlbumArt(playlistName: string) {
         console.log(
             "Playlist name:",
             `Sigma 75mm lens capturing this: ${playlistName}. No words, just the image.`,
@@ -145,7 +145,6 @@ class App extends React.Component {
                 console.log("API response:", albumArt);
                 this.setState({ albumArt: albumArt });
                 localStorage.setItem('albumArt', albumArt);
-                localStorage.setItem('albumArt', albumArt);
                 return albumArt;
             })
             .catch((error) => {
@@ -153,9 +152,9 @@ class App extends React.Component {
             });
     }
 
-    removeDuplicateTracks(tracks) {
-        const trackIds = new Set();
-        const uniqueTracks = [];
+    removeDuplicateTracks(tracks: Track[]): Track[] {
+        const trackIds = new Set<string>();
+        const uniqueTracks: Track[] = [];
         for (const track of tracks) {
             if (!trackIds.has(track.id)) {
                 trackIds.add(track.id);
@@ -165,7 +164,7 @@ class App extends React.Component {
         return uniqueTracks;
     }
 
-    addTrack(track) {
+    addTrack(track: Track) {
         let tracks = this.state.playlistTracks;
         if (tracks.find((savedTrack) => savedTrack.id === track.id)) {
             return;
@@ -179,13 +178,13 @@ class App extends React.Component {
         localStorage.setItem('searchResults', JSON.stringify(searchResults));
     }
 
-    toggleTrack(track) {
+    toggleTrack(track: Track) {
         if (this.state.currentTrack && this.state.currentTrack.id === track.id) {
-            // Pause the current track if it is already playing
-            this.audio.pause();
+            if (this.audio) {
+                this.audio.pause();
+            }
             this.setState({ currentTrack: null });
         } else {
-            // Play the new track
             if (this.audio) {
                 this.audio.pause();
             }
@@ -218,7 +217,7 @@ class App extends React.Component {
         }
     }
 
-    removeTrack(track) {
+    removeTrack(track: Track) {
         let tracks = this.state.playlistTracks;
         tracks = tracks.filter((currentTrack) => currentTrack.id !== track.id);
         this.setState({ playlistTracks: tracks });
@@ -229,7 +228,7 @@ class App extends React.Component {
         localStorage.setItem('searchResults', JSON.stringify(searchResults));
     }
 
-    updatePlaylistName(name) {
+    updatePlaylistName(name: string) {
         this.setState({ playlistName: name });
         localStorage.setItem('playlistName', name);
     }
@@ -244,11 +243,11 @@ class App extends React.Component {
         });
     }
 
-    setToSearchState(event) {
+    setToSearchState(event: React.MouseEvent<HTMLButtonElement>) {
         this.setState({ searchState: true });
     }
 
-    setToPlaylistState(event) {
+    setToPlaylistState(event: React.MouseEvent<HTMLButtonElement>) {
         this.setState({ searchState: false });
     }
 
@@ -269,18 +268,18 @@ class App extends React.Component {
                     <div className="user-info">
                         <img
                             className="avatar"
-                            src={this.state.spotifyAvatar || null}
+                            src={this.state.spotifyAvatar || undefined}
                             alt="avatar"
                         />
                         <h1 className="username">
                             {" "}
-                            {this.state.spotifyUsername || null}{" "}
+                            {this.state.spotifyUsername || undefined}{" "}
                         </h1>
                         <button className="Logout-button" onClick={this.handleLogout}>
                             Logout
                         </button>
                     </div>
-                    
+
                 </div>
 
                 <div className="SearchAndPlaylist">
