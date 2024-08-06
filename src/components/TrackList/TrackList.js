@@ -1,9 +1,9 @@
-import React from 'react';
-import Track from '../Track/Track.js';
+﻿import React from 'react';
+import Track from '../Track/Track';
 import './TrackList.css';
+import type { TrackListProps } from './TrackList-js.types';
 
-class TrackList extends React.Component {
-
+class TrackList extends React.Component<TrackListProps> {
   render() {
     return (
       <div className="TrackList">
