@@ -1,10 +1,11 @@
-import React from 'react';
+﻿import React from 'react';
 import './SearchBar.css';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { SearchBarProps, SearchBarState } from './SearchBar-js.types';
 
-class SearchBar extends React.Component {
-  constructor(props) {
+class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
+  constructor(props: SearchBarProps) {
     super(props);
 
     this.state = {
@@ -23,7 +24,7 @@ class SearchBar extends React.Component {
     }
   }
 
-  handleTermChange(event) {
+  handleTermChange(event: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ term: event.target.value });
   }
 
@@ -33,7 +34,7 @@ class SearchBar extends React.Component {
     this.props.onSearch(userSearchInput);
   }
 
-  handleKeyDown(event) {
+  handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'Enter') {
       this.search();
     }
