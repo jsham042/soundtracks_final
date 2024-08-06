@@ -1,7 +1,8 @@
-import React from 'react';
+﻿import React from 'react';
 import './LoginPage.css';
+import type { LoginPageProps } from './LoginPage-js.types';
 
-const LoginPage = ({ onLogin }) => {
+const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     return (
         <div className="LoginPage">
             <div className="App-logo">
