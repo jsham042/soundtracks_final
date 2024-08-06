@@ -1,22 +1,20 @@
-// Information to reach API
+﻿// Information to reach API
 const API_URL_COMPLETIONS = "https://api.openai.com/v1/completions";
 const API_URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
-const api_key = process.env.REACT_APP_MY_OPENAI_API_KEY;
+const api_key = process.env.REACT_APP_MY_OPENAI_API_KEY as string;
 const API_URL_IMAGE = "https://api.openai.com/v1/images/generations";
 
-
 // Fisher-Yates shuffle algorithm
-const shuffleArray = (array) => {
+const shuffleArray = (array: any[]): void => {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
 
-
 // creates song recommendations based on a prompt
-export const generateAISongRecommendations = async (userSearchInput) => {
-    
+export const generateAISongRecommendations = async (userSearchInput: string): Promise<any[]> => {
+
     // First, determine the right strategies (e.g. think literally vs. based on mood) to tell the AI to use
     const strategies = await DetermineAppropriateStrategies(userSearchInput);
 
@@ -27,14 +25,14 @@ export const generateAISongRecommendations = async (userSearchInput) => {
     const recsPerStrategy = Math.floor(totalRecommendations / strategies.length);
 
     // Generate the song recommendations by calling the AI with the different strategies
-    const songRecommendations = strategies.map(async strategy => {
+    const songRecommendations = strategies.map(async (strategy: string) => {
         // Modify prompt to include strategy for generating recommendations
         const strategyPrompt = `The user has requested that you curate a playlist based on this description:
         ${userSearchInput} 
-        
+
         Based on the user's description, it is best to follow this strategy for curating the playlist:
         ${strategy}
-        
+
         Give me ${recsPerStrategy} song recommendations in JSON format with the following structure:
         {
           "recommendations": [
@@ -59,18 +57,17 @@ export const generateAISongRecommendations = async (userSearchInput) => {
         // Grab the recommendations array
         strategyRecommendations = strategyRecommendationsDict.recommendations;
 
-
         return strategyRecommendations;
     });
 
     // Resolve all promises concurrently and flatten the resulting array
     let recommendations = (await Promise.all(songRecommendations)).flat();
-    
+
     const uniqueRecommendations = recommendations.filter((song, index, self) =>
         index === self.findIndex((t) => t.song === song.song && t.artist === song.artist)
     );
-    const removedCount =    recommendations.length - uniqueRecommendations.length;
-    
+    const removedCount = recommendations.length - uniqueRecommendations.length;
+
     recommendations = Array.from(uniqueRecommendations.values());
 
     // Randomize the order of recommendations
@@ -85,7 +82,7 @@ export const generateAISongRecommendations = async (userSearchInput) => {
 
         The following songs have already been added to the playlist:
         ${recommendationContents}
-        
+
         Give me ${remainingRecs} new song recommendations in JSON format with the following structure:
         {
           "recommendations": [
@@ -111,7 +108,7 @@ export const generateAISongRecommendations = async (userSearchInput) => {
 
         // Combine with other recs
         recommendations = [...new Set(recommendations.concat(additionalRecs))];
-        
+
         //Remove potential duplicates again after adding additional recommendations
         recommendations = recommendations.filter((song, index, self) =>
             index === self.findIndex((t) => t.song === song.song && t.artist === song.artist)
@@ -125,9 +122,8 @@ export const generateAISongRecommendations = async (userSearchInput) => {
     return recommendations;
 }
 
-
 //Interprets prompt to determine which batch strategies make sense given the context of the prompt
-export const DetermineAppropriateStrategies = async (userSearchInput) => {
+export const DetermineAppropriateStrategies = async (userSearchInput: string): Promise<string[]> => {
     const batchDescriptions = [
         "1. Interpret the user's prompt literally.",
         "2. Capture the mood or theme implied by the user's prompt.",
@@ -168,7 +164,7 @@ export const DetermineAppropriateStrategies = async (userSearchInput) => {
             // Extract numbers from GPT-4's response in a unique set
             const strategies = [...new Set(responseContent.match(/\d+/g))];
             if (strategies !== null) {
-                const strategyDescriptions = strategies.map(num => batchDescriptions[num - 1]);
+                const strategyDescriptions = strategies.map(num => batchDescriptions[parseInt(num) - 1]);
                 return strategyDescriptions;
             }
         }
@@ -182,12 +178,11 @@ export const DetermineAppropriateStrategies = async (userSearchInput) => {
     }
     // Fall back to the wildcard strategy.
     console.log("An error occurred or no strategies were selected. Falling back to wildcard strategy.");
-    return [5];
+    return [batchDescriptions[4]];
 }
 
-
 //Asynchronous functions
-export const generateSongRecommendations = async (prompt) => {
+export const generateSongRecommendations = async (prompt: string, recsPerStrategy: number): Promise<string> => {
     const data = JSON.stringify({
         model: "gpt-4o-mini",
         response_format: { type: "json_object" },
@@ -218,9 +213,10 @@ export const generateSongRecommendations = async (prompt) => {
     } catch (error) {
         console.log(error);
     }
+    return "";
 }
 
-export const generatePlaylistName = async(prompt) => {
+export const generatePlaylistName = async(prompt: string): Promise<string | null> => {
     const data = JSON.stringify({
         model: "gpt-3.5-turbo",
         messages: [{
@@ -255,8 +251,7 @@ export const generatePlaylistName = async(prompt) => {
     }
 }
 
-
-export const generateImage = async (prompt) => {
+export const generateImage = async (prompt: string): Promise<string | null> => {
     const data = JSON.stringify({
         "model": "dall-e-2",
         "prompt": prompt,
