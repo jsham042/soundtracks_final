@@ -1,11 +1,12 @@
-import React from 'react';
+﻿import React from 'react';
 
 import './SearchResults.css';
 
-import TrackList from '../TrackList/TrackList.js';
+import TrackList from '../TrackList/TrackList';
+import type { SearchResultsProps } from './SearchResults-js.types';
 
-class SearchResults extends React.Component {
-    constructor(props) {
+class SearchResults extends React.Component<SearchResultsProps> {
+    constructor(props: SearchResultsProps) {
         super(props);
         this.addTopFive = this.addTopFive.bind(this);
         this.addTopTen = this.addTopTen.bind(this);
@@ -25,13 +26,19 @@ class SearchResults extends React.Component {
     addAll() {
         this.props.onAdd(this.props.searchResults);
     }
+
     render() {
-    return (
-      <div className="SearchResults">
-        <TrackList tracks={this.props.searchResults} onAdd={this.props.onAdd} onToggle={this.props.onToggle}  currentTrack={this.props.currentTrack}/>
-      </div>
-    );
-  }
+        return (
+            <div className="SearchResults">
+                <TrackList 
+                    tracks={this.props.searchResults} 
+                    onAdd={this.props.onAdd} 
+                    onToggle={this.props.onToggle}  
+                    currentTrack={this.props.currentTrack}
+                />
+            </div>
+        );
+    }
 }
 
 export default SearchResults;
