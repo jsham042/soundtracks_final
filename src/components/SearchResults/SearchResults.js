@@ -3,6 +3,7 @@ import React from "react";
 import "./SearchResults.css";
 
 import TrackList from "../TrackList/TrackList.js";
+import Spotify from "../../util/Spotify"; // Assuming the path to Spotify.js utility module
 
 class SearchResults extends React.Component {
   constructor(props) {
@@ -29,9 +30,15 @@ class SearchResults extends React.Component {
   }
 
   // Fetch more recommendations based on the top 5 tracks
-  fetchMoreRecommendations() {
+  async fetchMoreRecommendations() {
     const topFiveTracks = this.props.searchResults.slice(0, 5);
-    this.props.onFetchMoreRecommendations(topFiveTracks);
+    const trackIds = topFiveTracks.map((track) => track.id);
+    try {
+      const recommendations = await Spotify.makeRecommendation(trackIds);
+      this.props.onAdd([...this.props.searchResults, ...recommendations]);
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+    }
   }
 
   render() {
