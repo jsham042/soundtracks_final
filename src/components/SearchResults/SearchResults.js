@@ -3,7 +3,7 @@ import React from "react";
 import "./SearchResults.css";
 
 import TrackList from "../TrackList/TrackList.js";
-import Spotify from "../../util/Spotify"; // Assuming the path to Spotify.js utility module
+import Spotify from "../../util/Spotify.js";
 
 class SearchResults extends React.Component {
   constructor(props) {
@@ -12,6 +12,7 @@ class SearchResults extends React.Component {
     this.addTopTen = this.addTopTen.bind(this);
     this.addAll = this.addAll.bind(this);
     this.fetchMoreRecommendations = this.fetchMoreRecommendations.bind(this);
+    this.clearSearchResults = this.clearSearchResults.bind(this);
   }
 
   // Add the top five tracks to the playlist
@@ -35,21 +36,38 @@ class SearchResults extends React.Component {
     const trackIds = topFiveTracks.map((track) => track.id);
     try {
       const recommendations = await Spotify.makeRecommendation(trackIds);
-      this.props.onAdd([...this.props.searchResults, ...recommendations]);
+      console.log(recommendations);
+      // Use the new prop to update search results in the parent component
+      this.props.onUpdateSearchResults([...recommendations, ...this.props.searchResults]);
     } catch (error) {
       console.error("Error fetching recommendations:", error);
     }
   }
 
+  // Clear search results
+  clearSearchResults() {
+    this.props.onUpdateSearchResults([]);
+  }
+
   render() {
     return (
       <div className="SearchResults">
-        <button
-          className="show-more-btn"
-          onClick={this.fetchMoreRecommendations}
-        >
-          Show More Recommendations
-        </button>
+        {this.props.searchResults.length > 0 && (
+          <>
+            <button
+              className="action-button"
+              onClick={this.fetchMoreRecommendations}
+            >
+              More Recommendations
+            </button>
+            <button
+              className="action-button clear"
+              onClick={this.clearSearchResults}
+            >
+              Clear Results
+            </button>
+          </>
+        )}
         <TrackList
           tracks={this.props.searchResults}
           onAdd={this.props.onAdd}

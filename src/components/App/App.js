@@ -288,6 +288,11 @@ class App extends React.Component {
         this.setState({ searchState: false });
     }
 
+    updateSearchResults = (newResults) => {
+        this.setState({ searchResults: newResults });
+        localStorage.setItem('searchResults', JSON.stringify(newResults));
+    }
+
     render() {
         if (!this.state.loggedIn) {
             return <LoginPage onLogin={() => this.handleLogin()} />;
@@ -336,6 +341,7 @@ class App extends React.Component {
                             onAdd={this.addTrack}
                             onToggle={this.toggleTrack}
                             currentTrack={this.state.currentTrack}
+                            onUpdateSearchResults={this.updateSearchResults}
                         />
                     </div>
                     <div className="PlaylistSection">

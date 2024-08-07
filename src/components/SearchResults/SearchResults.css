@@ -10,3 +10,37 @@
   width: 0px;
   background: transparent;
 }
+
+.action-button {
+  background-color: #282828; /* Dark gray */
+  color: #fff;
+  border: 1px solid #1db954; /* Spotify green border */
+  border-radius: 4px;
+  padding: 4px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.action-button:hover {
+  background-color: #1db954; /* Spotify green */
+  color: #fff;
+}
+
+.action-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-button.clear {
+  /* background-color: #ff5252; Red for clear button */
+  border: 1px solid #ff5252; /* Red border for clear button */
+}
+
+.action-button.clear:hover {
+  background-color: #ff7070; /* Lighter red for hover */
+}
