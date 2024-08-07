@@ -35,6 +35,8 @@ class App extends React.Component {
             currentTrack: null,
             spotifyUsername: null,
             spotifyAvatar: null,
+            loadingAlbumArt: false,
+            loadingPlaylistName: false,
         };
 
         this.openAiSearch = this.openAiSearch.bind(this);
@@ -106,6 +108,13 @@ class App extends React.Component {
             });
 
             console.log("Total length of search results: ", uniqueSearchResults.length);
+            // Print the tracks
+            uniqueSearchResults.forEach((track) => {
+                console.log(`Track: ${track.name} by ${track.artist}`);
+                console.log(`Album: ${track.album}`);
+                console.log(`Preview URL: ${track.preview_url}`);
+                console.log('---');
+            });
             // Save results to local storage
             localStorage.setItem('searchResults', JSON.stringify(uniqueSearchResults));
 
@@ -121,6 +130,7 @@ class App extends React.Component {
 
     async generatePlaylistName(prompt) {
         try {
+            this.setState({ loadingPlaylistName: true });
             const playlistName = await OpenAiAPIRequest.generatePlaylistName(
                 `Come up with a name for playlist with the following prompt: ${prompt}. Make it less than 50 characters. For example if the prompt is: Soaking up the sun in California, you could return: California Dreamin.`
             );
@@ -128,14 +138,17 @@ class App extends React.Component {
             this.setState({ playlistName: playlistName }, () => {
                 console.log("State updated with playlist name:", this.state.playlistName);
             });
+            this.setState({ loadingPlaylistName: false });
             localStorage.setItem('playlistName', playlistName);
             return playlistName;
         } catch (error) {
             console.error(error);
+            this.setState({ loadingPlaylistName: false });
         }
     }
 
     async generateAlbumArt(playlistName) {
+        this.setState({ loadingAlbumArt: true });
         console.log(
             "Playlist name:",
             `Sigma 75mm lens capturing this: ${playlistName}. No words, just the image.`,
@@ -144,12 +157,26 @@ class App extends React.Component {
             .then((albumArt) => {
                 console.log("API response:", albumArt);
                 this.setState({ albumArt: albumArt });
+                this.setState({ loadingAlbumArt: false });
                 localStorage.setItem('albumArt', albumArt);
-                localStorage.setItem('albumArt', albumArt);
+                
+                // Add an error handler for the image
+                const img = new Image();
+                img.onerror = () => {
+                    console.log("Image failed to load, using default album art");
+                    this.setState({ albumArt: defaultAlbumArt });
+                    localStorage.setItem('albumArt', defaultAlbumArt);
+                    this.setState({ loadingAlbumArt: false });
+                };
+                img.src = albumArt;
+                this.setState({ loadingAlbumArt: false });
                 return albumArt;
             })
             .catch((error) => {
                 console.error(error);
+                this.setState({ albumArt: defaultAlbumArt });
+                localStorage.setItem('albumArt', defaultAlbumArt);
+                this.setState({ loadingAlbumArt: false });
             });
     }
 
@@ -206,7 +233,16 @@ class App extends React.Component {
         }
         const storedAlbumArt = localStorage.getItem('albumArt');
         if (storedAlbumArt) {
-            this.setState({ albumArt: storedAlbumArt });
+            const img = new Image();
+            img.onerror = () => {
+                console.log("Stored image failed to load, using default album art");
+                this.setState({ albumArt: defaultAlbumArt });
+                localStorage.setItem('albumArt', defaultAlbumArt);
+            };
+            img.onload = () => {
+                this.setState({ albumArt: storedAlbumArt });
+            };
+            img.src = storedAlbumArt;
         }
         const storedPlaylistTracks = localStorage.getItem('playlistTracks');
         if (storedPlaylistTracks) {
@@ -315,12 +351,9 @@ class App extends React.Component {
                             onSave={this.savePlaylist}
                             onToggle={this.toggleTrack}
                             currentTrack={this.state.currentTrack}
+                            loadingAlbumArt={this.state.loadingAlbumArt}
+                            loadingPlaylistName={this.state.loadingPlaylistName}
                         >
-                            <img
-                                src={this.state.albumArt}
-                                alt="Album Art"
-                                style={{ width: "1rem", height: "1rem" }}
-                            />
                         </Playlist>
                     </div>
                 </div>

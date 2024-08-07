@@ -1,11 +1,17 @@
 import React from "react";
 import "./Playlist.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import TrackList from "../TrackList/TrackList.js";
 
 class Playlist extends React.Component {
   constructor(props) {
     super(props);
     this.handleNameChange = this.handleNameChange.bind(this);
+    this.state = {
+      loadingPlaylistName: false,
+      loadingAlbumArt: false,
+    };
   }
 
   handleNameChange(event) {
@@ -16,7 +22,15 @@ class Playlist extends React.Component {
     return (
       <div className="Playlist">
         <div className="Playlist-header">
-          <img className="Playlist-album" src={this.props.albumArt} width="200" alt="AI Generated Image" />
+          {this.props.loadingAlbumArt ? (
+            <div className="Fetching-sign">
+              <FontAwesomeIcon icon={faSpinner} spin />
+              {" "}
+              Fetching album art...
+            </div>
+          ) : (
+            <img className="Playlist-album" src={this.props.albumArt} width="200" alt="AI Generated Image" />
+          )}
           <div className="Playlist-info">
             <input style={{marginTop: '0rem', padding: '0rem'}}
               value={this.props.playlistName}
