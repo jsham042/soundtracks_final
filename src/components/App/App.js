@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import defaultAlbumArt from "./DALL·E 2023-03-01 20.07.50 - driving down the 101 with the top down.png";
+import defaultAlbumArt from "./djboticon.png";
 import Playlist from "../Playlist/Playlist.js";
 import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
@@ -53,7 +53,7 @@ class App extends React.Component {
         this.generateAlbumArt = this.generateAlbumArt.bind(this);
         this.interpretPrompt = this.interpretPrompt.bind(this);
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
-        this.handleLogin();
+        // this.handleLogin();
     }
     async handleLogin() {
         // Use the Spotify utility to get the access token
@@ -248,10 +248,10 @@ class App extends React.Component {
         if (storedPlaylistTracks) {
             this.setState({ playlistTracks: JSON.parse(storedPlaylistTracks) });
         }
-        const accessToken = Spotify.getAccessToken();
-        if (accessToken) {
-            this.setState({ loggedIn: true });
-        }
+        // const accessToken = Spotify.getAccessToken();
+        // if (accessToken) {
+        //     this.setState({ loggedIn: true });
+        // }
     }
 
     removeTrack(track) {
@@ -301,10 +301,11 @@ class App extends React.Component {
             <div className="App">
                 <div className="Header">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem',marginLeft:'1rem' }}>
-                        <img src={"/djboticon.png"} alt={"icon"} />
+                        
                         <h1>
                         <span> SOUND</span>
                         <span className="highlight">TRACKS</span>
+                        {" "}ai
                     </h1>
                     </div>
                     <div className="user-info">

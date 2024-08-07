@@ -14,10 +14,47 @@
 
 }
 
+.playlist-name{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items:center;
+  margin-bottom: 10px;
+  padding: 5px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.edit-playlist-name {
+  background-color: transparent;
+  width: 100%;
+  border-right:none;
+  border-top: none;
+  border-left:none;
+  border-radius: 5px;
+  outline: 0;
+  box-shadow: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  padding: 5px;
+  color: white;
+  }
+
+.playlist-name p {
+  font-size: 2.5rem;
+}
+
 .Playlist-album {
   width: 6.875rem;
   height: auto;
   
+}
+
+.small-icon{
+  font-size: 10px;
+}
+
+.edit-button {
+  cursor:pointer;
 }
 
 .Playlist-info {
@@ -25,19 +62,6 @@
   flex-direction: column;
   justify-content: flex-end;
   margin-left: 1rem;
-}
-
-.Playlist input {
-  width: 100%;
-  border: 0;
-  outline: 0;
-  margin-top: .5rem;
-  background: transparent;
-
-  font-family: 'Poppins', sans-serif;
-  font-size: 2.5rem;
-  color: white;
- 
 }
 
 .Playlist-save {

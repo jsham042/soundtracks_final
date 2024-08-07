@@ -1,7 +1,7 @@
 import React from "react";
 import "./Playlist.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faSpinner, faPencil, faCheck } from "@fortawesome/free-solid-svg-icons";
 import TrackList from "../TrackList/TrackList.js";
 
 class Playlist extends React.Component {
@@ -11,12 +11,24 @@ class Playlist extends React.Component {
     this.state = {
       loadingPlaylistName: false,
       loadingAlbumArt: false,
+      showNameEditor: false,
     };
+    this.handleShowNameEditor = this.handleShowNameEditor.bind(this);
   }
 
   handleNameChange(event) {
     this.props.onNameChange(event.target.value);
   }
+
+  handleShowNameEditor() {
+    let state = this.state.showNameEditor
+    this.setState({ showNameEditor: ! state})
+    if (this.props.playlistName === "") {
+       this.setState({playlistName: "My Playlist"})
+    }
+  }
+
+
 
   render() {
     return (
@@ -32,11 +44,30 @@ class Playlist extends React.Component {
             <img className="Playlist-album" src={this.props.albumArt} width="200" alt="AI Generated Image" />
           )}
           <div className="Playlist-info">
-            <input style={{marginTop: '0rem', padding: '0rem'}}
-              value={this.props.playlistName}
-              onChange={this.handleNameChange}
-            />
-            
+            <div>
+              {! this.state.showNameEditor ? (
+                <div className='playlist-name'>
+                  <p style={{marginTop: '0rem', padding: '0rem'}}>
+                    {this.props.playlistName}
+                  </p>
+                  <div className='edit-button' onClick={this.handleShowNameEditor}>
+                    <FontAwesomeIcon icon={faPencil} />
+                  </div>
+                </div>
+              ) : (
+              <div className='playlist-name'>
+                <input className="edit-playlist-name"
+                  value={this.props.playlistName}
+                  onChange={this.handleNameChange}
+                />
+                <div className='edit-button' onClick={this.handleShowNameEditor}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </div>
+                </div>
+              )}
+
+            </div>
+           
             <button className="Playlist-save" onClick={this.props.onSave}>
               SAVE TO <img className='spotifyLogo' src={"./512px-Black_Spotify_logo_with_text.svg.png"} alt="Spotify Logo" />
             </button>
