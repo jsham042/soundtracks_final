@@ -4,6 +4,7 @@ import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import "./Track.css";
 import ToastNotification from "../ToastNotification/ToastNotification.js";
 
+
 class Track extends React.Component {
   constructor(props) {
     super(props);
