@@ -27,17 +27,33 @@
 .edit-playlist-name {
   background-color: transparent;
   width: 100%;
-  border-right:none;
-  border-top: none;
-  border-left:none;
-  border-radius: 5px;
+  border: none;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
   outline: 0;
   box-shadow: none;
   font-family: 'Poppins', sans-serif;
   font-size: 2rem;
   padding: 5px;
   color: white;
-  }
+  transition: border-bottom-color 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.edit-playlist-name:hover,
+.edit-playlist-name:focus {
+  border-bottom-color: lightgray;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.edit-playlist-name::selection {
+  background-color: rgba(29, 185, 84, 0.5); /* Spotify green with 50% opacity */
+  color: white; /* Text color when highlighted */
+}
 
 .playlist-name p {
   font-size: 2.5rem;

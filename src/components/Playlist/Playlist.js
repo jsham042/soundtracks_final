@@ -14,6 +14,7 @@ class Playlist extends React.Component {
       showNameEditor: false,
     };
     this.handleShowNameEditor = this.handleShowNameEditor.bind(this);
+    this.inputRef = React.createRef();
   }
 
   handleNameChange(event) {
@@ -21,14 +22,18 @@ class Playlist extends React.Component {
   }
 
   handleShowNameEditor() {
-    let state = this.state.showNameEditor
-    this.setState({ showNameEditor: ! state})
+    this.setState(prevState => ({ 
+      showNameEditor: !prevState.showNameEditor 
+    }), () => {
+      if (this.state.showNameEditor && this.inputRef.current) {
+        this.inputRef.current.focus();
+        this.inputRef.current.select();
+      }
+    });
     if (this.props.playlistName === "") {
-       this.setState({playlistName: "My Playlist"})
+      this.props.onNameChange("My Playlist");
     }
   }
-
-
 
   render() {
     return (
@@ -56,9 +61,12 @@ class Playlist extends React.Component {
                 </div>
               ) : (
               <div className='playlist-name'>
-                <input className="edit-playlist-name"
+                <input
+                  ref={this.inputRef}
+                  className="edit-playlist-name"
                   value={this.props.playlistName}
                   onChange={this.handleNameChange}
+                  onBlur={this.handleShowNameEditor}
                 />
                 <div className='edit-button' onClick={this.handleShowNameEditor}>
                     <FontAwesomeIcon icon={faCheck} />
