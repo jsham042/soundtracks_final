@@ -26,6 +26,12 @@
   margin-bottom: 10px;
 }
 
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
 .action-button:hover {
   background-color: #1db954; /* Spotify green */
   color: #fff;

@@ -53,7 +53,7 @@ class SearchResults extends React.Component {
     return (
       <div className="SearchResults">
         {this.props.searchResults.length > 0 && (
-          <>
+          <div className="action-buttons">
             <button
               className="action-button"
               onClick={this.fetchMoreRecommendations}
@@ -66,7 +66,7 @@ class SearchResults extends React.Component {
             >
               Clear Results
             </button>
-          </>
+          </div>
         )}
         <TrackList
           tracks={this.props.searchResults}

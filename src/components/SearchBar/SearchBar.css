@@ -52,8 +52,8 @@
   .SearchBar {
     align-items: center;
     justify-content: end;
-    margin-bottom: 2rem;
-
+    margin-bottom: 0rem;
+    margin-left: 0rem;
   }
 
   .SearchBar input {

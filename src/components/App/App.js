@@ -19,6 +19,7 @@ import {
     faMusic,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState, useEffect } from 'react';
 
 class App extends React.Component {
     constructor(props) {
@@ -37,6 +38,7 @@ class App extends React.Component {
             spotifyAvatar: null,
             loadingAlbumArt: false,
             loadingPlaylistName: false,
+            showSearchResults: true, // New state to toggle between search results and playlist
         };
 
         this.openAiSearch = this.openAiSearch.bind(this);
@@ -47,13 +49,15 @@ class App extends React.Component {
         this.generatePlaylistName = this.generatePlaylistName.bind(this);
         this.setToSearchState = this.setToSearchState.bind(this);
         this.setToPlaylistState = this.setToPlaylistState.bind(this);
+        this.clearPlaylist = this.clearPlaylist.bind(this);
         this.toggleTrack = this.toggleTrack.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
         this.generateAlbumArt = this.generateAlbumArt.bind(this);
         this.interpretPrompt = this.interpretPrompt.bind(this);
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
-        // this.handleLogin();
+        this.toggleView = this.toggleView.bind(this);
+        this.handleLogin();
     }
     async handleLogin() {
         // Use the Spotify utility to get the access token
@@ -85,6 +89,7 @@ class App extends React.Component {
             spotifyUsername: null,
             spotifyAvatar: null,
         });
+        localStorage.clear();
     }
 
     interpretPrompt(prompt) {
@@ -101,27 +106,32 @@ class App extends React.Component {
             const promises = songList.map((song) => Spotify.openAiSearch(song));
             const searchResultsArray = await Promise.all(promises);
             const flattenedSearchResults = [].concat(...searchResultsArray);
-            const uniqueSearchResults = this.removeDuplicateTracks(flattenedSearchResults);
+            const newUniqueSearchResults = this.removeDuplicateTracks(flattenedSearchResults);
+
+            // Combine new results with existing ones
+            const combinedSearchResults = [...newUniqueSearchResults, ...this.state.searchResults];
+            const finalUniqueSearchResults = this.removeDuplicateTracks(combinedSearchResults);
 
             this.setState({
-                searchResults: uniqueSearchResults,
+                searchResults: finalUniqueSearchResults,
             });
 
-            console.log("Total length of search results: ", uniqueSearchResults.length);
+            console.log("Total length of search results: ", finalUniqueSearchResults.length);
             // Print the tracks
-            uniqueSearchResults.forEach((track) => {
+            finalUniqueSearchResults.forEach((track) => {
                 console.log(`Track: ${track.name} by ${track.artist}`);
                 console.log(`Album: ${track.album}`);
                 console.log(`Preview URL: ${track.preview_url}`);
                 console.log('---');
             });
             // Save results to local storage
-            localStorage.setItem('searchResults', JSON.stringify(uniqueSearchResults));
+            localStorage.setItem('searchResults', JSON.stringify(finalUniqueSearchResults));
 
             this.setState({ isFetching: false });
-
-            const playlistName = await this.generatePlaylistName(userSearchInput);
-            await this.generateAlbumArt(playlistName);
+            if (this.state.playlistName === "New Playlist" && this.state.albumArt === defaultAlbumArt) {
+                const playlistName = await this.generatePlaylistName(userSearchInput);
+                await this.generateAlbumArt(playlistName);
+            }
         } catch (error) {
             console.error(error);
             this.setState({ isFetching: false });
@@ -248,10 +258,10 @@ class App extends React.Component {
         if (storedPlaylistTracks) {
             this.setState({ playlistTracks: JSON.parse(storedPlaylistTracks) });
         }
-        // const accessToken = Spotify.getAccessToken();
-        // if (accessToken) {
-        //     this.setState({ loggedIn: true });
-        // }
+        const accessToken = Spotify.getAccessToken();
+        if (accessToken) {
+            this.setState({ loggedIn: true });
+        }
     }
 
     removeTrack(track) {
@@ -270,13 +280,27 @@ class App extends React.Component {
         localStorage.setItem('playlistName', name);
     }
 
+    clearPlaylist() {
+        const confirmClear = window.confirm("Careful! Your playlist will be lost forever unless you save it to Spotify. Are you sure you want to clear the playlist?");
+        if (confirmClear) {
+            this.setState({ playlistName: "New Playlist" });
+            localStorage.setItem('playlistName', "New Playlist");
+            this.setState({ playlistTracks: [] });
+            localStorage.setItem('playlistTracks', JSON.stringify([]));
+            this.setState({ albumArt: defaultAlbumArt });
+            localStorage.setItem('albumArt', defaultAlbumArt);
+        }
+    }
+
+
     savePlaylist() {
         const trackUris = this.state.playlistTracks.map((track) => track.uri);
         Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
-            this.setState({
-                playlistName: "[NAME PLAYLIST]",
-                playlistTracks: [],
-            });
+            this.updatePlaylistName("New Playlist");
+            this.setState({ playlistTracks: [] });
+            localStorage.setItem('playlistTracks', JSON.stringify([]));
+            this.setState({ albumArt: defaultAlbumArt });
+            localStorage.setItem('albumArt', defaultAlbumArt);
         });
     }
 
@@ -289,8 +313,15 @@ class App extends React.Component {
     }
 
     updateSearchResults = (newResults) => {
-        this.setState({ searchResults: newResults });
-        localStorage.setItem('searchResults', JSON.stringify(newResults));
+        const uniqueResults = this.removeDuplicateTracks(newResults);
+        
+        this.setState({ searchResults: uniqueResults });
+        
+        localStorage.setItem('searchResults', JSON.stringify(uniqueResults));
+    }
+
+    toggleView() {
+        this.setState(prevState => ({ showSearchResults: !prevState.showSearchResults }));
     }
 
     render() {
@@ -300,12 +331,12 @@ class App extends React.Component {
         return (
             <div className="App">
                 <div className="Header">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem',marginLeft:'1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem',marginLeft:'1rem', cursor: 'default' }}>
                         
                         <h1>
                         <span> SOUND</span>
                         <span className="highlight">TRACKS</span>
-                        {" "}ai
+                        {" "}AI
                     </h1>
                     </div>
                     <div className="user-info">
@@ -326,14 +357,14 @@ class App extends React.Component {
                 </div>
 
                 <div className="SearchAndPlaylist">
-                    <div className="SearchSection">
+                    <div className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}>
                         <div className="SearchSectionHeader">
-                            <h1 style={{ margin: 0 }}>Search</h1>
-                                <SearchBar onSearch={this.openAiSearch} />
+                            <h1 className="search-header">Search</h1>
+                            <SearchBar onSearch={this.openAiSearch} />
                         </div>
                         {this.state.isFetching ? (
                             <div className="Fetching-sign">
-                                <FontAwesomeIcon icon={faSpinner} spin />
+                                <FontAwesomeIcon icon={faSpinner} spin style={{ marginRight: '10px' }}/>
                                 Fetching results...
                             </div>
                         ) : null}
@@ -345,9 +376,14 @@ class App extends React.Component {
                             onUpdateSearchResults={this.updateSearchResults}
                         />
                     </div>
-                    <div className="PlaylistSection">
+                    <div className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}>
                         <div className="PlaylistSectionHeader">
-                            <h1 style={{ margin: 0 }}>Playlist</h1>
+                            <h1 style={{ margin: 0, cursor: 'default' }}>Playlist</h1>
+                            {this.state.playlistName !== "New Playlist" && this.state.albumArt !== "./default-album-art.png" && (
+                                <button className="new-playlist-button" onClick={this.clearPlaylist}>
+                                    Create New Playlist
+                                </button>
+                            )}
                         </div>
                         <Playlist
                             playlistName={this.state.playlistName}
@@ -363,6 +399,23 @@ class App extends React.Component {
                         >
                         </Playlist>
                     </div>
+                </div>
+
+                <div className="Navigator">
+                    <button
+                        onClick={this.toggleView}
+                        className={this.state.showSearchResults ? "active" : ""}
+                    >
+                        <FontAwesomeIcon icon={faSearch} style={{ marginRight: "0.4em" }} />
+                        Search
+                    </button>
+                    <button
+                        onClick={this.toggleView}
+                        className={this.state.showSearchResults ? "" : "active"}
+                    >
+                        <FontAwesomeIcon icon={faMusic} style={{ marginRight: "0.5em" }} />
+                        Playlist
+                    </button>
                 </div>
             </div>
         );
