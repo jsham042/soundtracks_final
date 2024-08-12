@@ -1,14 +1,10 @@
 .SearchResults {
-  overflow-y: auto;
-  padding: 1rem;
-  background-color: #1E1E20;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
   height: 100%;
-
-}
-
-::-webkit-scrollbar {
-  width: 0px;
-  background: transparent;
+  padding: 0.88rem 0.88rem;
+  background-color: #1E1E20;
 }
 
 .action-button {
@@ -32,6 +28,13 @@
   justify-content: space-between;
 }
 
+.action-buttons-mobile {
+  display: none;
+}
+
+
+
+
 .action-button:hover {
   background-color: #1db954; /* Spotify green */
   color: #fff;
@@ -50,3 +53,25 @@
 .action-button.clear:hover {
   background-color: #ff7070; /* Lighter red for hover */
 }
+
+
+@media (max-width: 768px) {
+
+  .action-buttons {
+    display: none;
+    
+  }
+
+  .action-buttons-mobile {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0px;
+    margin-top: 10px;
+  }
+
+  .action-button {
+    margin-bottom: 0px;
+  }
+}
+

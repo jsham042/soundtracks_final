@@ -74,6 +74,22 @@ class SearchResults extends React.Component {
           onToggle={this.props.onToggle}
           currentTrack={this.props.currentTrack}
         />
+         {this.props.searchResults.length > 0 && (
+          <div className="action-buttons-mobile">
+            <button
+              className="action-button"
+              onClick={this.fetchMoreRecommendations}
+            >
+              More Recommendations
+            </button>
+            <button
+              className="action-button clear"
+              onClick={this.clearSearchResults}
+            >
+              Clear Results
+            </button>
+          </div>
+        )}
       </div>
     );
   }

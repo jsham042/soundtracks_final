@@ -1,6 +1,21 @@
 .TrackList {
   width: 100%;
   overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  }
+  overflow-y: scroll;
+}
+
+
+/* WebKit scrollbar styles */
+.TrackList::-webkit-scrollbar {
+  width: 8px;
+}
+
+
+.TrackList::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.TrackList::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

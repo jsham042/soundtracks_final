@@ -332,11 +332,9 @@ class App extends React.Component {
             <div className="App">
                 <div className="Header">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem',marginLeft:'1rem', cursor: 'default' }}>
-                        
                         <h1>
                         <span> SOUND</span>
                         <span className="highlight">TRACKS</span>
-                        {" "}AI
                     </h1>
                     </div>
                     <div className="user-info">
