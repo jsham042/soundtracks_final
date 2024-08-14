@@ -57,6 +57,7 @@ class App extends React.Component {
         this.interpretPrompt = this.interpretPrompt.bind(this);
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
+        this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
         this.handleLogin();
     }
     async handleLogin() {
@@ -156,6 +157,17 @@ class App extends React.Component {
             this.setState({ loadingPlaylistName: false });
         }
     }
+
+    regenerateAlbumArt = async () => {
+        this.setState({ loadingAlbumArt: true });
+        try {
+          await this.generateAlbumArt(this.state.playlistName);
+        } catch (error) {
+          console.error("Error regenerating album art:", error);
+        } finally {
+          this.setState({ loadingAlbumArt: false });
+        }
+      }
 
     async generateAlbumArt(playlistName) {
         this.setState({ loadingAlbumArt: true });
@@ -394,6 +406,7 @@ class App extends React.Component {
                             currentTrack={this.state.currentTrack}
                             loadingAlbumArt={this.state.loadingAlbumArt}
                             loadingPlaylistName={this.state.loadingPlaylistName}
+                            onRegenerateAlbumArt={this.regenerateAlbumArt}
                         >
                         </Playlist>
                     </div>

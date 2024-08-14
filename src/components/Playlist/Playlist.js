@@ -1,7 +1,7 @@
 import React from "react";
 import "./Playlist.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner, faPencil, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faSpinner, faPencil, faCheck, faSync } from "@fortawesome/free-solid-svg-icons";
 import TrackList from "../TrackList/TrackList.js";
 
 class Playlist extends React.Component {
@@ -43,51 +43,47 @@ class Playlist extends React.Component {
             <div className="Fetching-sign">
               <FontAwesomeIcon icon={faSpinner} spin />
               {" "}
-              Fetching album art...
+              Generating Album Art...
             </div>
           ) : (
-            <img className="Playlist-album" src={this.props.albumArt} width="200" alt="AI Generated Image" />
+            <div className="Playlist-album-container" onClick={this.props.onRegenerateAlbumArt}>
+              <img className="Playlist-album" src={this.props.albumArt} width="200" alt="AI Generated Image" />
+              <div className="Playlist-album-overlay">
+                <span style={{ fontSize: "1rem", fontWeight: "bold", textAlign: "center" }}>Regenerate artwork</span>
+              </div>
+            </div>
           )}
           <div className="Playlist-info">
-            <div>
-              {! this.state.showNameEditor ? (
-                <div className='playlist-name'>
-                  <p style={{marginTop: '0rem', padding: '0rem'}}>
-                    {this.props.playlistName}
-                  </p>
-                  <div className='edit-button' onClick={this.handleShowNameEditor}>
-                    <FontAwesomeIcon icon={faPencil} />
-                  </div>
-                </div>
-              ) : (
-              <div className='playlist-name'>
+            <div className="playlist-name">
+              {this.state.showNameEditor ? (
                 <input
                   ref={this.inputRef}
                   className="edit-playlist-name"
-                  value={this.props.playlistName}
                   onChange={this.handleNameChange}
+                  value={this.props.playlistName}
                   onBlur={this.handleShowNameEditor}
                 />
-                <div className='edit-button' onClick={this.handleShowNameEditor}>
-                    <FontAwesomeIcon icon={faCheck} />
-                  </div>
-                </div>
+              ) : (
+                <p>{this.props.playlistName}</p>
               )}
-
+              <FontAwesomeIcon
+                icon={this.state.showNameEditor ? faCheck : faPencil}
+                className="edit-button"
+                onClick={this.handleShowNameEditor}
+              />
             </div>
-           
             <button className="Playlist-save" onClick={this.props.onSave}>
-              SAVE TO <img className='spotifyLogo' src={"./512px-Black_Spotify_logo_with_text.svg.png"} alt="Spotify Logo" />
+              SAVE TO SPOTIFY
             </button>
           </div>
         </div>
-          <TrackList
-            tracks={this.props.playlistTracks}
-            isRemoval={true}
-            onRemove={this.props.onRemove}
-            onToggle={this.props.onToggle}
-            currentTrack={this.props.currentTrack}
-          />
+        <TrackList
+          tracks={this.props.playlistTracks}
+          isRemoval={true}
+          onRemove={this.props.onRemove}
+          onToggle={this.props.onToggle}
+          currentTrack={this.props.currentTrack}
+        />
       </div>
     );
   }
