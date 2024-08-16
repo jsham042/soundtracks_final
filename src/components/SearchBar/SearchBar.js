@@ -15,6 +15,7 @@ class SearchBar extends React.Component {
     this.handleTermChange = this.handleTermChange.bind(this);
     this.search = this.search.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleAutoGenerateToggle = this.handleAutoGenerateToggle.bind(this);
   }
 
   componentDidMount() {
@@ -26,6 +27,10 @@ class SearchBar extends React.Component {
 
   handleTermChange(event) {
     this.setState({ term: event.target.value });
+  }
+
+  handleAutoGenerateToggle(event) {
+    this.setState({ autoGenerate: event.target.checked });
   }
 
   search() {
@@ -52,6 +57,14 @@ class SearchBar extends React.Component {
         <button onClick={this.search}>
           <FontAwesomeIcon icon={faSearch} />
         </button>
+        <label>
+          <input
+            type="checkbox"
+            checked={this.state.autoGenerate}
+            onChange={this.handleAutoGenerateToggle}
+          />
+          Generate album art and playlist name upon search
+        </label>
       </div>
     );
   }
