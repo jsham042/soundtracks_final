@@ -1,14 +1,15 @@
-import React from 'react';
-import './SearchBar.css';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from "react";
+import "./SearchBar.css";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class SearchBar extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      term: ''
+      term: "",
+      autoGenerate: false, // New state variable to track the toggle state
     };
 
     this.handleTermChange = this.handleTermChange.bind(this);
@@ -17,7 +18,7 @@ class SearchBar extends React.Component {
   }
 
   componentDidMount() {
-    const storedSearchTerm = localStorage.getItem('searchTerm');
+    const storedSearchTerm = localStorage.getItem("searchTerm");
     if (storedSearchTerm) {
       this.setState({ term: storedSearchTerm });
     }
@@ -29,12 +30,12 @@ class SearchBar extends React.Component {
 
   search() {
     const userSearchInput = this.state.term;
-    localStorage.setItem('searchTerm', userSearchInput);
-    this.props.onSearch(userSearchInput);
+    localStorage.setItem("searchTerm", userSearchInput);
+    this.props.onSearch(userSearchInput, this.state.autoGenerate);
   }
 
   handleKeyDown(event) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       this.search();
     }
   }
