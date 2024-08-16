@@ -36,6 +36,10 @@ class SearchBar extends React.Component {
   search() {
     const userSearchInput = this.state.term;
     localStorage.setItem("searchTerm", userSearchInput);
+    if (this.state.autoGenerate) {
+      this.props.generatePlaylistName(userSearchInput);
+      this.props.generateAlbumArt(userSearchInput);
+    }
     this.props.onSearch(userSearchInput, this.state.autoGenerate);
   }
 
