@@ -1,23 +1,25 @@
-import React from 'react';
-import './SearchBar.css';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from "react";
+import "./SearchBar.css";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class SearchBar extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      term: ''
+      term: "",
+      autoGenerate: false, // New state variable to track the toggle state
     };
 
     this.handleTermChange = this.handleTermChange.bind(this);
     this.search = this.search.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleAutoGenerateToggle = this.handleAutoGenerateToggle.bind(this);
   }
 
   componentDidMount() {
-    const storedSearchTerm = localStorage.getItem('searchTerm');
+    const storedSearchTerm = localStorage.getItem("searchTerm");
     if (storedSearchTerm) {
       this.setState({ term: storedSearchTerm });
     }
@@ -27,14 +29,22 @@ class SearchBar extends React.Component {
     this.setState({ term: event.target.value });
   }
 
+  handleAutoGenerateToggle(event) {
+    this.setState({ autoGenerate: event.target.checked });
+  }
+
   search() {
     const userSearchInput = this.state.term;
-    localStorage.setItem('searchTerm', userSearchInput);
-    this.props.onSearch(userSearchInput);
+    localStorage.setItem("searchTerm", userSearchInput);
+    if (this.state.autoGenerate) {
+      this.props.generatePlaylistName(userSearchInput);
+      this.props.generateAlbumArt(userSearchInput);
+    }
+    this.props.onSearch(userSearchInput, this.state.autoGenerate);
   }
 
   handleKeyDown(event) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       this.search();
     }
   }
@@ -51,6 +61,14 @@ class SearchBar extends React.Component {
         <button onClick={this.search}>
           <FontAwesomeIcon icon={faSearch} />
         </button>
+        <label>
+          <input
+            type="checkbox"
+            checked={this.state.autoGenerate}
+            onChange={this.handleAutoGenerateToggle}
+          />
+          Generate album art and playlist name upon search
+        </label>
       </div>
     );
   }
