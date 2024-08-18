@@ -1,0 +1,67 @@
+/* Base styles for the Dashboard component */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+}
+
+/* Responsive layout adjustments */
+@media (min-width: 768px) {
+  .dashboard {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+}
+
+/* Styles for list items within the dashboard */
+.dashboard li {
+  list-style: none;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Button styles */
+.dashboard button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dashboard button:hover {
+  background-color: #0056b3;
+}
+
+/* Form styles for editing playlist names */
+.dashboard form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+.dashboard form input[type="text"] {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.dashboard form button {
+  width: auto;
+  padding: 10px 30px;
+  margin-top: 10px;
+}
