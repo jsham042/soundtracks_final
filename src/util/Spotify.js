@@ -125,7 +125,6 @@ const Spotify = {
         return [];
       }
       const trackPromises = jsonResponse.tracks.map(async (track) => {
-        const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
         if (!track.preview_url) {
           console.error(
             `Missing or invalid preview URL for track ID: ${track.id}, track name: ${track.name}`,
