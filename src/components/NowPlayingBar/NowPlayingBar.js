@@ -9,6 +9,7 @@ const NowPlayingBar = () => {
     artwork: "",
     duration: 0,
     currentTime: 0,
+    isPlaying: false,
   });
 
   const currentTrack = useContext(CurrentTrackContext);
@@ -22,27 +23,48 @@ const NowPlayingBar = () => {
         artwork: currentTrack.artwork,
         duration: currentTrack.duration,
         currentTime: songDetails.currentTime, // Preserve current time on track change
+        isPlaying: songDetails.isPlaying,
       });
     }
   }, [currentTrack]);
 
+  const audioRef = useRef(new Audio());
+
+  useEffect(() => {
+    if (songDetails.isPlaying) {
+      audioRef.current.play();
+    } else {
+      audioRef.current.pause();
+    }
+  }, [songDetails.isPlaying]);
+
+  useEffect(() => {
+    audioRef.current.src = currentTrack ? currentTrack.preview_url : "";
+    audioRef.current.load();
+  }, [currentTrack]);
+
   const handlePlayPause = () => {
-    // Logic to play or pause the song
-    // This should toggle the play state and possibly update the `currentTime`
+    setSongDetails((prevDetails) => ({
+      ...prevDetails,
+      isPlaying: !prevDetails.isPlaying,
+    }));
   };
 
   const handleNext = () => {
     // Logic to skip to the next song
     // This should update the `currentTrack` context
+    // Placeholder for context update logic
   };
 
   const handlePrevious = () => {
     // Logic to go to the previous song
     // This should update the `currentTrack` context
+    // Placeholder for context update logic
   };
 
   const updateProgress = (time) => {
     setSongDetails({ ...songDetails, currentTime: time });
+    audioRef.current.currentTime = time;
   };
 
   return (
@@ -61,7 +83,9 @@ const NowPlayingBar = () => {
       </div>
       <div className="playback-controls">
         <button onClick={handlePrevious}>Previous</button>
-        <button onClick={handlePlayPause}>Play/Pause</button>
+        <button onClick={handlePlayPause}>
+          {songDetails.isPlaying ? "Pause" : "Play"}
+        </button>
         <button onClick={handleNext}>Next</button>
       </div>
       <div className="progress-tracker">
