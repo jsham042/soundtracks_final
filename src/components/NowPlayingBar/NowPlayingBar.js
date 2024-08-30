@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { CurrentTrackContext } from "../../contexts/CurrentTrackContext";
+import { CurrentTrackContext } from "../../CurrentTrackContext.js";
 
 const NowPlayingBar = () => {
   const [songDetails, setSongDetails] = useState({
@@ -22,10 +22,17 @@ const NowPlayingBar = () => {
         title: currentTrack.name,
         artist: currentTrack.artist,
         album: currentTrack.album,
-        artwork: currentTrack.artwork,
-        duration: currentTrack.duration,
-        currentTime: prevDetails.currentTime, // Preserve current time on track change
-        isPlaying: prevDetails.isPlaying,
+        artwork: currentTrack.album.images[0].url,
+        duration: currentTrack.duration_ms / 1000,
+        isPlaying: true,
+      }));
+      audioRef.current.src = currentTrack.preview_url;
+      audioRef.current.play();
+    } else {
+      audioRef.current.pause();
+      setSongDetails((prevDetails) => ({
+        ...prevDetails,
+        isPlaying: false,
       }));
     }
   }, [currentTrack]);

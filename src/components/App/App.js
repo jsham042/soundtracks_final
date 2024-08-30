@@ -8,6 +8,7 @@ import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
 import NowPlayingBar from "../NowPlayingBar/NowPlayingBar.js";
 
+
 import OpenAiAPIRequest, {
   generatePlaylistName,
   generateImage,
@@ -20,7 +21,6 @@ import {
   faMusic,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState, useEffect } from "react";
 
 class App extends React.Component {
   constructor(props) {
