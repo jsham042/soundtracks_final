@@ -66,3 +66,62 @@
   margin-left: 10px;
   width: 100px;
 }
+
+/* Additional styles for playback controls and progress tracker */
+.NowPlayingBar__playback-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.NowPlayingBar__progress-tracker {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.NowPlayingBar__progress-bar {
+  flex-grow: 1;
+  height: 4px;
+  background-color: #404040;
+  border-radius: 2px;
+  position: relative;
+}
+
+.NowPlayingBar__progress-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background-color: #1db954;
+  border-radius: 2px;
+  width: var(--progress-percentage); /* Controlled via JavaScript */
+}
+
+.NowPlayingBar__time-info {
+  font-size: 12px;
+  color: #ccc;
+  margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+  .NowPlayingBar {
+    height: 50px;
+    padding: 5px 10px;
+  }
+
+  .NowPlayingBar__song-name,
+  .NowPlayingBar__artist-name {
+    font-size: 12px;
+  }
+
+  .NowPlayingBar__play-pause-btn {
+    font-size: 18px;
+  }
+
+  .NowPlayingBar__volume-slider {
+    width: 80px;
+  }
+}
