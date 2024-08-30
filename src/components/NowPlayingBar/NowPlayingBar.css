@@ -1,0 +1,68 @@
+/* Basic layout and visibility styles for the NowPlayingBar component */
+.NowPlayingBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 60px;
+  background-color: #282828;
+  color: #fff;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.NowPlayingBar__info {
+  display: flex;
+  align-items: center;
+}
+
+.NowPlayingBar__album-art {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+}
+
+.NowPlayingBar__song-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.NowPlayingBar__song-name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.NowPlayingBar__artist-name {
+  font-size: 14px;
+}
+
+.NowPlayingBar__controls {
+  display: flex;
+  align-items: center;
+}
+
+.NowPlayingBar__play-pause-btn {
+  margin: 0 15px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 24px;
+}
+
+.NowPlayingBar__volume {
+  display: flex;
+  align-items: center;
+}
+
+.NowPlayingBar__volume-slider {
+  margin-left: 10px;
+  width: 100px;
+}
