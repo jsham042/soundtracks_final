@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { CurrentTrackContext } from "../../contexts/CurrentTrackContext";
 
 const NowPlayingBar = () => {
@@ -13,22 +13,22 @@ const NowPlayingBar = () => {
   });
 
   const currentTrack = useContext(CurrentTrackContext);
+  const audioRef = useRef(new Audio());
 
   useEffect(() => {
     if (currentTrack) {
-      setSongDetails({
+      setSongDetails((prevDetails) => ({
+        ...prevDetails,
         title: currentTrack.name,
         artist: currentTrack.artist,
         album: currentTrack.album,
         artwork: currentTrack.artwork,
         duration: currentTrack.duration,
-        currentTime: songDetails.currentTime, // Preserve current time on track change
-        isPlaying: songDetails.isPlaying,
-      });
+        currentTime: prevDetails.currentTime, // Preserve current time on track change
+        isPlaying: prevDetails.isPlaying,
+      }));
     }
   }, [currentTrack]);
-
-  const audioRef = useRef(new Audio());
 
   useEffect(() => {
     if (songDetails.isPlaying) {
@@ -41,6 +41,19 @@ const NowPlayingBar = () => {
   useEffect(() => {
     audioRef.current.src = currentTrack ? currentTrack.preview_url : "";
     audioRef.current.load();
+
+    const handleTimeUpdate = () => {
+      setSongDetails((prevDetails) => ({
+        ...prevDetails,
+        currentTime: audioRef.current.currentTime,
+      }));
+    };
+
+    audioRef.current.addEventListener("timeupdate", handleTimeUpdate);
+
+    return () => {
+      audioRef.current.removeEventListener("timeupdate", handleTimeUpdate);
+    };
   }, [currentTrack]);
 
   const handlePlayPause = () => {
