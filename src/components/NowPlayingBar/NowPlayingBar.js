@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { CurrentTrackContext } from "../../contexts/CurrentTrackContext";
 
 const NowPlayingBar = () => {
   const [songDetails, setSongDetails] = useState({
@@ -10,16 +11,34 @@ const NowPlayingBar = () => {
     currentTime: 0,
   });
 
+  const currentTrack = useContext(CurrentTrackContext);
+
+  useEffect(() => {
+    if (currentTrack) {
+      setSongDetails({
+        title: currentTrack.name,
+        artist: currentTrack.artist,
+        album: currentTrack.album,
+        artwork: currentTrack.artwork,
+        duration: currentTrack.duration,
+        currentTime: songDetails.currentTime, // Preserve current time on track change
+      });
+    }
+  }, [currentTrack]);
+
   const handlePlayPause = () => {
     // Logic to play or pause the song
+    // This should toggle the play state and possibly update the `currentTime`
   };
 
   const handleNext = () => {
     // Logic to skip to the next song
+    // This should update the `currentTrack` context
   };
 
   const handlePrevious = () => {
     // Logic to go to the previous song
+    // This should update the `currentTrack` context
   };
 
   const updateProgress = (time) => {
