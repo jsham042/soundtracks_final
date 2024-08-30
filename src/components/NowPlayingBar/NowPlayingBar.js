@@ -95,11 +95,18 @@ const NowPlayingBar = () => {
         </div>
       </div>
       <div className="playback-controls">
-        <button onClick={handlePrevious}>Previous</button>
-        <button onClick={handlePlayPause}>
+        <button onClick={handlePrevious} aria-label="Play previous track">
+          Previous
+        </button>
+        <button
+          onClick={handlePlayPause}
+          aria-label={songDetails.isPlaying ? "Pause" : "Play"}
+        >
           {songDetails.isPlaying ? "Pause" : "Play"}
         </button>
-        <button onClick={handleNext}>Next</button>
+        <button onClick={handleNext} aria-label="Play next track">
+          Next
+        </button>
       </div>
       <div className="progress-tracker">
         <input
@@ -108,6 +115,10 @@ const NowPlayingBar = () => {
           max={songDetails.duration}
           value={songDetails.currentTime}
           onChange={(e) => updateProgress(e.target.value)}
+          aria-label="Song progress"
+          aria-valuemin={0}
+          aria-valuemax={songDetails.duration}
+          aria-valuenow={songDetails.currentTime}
         />
         <div className="time-info">
           {Math.floor(songDetails.currentTime / 60)}:
