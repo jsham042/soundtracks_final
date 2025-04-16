@@ -1,55 +1,26 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+
 import "./Track.css";
-import ToastNotification from "../ToastNotification/ToastNotification.js";
+
 
 
 class Track extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      toastMessage: "",
-    };
+    
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
-    this.handleClick = this.handleClick.bind(this);
   }
 
   addTrack(event) {
     this.props.onAdd(this.props.track);
-    if (
-      this.props.currentTrack &&
-      this.props.currentTrack.id === this.props.track.id
-    ) {
-      this.props.onToggle(this.props.track);
-    }
   }
 
   removeTrack(event) {
     this.props.onRemove(this.props.track);
-    if (
-      this.props.currentTrack &&
-      this.props.currentTrack.id === this.props.track.id
-    ) {
-      this.props.onToggle(this.props.track);
-    }
   }
 
-  handleClick() {
-    this.setState({ toastMessage: "" }, () => {
-      const audio = new Audio(this.props.track.preview_url);
-      audio.onerror = () => {
-        this.setState({
-          toastMessage: `Sorry, the audio for ${this.props.track.name} isn't available.`,
-        });
-      };
-      audio.oncanplaythrough = () => {
-        this.props.onToggle(this.props.track);
-      };
-      audio.load();
-    });
-  }
+  
 
   renderAction() {
     if (this.props.isRemoval) {
@@ -79,18 +50,8 @@ class Track extends React.Component {
   }
 
   render() {
-    const isCurrentTrack =
-      this.props.currentTrack &&
-      this.props.currentTrack.id === this.props.track.id;
     return (
-      <div className="Track" onClick={this.handleClick}>
-        <button className="playButton">
-          {isCurrentTrack ? (
-            <FontAwesomeIcon icon={faPause} style={{ width: "1rem" }} />
-          ) : (
-            <FontAwesomeIcon icon={faPlay} style={{ width: "1rem" }} />
-          )}
-        </button>
+      <div className="Track">
         <div className="Track-image">
           <img
             src={this.props.track.image}
@@ -117,9 +78,7 @@ class Track extends React.Component {
           />
         </a>
 
-        {this.state.toastMessage && (
-          <ToastNotification message={this.state.toastMessage} />
-        )}
+        
         {this.renderAction()}
       </div>
     );

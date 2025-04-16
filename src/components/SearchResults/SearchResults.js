@@ -71,8 +71,6 @@ class SearchResults extends React.Component {
         <TrackList
           tracks={this.props.searchResults}
           onAdd={this.props.onAdd}
-          onToggle={this.props.onToggle}
-          currentTrack={this.props.currentTrack}
         />
          {this.props.searchResults.length > 0 && (
           <div className="action-buttons-mobile">

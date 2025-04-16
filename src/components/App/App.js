@@ -33,7 +33,6 @@ class App extends React.Component {
             isFetching: false,
             searchState: true,
             albumArt: defaultAlbumArt,
-            currentTrack: null,
             spotifyUsername: null,
             spotifyAvatar: null,
             loadingAlbumArt: false,
@@ -50,7 +49,7 @@ class App extends React.Component {
         this.setToSearchState = this.setToSearchState.bind(this);
         this.setToPlaylistState = this.setToPlaylistState.bind(this);
         this.clearPlaylist = this.clearPlaylist.bind(this);
-        this.toggleTrack = this.toggleTrack.bind(this);
+        
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
         this.generateAlbumArt = this.generateAlbumArt.bind(this);
@@ -87,7 +86,6 @@ class App extends React.Component {
             isFetching: false,
             searchState: true,
             albumArt: defaultAlbumArt,
-            currentTrack: null,
             spotifyUsername: null,
             spotifyAvatar: null,
         });
@@ -254,21 +252,7 @@ class App extends React.Component {
         localStorage.setItem('searchResults', JSON.stringify(searchResults));
     }
 
-    toggleTrack(track) {
-        if (this.state.currentTrack && this.state.currentTrack.id === track.id) {
-            // Pause the current track if it is already playing
-            this.audio.pause();
-            this.setState({ currentTrack: null });
-        } else {
-            // Play the new track
-            if (this.audio) {
-                this.audio.pause();
-            }
-            this.audio = new Audio(track.preview_url);
-            this.audio.play();
-            this.setState({ currentTrack: track });
-        }
-    }
+    
 
     componentDidMount() {
         const storedResults = localStorage.getItem('searchResults');
@@ -410,8 +394,6 @@ class App extends React.Component {
                         <SearchResults
                             searchResults={this.state.searchResults}
                             onAdd={this.addTrack}
-                            onToggle={this.toggleTrack}
-                            currentTrack={this.state.currentTrack}
                             onUpdateSearchResults={this.updateSearchResults}
                         />
                     </div>
@@ -431,8 +413,6 @@ class App extends React.Component {
                             onNameChange={this.updatePlaylistName}
                             onRemove={this.removeTrack}
                             onSave={this.savePlaylist}
-                            onToggle={this.toggleTrack}
-                            currentTrack={this.state.currentTrack}
                             loadingAlbumArt={this.state.loadingAlbumArt}
                             loadingPlaylistName={this.state.loadingPlaylistName}
                             onRegenerateAlbumArt={this.regenerateAlbumArt}
