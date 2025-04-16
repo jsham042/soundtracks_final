@@ -154,48 +154,7 @@ const Spotify = {
     }
   },
 
-  async makeRecommendation(trackIds) {
-    const accessToken = Spotify.getAccessToken();
-    const seedTracks = trackIds.slice(0, 5).join(',');
-    try {
-      const response = await fetch(
-        `https://api.spotify.com/v1/recommendations?limit=25&market=US&seed_tracks=${seedTracks}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      const jsonResponse = await response.json();
-      if (!jsonResponse.tracks) {
-        return [];
-      }
-      const trackPromises = jsonResponse.tracks.map(async (track) => {
-        const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
-        if (!track.preview_url) {
-          console.error(
-            `Missing or invalid preview URL for track ID: ${track.id}, track name: ${track.name}`,
-          );
-        }
-        return {
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          genre: mainGenre,
-          image: track.album.images[0].url,
-          preview_url: track.preview_url || "No preview available",
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        };
-      });
-      return Promise.all(trackPromises);
-    } catch (error) {
-      console.error("Error in makeRecommendation:", error);
-      return [];
-    }
-  },
+  
 
   savePlaylist(name, trackUris) {
     if (!name || !trackUris.length) {

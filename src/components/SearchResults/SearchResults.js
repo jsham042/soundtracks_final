@@ -3,7 +3,7 @@ import React from "react";
 import "./SearchResults.css";
 
 import TrackList from "../TrackList/TrackList.js";
-import Spotify from "../../util/Spotify.js";
+
 
 class SearchResults extends React.Component {
   constructor(props) {
@@ -11,7 +11,6 @@ class SearchResults extends React.Component {
     this.addTopFive = this.addTopFive.bind(this);
     this.addTopTen = this.addTopTen.bind(this);
     this.addAll = this.addAll.bind(this);
-    this.fetchMoreRecommendations = this.fetchMoreRecommendations.bind(this);
     this.clearSearchResults = this.clearSearchResults.bind(this);
   }
 
@@ -30,19 +29,7 @@ class SearchResults extends React.Component {
     this.props.onAdd(this.props.searchResults);
   }
 
-  // Fetch more recommendations based on the top 5 tracks
-  async fetchMoreRecommendations() {
-    const topFiveTracks = this.props.searchResults.slice(0, 5);
-    const trackIds = topFiveTracks.map((track) => track.id);
-    try {
-      const recommendations = await Spotify.makeRecommendation(trackIds);
-      console.log(recommendations);
-      // Use the new prop to update search results in the parent component
-      this.props.onUpdateSearchResults([...recommendations, ...this.props.searchResults]);
-    } catch (error) {
-      console.error("Error fetching recommendations:", error);
-    }
-  }
+  
 
   // Clear search results
   clearSearchResults() {
@@ -54,12 +41,6 @@ class SearchResults extends React.Component {
       <div className="SearchResults">
         {this.props.searchResults.length > 0 && (
           <div className="action-buttons">
-            <button
-              className="action-button"
-              onClick={this.fetchMoreRecommendations}
-            >
-              More Recommendations
-            </button>
             <button
               className="action-button clear"
               onClick={this.clearSearchResults}
@@ -76,12 +57,6 @@ class SearchResults extends React.Component {
         />
          {this.props.searchResults.length > 0 && (
           <div className="action-buttons-mobile">
-            <button
-              className="action-button"
-              onClick={this.fetchMoreRecommendations}
-            >
-              More Recommendations
-            </button>
             <button
               className="action-button clear"
               onClick={this.clearSearchResults}
