@@ -11,7 +11,7 @@ import OpenAiAPIRequest, {
     generatePlaylistName,
     generateImage,
     generateAISongRecommendations,
-} from "../../util/OpenAiAPIRequest.js";
+} from "../../util/OpenAiAPIRequest.js";    
 import {
     faSpinner,
     faCommentAlt,
@@ -58,11 +58,7 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
-
-        this.directSearch = this.directSearch.bind(this);
-                this.handleLogin();
-            }
-
+        this.directSearch = this.directSearch.bind(this);   
         this.handleLogin();
     }
     async handleLogin() {

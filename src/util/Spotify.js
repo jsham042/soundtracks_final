@@ -109,11 +109,6 @@ const Spotify = {
       }
     },
 
-    async openAiSearch(term) {
-      const track = term.song;
-      const artist = term.artist;
-      const accessToken = Spotify.getAccessToken();
-
   async openAiSearch(term) {
     const track = term.song;
     const artist = term.artist;
