@@ -50,6 +50,7 @@
   color: #fff;
   font-size: 0.9rem;
   transition: background-color 0.3s ease;
+  position: relative;
 }
 
 .search-button {
@@ -71,6 +72,33 @@
 .search-button:active,
 .ai-search-button:active {
   transform: scale(0.98);
+}
+
+/* Tooltip styling */
+.search-button[data-tooltip],
+.ai-search-button[data-tooltip] {
+  position: relative;
+  z-index: 1000;
+}
+
+.search-button[data-tooltip]:hover::after,
+.ai-search-button[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 100%;
+  right: 0;
+  transform: none;
+  padding: 0.5rem;
+  background-color: #1E1E20;
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  z-index: 1000;
+  margin-top: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: fit-content;
+  text-align: right;
+  text-wrap: nowrap;
 }
 
 .SearchBar button:hover {

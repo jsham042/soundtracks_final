@@ -58,10 +58,18 @@ class SearchBar extends React.Component {
         />
         </div>
         <div className="search-buttons">
-          <button className="search-button" onClick={this.directSearch}>
+          <button 
+            className="search-button" 
+            onClick={this.directSearch}
+            data-tooltip="Search for songs and artists"
+          >
             <FontAwesomeIcon icon={faSearch} />
           </button>
-          <button className="ai-search-button" onClick={this.aiSearch}>
+          <button 
+            className="ai-search-button" 
+            onClick={this.aiSearch}
+            data-tooltip="AI-powered search for mood-based recommendations"
+          >
             <FontAwesomeIcon icon={faMagicWandSparkles} />
           </button>
         </div>
