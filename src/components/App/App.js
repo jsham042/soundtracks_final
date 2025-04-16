@@ -1,4 +1,8 @@
 import React from "react";
+
+import React from "react";
+import { ResizableDivider } from "../ResizableDivider/ResizableDivider";
+
 import "./App.css";
 import defaultAlbumArt from "./djboticon.png";
 import Playlist from "../Playlist/Playlist.js";
@@ -38,7 +42,9 @@ class App extends React.Component {
             spotifyAvatar: null,
             loadingAlbumArt: false,
             loadingPlaylistName: false,
-            showSearchResults: true, // New state to toggle between search results and playlist
+            showSearchResults: true,
+            searchWidth: "50%",
+            playlistWidth: "50%"
         };
 
         this.openAiSearch = this.openAiSearch.bind(this);
@@ -58,7 +64,8 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
-        this.directSearch = this.directSearch.bind(this);   
+        this.directSearch = this.directSearch.bind(this);
+        this.handleResize = this.handleResize.bind(this);
         this.handleLogin();
     }
     async handleLogin() {
@@ -362,6 +369,18 @@ class App extends React.Component {
         this.setState(prevState => ({ showSearchResults: !prevState.showSearchResults }));
     }
 
+    toggleView() {
+            this.setState(prevState => ({ showSearchResults: !prevState.showSearchResults }));
+        }
+
+        handleResize = (widths) => {
+            this.setState({
+                searchWidth: widths.searchWidth,
+                playlistWidth: widths.playlistWidth
+            });
+        }
+
+
     render() {
         if (!this.state.loggedIn) {
             return <LoginPage onLogin={() => this.handleLogin()} />;
@@ -393,7 +412,10 @@ class App extends React.Component {
                 </div>
 
                 <div className="SearchAndPlaylist">
-                    <div className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}>
+                    <div 
+                        className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}
+                        style={{ width: this.state.searchWidth }}
+                    >
                         <div className="SearchSectionHeader">
                             <h1 className="search-header">Search</h1>
                             <SearchBar 
@@ -415,7 +437,11 @@ class App extends React.Component {
                             onUpdateSearchResults={this.updateSearchResults}
                         />
                     </div>
-                    <div className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}>
+                    <ResizableDivider onResize={this.handleResize} />
+                    <div 
+                        className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}
+                        style={{ width: this.state.playlistWidth }}
+                    >
                         <div className="PlaylistSectionHeader">
                             <h1 style={{ margin: 0, cursor: 'default' }}>Playlist</h1>
                             {this.state.playlistName !== "New Playlist" && this.state.albumArt !== "./default-album-art.png" && (

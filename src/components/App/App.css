@@ -108,13 +108,12 @@ h2 {
 
 .SearchSection,
 .PlaylistSection {
-  width: 50%;
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
   padding: 0 1rem; /* Add horizontal padding */
-  }
+}
 
 .SearchSectionHeader, .PlaylistSectionHeader {
   display: flex;
