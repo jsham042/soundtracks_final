@@ -65,6 +65,50 @@ const Spotify = {
     }
   },
 
+
+  async directSearch(searchTerm) {
+      const accessToken = Spotify.getAccessToken();
+      try {
+        const response = await fetch(
+          `https://api.spotify.com/v1/search?q=${searchTerm}&type=track&limit=20`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+        const jsonResponse = await response.json();
+        if (!jsonResponse.tracks) {
+          return [];
+        }
+        const tracks = jsonResponse.tracks.items;
+        const trackPromises = tracks.map(async (track) => {
+          const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
+          if (!track.preview_url) {
+            console.error(
+              `Missing preview URL for track: ${track.name} by ${track.artists[0].name}`,
+            );
+          }
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            preview_url: track.preview_url || "No preview available",
+            image: track.album.images[0].url,
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+            genre: mainGenre,
+          };
+        });
+        return Promise.all(trackPromises);
+      } catch (error) {
+        console.error("Error in directSearch:", error);
+        return [];
+      }
+    },
+
   async openAiSearch(term) {
     const track = term.song;
     const artist = term.artist;

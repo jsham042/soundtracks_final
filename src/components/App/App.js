@@ -11,7 +11,7 @@ import OpenAiAPIRequest, {
     generatePlaylistName,
     generateImage,
     generateAISongRecommendations,
-} from "../../util/OpenAiAPIRequest.js";
+} from "../../util/OpenAiAPIRequest.js";    
 import {
     faSpinner,
     faCommentAlt,
@@ -58,6 +58,7 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
+        this.directSearch = this.directSearch.bind(this);   
         this.handleLogin();
     }
     async handleLogin() {
@@ -91,6 +92,31 @@ class App extends React.Component {
             spotifyAvatar: null,
         });
         localStorage.clear();
+    }
+
+    async directSearch(userSearchInput) {
+        try {
+            this.setState({ isFetching: true });
+
+            const searchResults = await Spotify.directSearch(userSearchInput);
+            const uniqueSearchResults = this.removeDuplicateTracks(searchResults);
+
+            // Combine new results with existing ones
+            const combinedSearchResults = [...uniqueSearchResults, ...this.state.searchResults];
+            const finalUniqueSearchResults = this.removeDuplicateTracks(combinedSearchResults);
+
+            this.setState({
+                searchResults: finalUniqueSearchResults,
+            });
+
+            // Save results to local storage
+            localStorage.setItem('searchResults', JSON.stringify(finalUniqueSearchResults));
+
+            this.setState({ isFetching: false });
+        } catch (error) {
+            console.error("Error in directSearch:", error);
+            this.setState({ isFetching: false });
+        }
     }
 
     interpretPrompt(prompt) {
@@ -370,7 +396,10 @@ class App extends React.Component {
                     <div className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}>
                         <div className="SearchSectionHeader">
                             <h1 className="search-header">Search</h1>
-                            <SearchBar onSearch={this.openAiSearch} />
+                            <SearchBar 
+                                onAiSearch={this.openAiSearch}
+                                onDirectSearch={this.directSearch}
+                            />
                         </div>
                         {this.state.isFetching ? (
                             <div className="Fetching-sign">
