@@ -11,7 +11,7 @@
 
 .SearchBar input {
   width: 100%;
-  padding: .5rem 7rem .5rem 1.5rem;
+  padding: .5rem 8.5rem .5rem 1.5rem;
   border: 1px solid #fff;
   border-radius: 2rem;
   margin-right: 0;
@@ -26,20 +26,33 @@
   outline: none;
 }
 
-.SearchBar button {
+.search-buttons {
+  display: flex;
+  gap: 0.5rem;
   position: absolute;
   right: 0;
-  cursor: pointer;
-  padding: .5rem 1.5rem .5rem 1.5rem;
-  border-radius: 0 2rem 2rem 0;
-  background-color: lightgrey;
-  text-align: right;
-  font-size: .9rem;
-  transition: background-color .25s;
-  border: 1rem;
-  color: #000000;
-  font-weight: 500;
   z-index: 2;
+}
+
+.search-button, .ai-search-button {
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #282828;
+  color: #fff;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover,
+.ai-search-button:hover {
+  background-color: #1db954;
+}
+
+.search-button:active,
+.ai-search-button:active {
+  background-color: #1aa34a;
 }
 
 .SearchBar button:hover {
@@ -71,9 +84,15 @@
   }
 
 
-  .SearchBar button {
-    padding: .71rem 1.5rem;
-    margin: 0%;
+  .search-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .search-button, .ai-search-button {
+    width: 100%;
+    padding: 0.71rem 1.5rem;
+    margin: 0;
   }
 }
 
