@@ -1,6 +1,6 @@
 import React from 'react';
 import './SearchBar.css';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faMagicWandSparkles } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class SearchBar extends React.Component {
@@ -12,7 +12,8 @@ class SearchBar extends React.Component {
     };
 
     this.handleTermChange = this.handleTermChange.bind(this);
-    this.search = this.search.bind(this);
+    this.aiSearch = this.aiSearch.bind(this);
+    this.directSearch = this.directSearch.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
@@ -27,15 +28,21 @@ class SearchBar extends React.Component {
     this.setState({ term: event.target.value });
   }
 
-  search() {
+  aiSearch() {
     const userSearchInput = this.state.term;
     localStorage.setItem('searchTerm', userSearchInput);
-    this.props.onSearch(userSearchInput);
+    this.props.onAiSearch(userSearchInput);
+  }
+
+  directSearch() {
+    const userSearchInput = this.state.term;
+    localStorage.setItem('searchTerm', userSearchInput);
+    this.props.onDirectSearch(userSearchInput);
   }
 
   handleKeyDown(event) {
     if (event.key === 'Enter') {
-      this.search();
+      this.directSearch();
     }
   }
 
@@ -48,9 +55,14 @@ class SearchBar extends React.Component {
           onChange={this.handleTermChange}
           onKeyDown={this.handleKeyDown}
         />
-        <button onClick={this.search}>
-          <FontAwesomeIcon icon={faSearch} />
-        </button>
+        <div className="search-buttons">
+          <button className="search-button" onClick={this.directSearch}>
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
+          <button className="ai-search-button" onClick={this.aiSearch}>
+            <FontAwesomeIcon icon={faMagicWandSparkles} />
+          </button>
+        </div>
       </div>
     );
   }
