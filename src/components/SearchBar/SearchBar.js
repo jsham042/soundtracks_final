@@ -48,6 +48,7 @@ class SearchBar extends React.Component {
 
   render() {
     return (
+      <div className="SearchBar-container">
       <div className="SearchBar">
         <input
           placeholder="Describe the vibe you're going for"
@@ -55,6 +56,7 @@ class SearchBar extends React.Component {
           onChange={this.handleTermChange}
           onKeyDown={this.handleKeyDown}
         />
+        </div>
         <div className="search-buttons">
           <button className="search-button" onClick={this.directSearch}>
             <FontAwesomeIcon icon={faSearch} />
@@ -63,7 +65,7 @@ class SearchBar extends React.Component {
             <FontAwesomeIcon icon={faMagicWandSparkles} />
           </button>
         </div>
-      </div>
+        </div> 
     );
   }
 }
