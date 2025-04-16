@@ -258,10 +258,10 @@ export const generatePlaylistName = async(prompt) => {
 
 export const generateImage = async (prompt) => {
     const data = JSON.stringify({
-        "model": "dall-e-2",
+        "model": "dall-e-3",
         "prompt": prompt,
-        "num_images": 1,
-        "size": "512x512",
+        "n": 1,
+        "size": "1024x1024"
     });
 
     try {
