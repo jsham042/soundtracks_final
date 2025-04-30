@@ -199,7 +199,7 @@ const Spotify = {
 
   savePlaylist(name, trackUris) {
     if (!name || !trackUris.length) {
-      return;
+      return Promise.reject(new Error('Please provide a playlist name and at least one track.'));
     }
 
     const accessToken = Spotify.getAccessToken();
@@ -207,26 +207,52 @@ const Spotify = {
     let userId;
 
     return fetch("https://api.spotify.com/v1/me", { headers: headers })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch user info: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((jsonResponse) => {
+        if (!jsonResponse.id) {
+          throw new Error('User ID not found in the response');
+        }
         userId = jsonResponse.id;
         return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
           headers: headers,
           method: "POST",
           body: JSON.stringify({ name: name }),
-        })
-          .then((response) => response.json())
-          .then((jsonResponse) => {
-            const playlistId = jsonResponse.id;
-            return fetch(
-              `https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`,
-              {
-                headers: headers,
-                method: "POST",
-                body: JSON.stringify({ uris: trackUris }),
-              },
-            );
-          });
+        });
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to create playlist: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((jsonResponse) => {
+        if (!jsonResponse.id) {
+          throw new Error('Playlist ID not found in the response');
+        }
+        const playlistId = jsonResponse.id;
+        return fetch(
+          `https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`,
+          {
+            headers: headers,
+            method: "POST",
+            body: JSON.stringify({ uris: trackUris }),
+          }
+        );
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to add tracks to playlist: ${response.status}`);
+        }
+        return response.json();
+      })
+      .catch((error) => {
+        console.error('Error saving playlist:', error);
+        return Promise.reject(error);
       });
   },
   logout() {

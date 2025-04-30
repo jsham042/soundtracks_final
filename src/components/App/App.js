@@ -333,13 +333,30 @@ class App extends React.Component {
 
     savePlaylist() {
         const trackUris = this.state.playlistTracks.map((track) => track.uri);
-        Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
-            this.updatePlaylistName("New Playlist");
-            this.setState({ playlistTracks: [] });
-            localStorage.setItem('playlistTracks', JSON.stringify([]));
-            this.setState({ albumArt: defaultAlbumArt });
-            localStorage.setItem('albumArt', defaultAlbumArt);
-        });
+        Spotify.savePlaylist(this.state.playlistName, trackUris)
+            .then(() => {
+                // Only clear playlist after successful save
+                this.updatePlaylistName("New Playlist");
+                this.setState({ playlistTracks: [] });
+                localStorage.setItem('playlistTracks', JSON.stringify([]));
+                this.setState({ albumArt: defaultAlbumArt });
+                localStorage.setItem('albumArt', defaultAlbumArt);
+            })
+            .catch((error) => {
+                // Handle errors gracefully
+                console.error('Failed to save playlist:', error);
+                if (error.message.includes('Failed to fetch user info') || 
+                    error.message.includes('Failed to create playlist') || 
+                    error.message.includes('Failed to add tracks')) {
+                    // Show alert for authentication issues
+                    alert('Unable to save playlist. Please log in again to reconnect with Spotify.');
+                    // Optionally trigger re-authentication
+                    this.handleLogout();
+                } else {
+                    // Show generic error for other issues
+                    alert('An error occurred while saving the playlist. Please try again.');
+                }
+            });
     }
 
     setToSearchState(event) {
