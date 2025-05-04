@@ -32,9 +32,6 @@
   display: none;
 }
 
-
-
-
 .action-button:hover {
   background-color: #1db954; /* Spotify green */
   color: #fff;
@@ -54,12 +51,9 @@
   background-color: #ff7070; /* Lighter red for hover */
 }
 
-
 @media (max-width: 768px) {
-
   .action-buttons {
     display: none;
-    
   }
 
   .action-buttons-mobile {
@@ -74,4 +68,3 @@
     margin-bottom: 0px;
   }
 }
-
