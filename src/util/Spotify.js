@@ -52,11 +52,14 @@ const Spotify = {
 
   async getArtistGenres(artistId, accessToken) {
     try {
-      const response = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+      const response = await fetch(
+        `https://api.spotify.com/v1/artists/${artistId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-      });
+      );
       const artistInfo = await response.json();
       return artistInfo.genres[0] || "Unknown Genre";
     } catch (error) {
@@ -128,7 +131,10 @@ const Spotify = {
       }
       const tracks = jsonResponse.tracks.items;
       const trackPromises = tracks.map(async (track) => {
-        const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
+        const mainGenre = await this.getArtistGenres(
+          track.artists[0].id,
+          accessToken,
+        );
         if (!track.preview_url) {
           console.error(
             `Missing preview URL for track: ${track.name} by ${track.artists[0].name}`,
@@ -144,7 +150,7 @@ const Spotify = {
           image: track.album.images[0].url,
           spotifyLogo: "spotify-logo.png",
           spotifyLink: `https://open.spotify.com/track/${track.id}`,
-          genre: mainGenre,
+          // genre: mainGenre, // Removed genre from the response sent to the frontend
         };
       });
       return Promise.all(trackPromises);
@@ -156,7 +162,7 @@ const Spotify = {
 
   async makeRecommendation(trackIds) {
     const accessToken = Spotify.getAccessToken();
-    const seedTracks = trackIds.slice(0, 5).join(',');
+    const seedTracks = trackIds.slice(0, 5).join(",");
     try {
       const response = await fetch(
         `https://api.spotify.com/v1/recommendations?limit=25&market=US&seed_tracks=${seedTracks}`,
@@ -171,7 +177,10 @@ const Spotify = {
         return [];
       }
       const trackPromises = jsonResponse.tracks.map(async (track) => {
-        const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
+        const mainGenre = await this.getArtistGenres(
+          track.artists[0].id,
+          accessToken,
+        );
         if (!track.preview_url) {
           console.error(
             `Missing or invalid preview URL for track ID: ${track.id}, track name: ${track.name}`,
