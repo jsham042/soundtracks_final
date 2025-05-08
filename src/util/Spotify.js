@@ -84,18 +84,13 @@ const Spotify = {
         const tracks = jsonResponse.tracks.items;
         const trackPromises = tracks.map(async (track) => {
           const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
-          if (!track.preview_url) {
-            console.error(
-              `Missing preview URL for track: ${track.name} by ${track.artists[0].name}`,
-            );
-          }
+          
           return {
             id: track.id,
             name: track.name,
             artist: track.artists[0].name,
             album: track.album.name,
             uri: track.uri,
-            preview_url: track.preview_url || "No preview available",
             image: track.album.images[0].url,
             spotifyLogo: "spotify-logo.png",
             spotifyLink: `https://open.spotify.com/track/${track.id}`,
@@ -129,23 +124,18 @@ const Spotify = {
       const tracks = jsonResponse.tracks.items;
       const trackPromises = tracks.map(async (track) => {
         const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
-        if (!track.preview_url) {
-          console.error(
-            `Missing preview URL for track: ${track.name} by ${track.artists[0].name}`,
-          );
-        }
+        
         return {
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          preview_url: track.preview_url || "No preview available",
-          image: track.album.images[0].url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-          genre: mainGenre,
-        };
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            image: track.album.images[0].url,
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+            genre: mainGenre,
+          };
       });
       return Promise.all(trackPromises);
     } catch (error) {
@@ -172,23 +162,18 @@ const Spotify = {
       }
       const trackPromises = jsonResponse.tracks.map(async (track) => {
         const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
-        if (!track.preview_url) {
-          console.error(
-            `Missing or invalid preview URL for track ID: ${track.id}, track name: ${track.name}`,
-          );
-        }
+        
         return {
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          genre: mainGenre,
-          image: track.album.images[0].url,
-          preview_url: track.preview_url || "No preview available",
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        };
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            genre: mainGenre,
+            image: track.album.images[0].url,
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+          };
       });
       return Promise.all(trackPromises);
     } catch (error) {

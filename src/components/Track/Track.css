@@ -82,19 +82,7 @@
 
 }
 
-.playButton {
 
-  cursor: pointer;
-  padding: 0.5rem;
-
-  font-size: 1.05rem;
-  transition: color 0.25s;
-  border: transparent;
-  background-color: transparent;
-
-  color: white;
-  margin-right: 10px;
-}
 
 @media screen and (max-width: 600px) {
   .Track-action {
@@ -114,11 +102,6 @@
     background: transparent;
 
   }
-  .playButton {
-    font-size: 0.75rem;
-    margin-right: 10px;
-    padding: 0.1rem;
-
-  }
+  
 
 }
