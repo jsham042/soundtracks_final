@@ -91,7 +91,6 @@ const Spotify = {
             artist: track.artists[0].name,
             album: track.album.name,
             uri: track.uri,
-            
             image: track.album.images[0].url,
             spotifyLogo: "spotify-logo.png",
             spotifyLink: `https://open.spotify.com/track/${track.id}`,
@@ -127,17 +126,16 @@ const Spotify = {
         const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
         
         return {
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          
-          image: track.album.images[0].url,
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-          genre: mainGenre,
-        };
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            image: track.album.images[0].url,
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+            genre: mainGenre,
+          };
       });
       return Promise.all(trackPromises);
     } catch (error) {
@@ -166,17 +164,16 @@ const Spotify = {
         const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
         
         return {
-          id: track.id,
-          name: track.name,
-          artist: track.artists[0].name,
-          album: track.album.name,
-          uri: track.uri,
-          genre: mainGenre,
-          image: track.album.images[0].url,
-          
-          spotifyLogo: "spotify-logo.png",
-          spotifyLink: `https://open.spotify.com/track/${track.id}`,
-        };
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            genre: mainGenre,
+            image: track.album.images[0].url,
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+          };
       });
       return Promise.all(trackPromises);
     } catch (error) {

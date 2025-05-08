@@ -19,7 +19,7 @@ describe('Spotify.makeRecommendation', () => {
           artists: [{ name: 'Test Artist' }],
           album: { name: 'Test Album' },
           uri: 'spotify:track:1',
-          preview_url: 'https://example.com/preview.mp3',
+          
         },
         {
           id: '2',
@@ -27,7 +27,7 @@ describe('Spotify.makeRecommendation', () => {
           artists: [{ name: 'Another Artist' }],
           album: { name: 'Another Album' },
           uri: 'spotify:track:2',
-          preview_url: null,
+          
         },
       ],
     };
@@ -54,7 +54,7 @@ describe('Spotify.makeRecommendation', () => {
         artist: 'Test Artist',
         album: 'Test Album',
         uri: 'spotify:track:1',
-        preview_url: 'https://example.com/preview.mp3',
+        
         spotifyLogo: 'spotify-logo.png',
         spotifyLink: 'https://open.spotify.com/track/1',
       },
@@ -64,7 +64,7 @@ describe('Spotify.makeRecommendation', () => {
         artist: 'Another Artist',
         album: 'Another Album',
         uri: 'spotify:track:2',
-        preview_url: 'No preview available',
+        
         spotifyLogo: 'spotify-logo.png',
         spotifyLink: 'https://open.spotify.com/track/2',
       },

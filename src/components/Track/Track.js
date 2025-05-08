@@ -7,7 +7,6 @@ import "./Track.css";
 class Track extends React.Component {
   constructor(props) {
     super(props);
-    
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
   }
@@ -19,8 +18,6 @@ class Track extends React.Component {
   removeTrack(event) {
     this.props.onRemove(this.props.track);
   }
-
-  
 
   renderAction() {
     if (this.props.isRemoval) {
@@ -64,7 +61,6 @@ class Track extends React.Component {
           <p>
             {this.props.track.artist} | {this.props.track.album} | {this.props.track.genre}
           </p>
-
         </div>
         <a
           href={this.props.track.uri}
@@ -77,8 +73,6 @@ class Track extends React.Component {
             alt="Spotify Logo"
           />
         </a>
-
-        
         {this.renderAction()}
       </div>
     );
