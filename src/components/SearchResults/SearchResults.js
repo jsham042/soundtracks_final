@@ -8,26 +8,10 @@ import TrackList from "../TrackList/TrackList.js";
 class SearchResults extends React.Component {
   constructor(props) {
     super(props);
-    this.addTopFive = this.addTopFive.bind(this);
-    this.addTopTen = this.addTopTen.bind(this);
-    this.addAll = this.addAll.bind(this);
     this.clearSearchResults = this.clearSearchResults.bind(this);
   }
 
-  // Add the top five tracks to the playlist
-  addTopFive() {
-    this.props.onAdd(this.props.searchResults.slice(0, 5));
-  }
-
-  // Add top 10 tracks to the playlist
-  addTopTen() {
-    this.props.onAdd(this.props.searchResults.slice(0, 10));
-  }
-
-  // Add all tracks to the playlist
-  addAll() {
-    this.props.onAdd(this.props.searchResults);
-  }
+  
 
   
 
