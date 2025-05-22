@@ -5,6 +5,7 @@ import Playlist from "../Playlist/Playlist.js";
 import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
+import SavedTracks from "../SavedTracks/SavedTracks.js";
 import Spotify from "../../util/Spotify.js";
 
 import OpenAiAPIRequest, {
@@ -30,6 +31,7 @@ class App extends React.Component {
             searchResults: [],
             playlistName: "New Playlist",
             playlistTracks: [],
+            savedTracks: [],
             isFetching: false,
             searchState: true,
             albumArt: defaultAlbumArt,
@@ -58,7 +60,9 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
-        this.directSearch = this.directSearch.bind(this);   
+        this.directSearch = this.directSearch.bind(this);
+        this.addSavedTrack = this.addSavedTrack.bind(this);
+        this.removeSavedTrack = this.removeSavedTrack.bind(this);
         this.handleLogin();
     }
     async handleLogin() {
@@ -84,6 +88,7 @@ class App extends React.Component {
             searchResults: [],
             playlistName: "New Playlist",
             playlistTracks: [],
+            savedTracks: [],
             isFetching: false,
             searchState: true,
             albumArt: defaultAlbumArt,
@@ -296,6 +301,10 @@ class App extends React.Component {
         if (storedPlaylistTracks) {
             this.setState({ playlistTracks: JSON.parse(storedPlaylistTracks) });
         }
+        const storedSavedTracks = localStorage.getItem('savedTracks');
+        if (storedSavedTracks) {
+            this.setState({ savedTracks: JSON.parse(storedSavedTracks) });
+        }
         const accessToken = Spotify.getAccessToken();
         if (accessToken) {
             this.setState({ loggedIn: true });
@@ -334,6 +343,10 @@ class App extends React.Component {
     savePlaylist() {
         const trackUris = this.state.playlistTracks.map((track) => track.uri);
         Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
+            const merged = this.removeDuplicateTracks([...this.state.savedTracks, ...this.state.playlistTracks]);
+            localStorage.setItem('savedTracks', JSON.stringify(merged));
+            this.setState({ savedTracks: merged });
+            
             this.updatePlaylistName("New Playlist");
             this.setState({ playlistTracks: [] });
             localStorage.setItem('playlistTracks', JSON.stringify([]));
@@ -360,6 +373,16 @@ class App extends React.Component {
 
     toggleView() {
         this.setState(prevState => ({ showSearchResults: !prevState.showSearchResults }));
+    }
+    
+    addSavedTrack(track) {
+        this.addTrack(track);
+    }
+    
+    removeSavedTrack(track) {
+        const updated = this.state.savedTracks.filter(t => t.id !== track.id);
+        this.setState({ savedTracks: updated });
+        localStorage.setItem('savedTracks', JSON.stringify(updated));
     }
 
     render() {
@@ -407,6 +430,15 @@ class App extends React.Component {
                                 Fetching results...
                             </div>
                         ) : null}
+                        {this.state.savedTracks.length > 0 && (
+                            <SavedTracks
+                                savedTracks={this.state.savedTracks}
+                                onAdd={this.addSavedTrack}
+                                onRemoveSaved={this.removeSavedTrack}
+                                onToggle={this.toggleTrack}
+                                currentTrack={this.state.currentTrack}
+                            />
+                        )}
                         <SearchResults
                             searchResults={this.state.searchResults}
                             onAdd={this.addTrack}
