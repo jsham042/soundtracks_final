@@ -100,7 +100,7 @@ export const generateAISongRecommendations = async (userSearchInput) => {
             ...
           ]
         }
-        `
+        `;
         let additionalRecs = await generateSongRecommendations(prompt, remainingRecs);
 
         // Parse the recommendations as JSON
@@ -164,7 +164,7 @@ export const DetermineAppropriateStrategies = async (userSearchInput) => {
         if (response.ok) {
             const jsonResponse = await response.json();
             const responseContent = jsonResponse.choices[0].message.content;
-            console.log(responseContent)
+            console.log(responseContent);
             // Extract numbers from GPT-4's response in a unique set
             const strategies = [...new Set(responseContent.match(/\d+/g))];
             if (strategies !== null) {
@@ -182,7 +182,7 @@ export const DetermineAppropriateStrategies = async (userSearchInput) => {
     }
     // Fall back to the wildcard strategy.
     console.log("An error occurred or no strategies were selected. Falling back to wildcard strategy.");
-    return [5];
+    return [batchDescriptions[4]];
 }
 
 
@@ -212,8 +212,8 @@ export const generateSongRecommendations = async (prompt) => {
 
         if (response.ok) {
             const jsonResponse = await response.json();
-            const responseArray = jsonResponse.choices[0].message.content
-            return responseArray
+            const responseArray = jsonResponse.choices[0].message.content;
+            return responseArray;
         }
     } catch (error) {
         console.log(error);
@@ -258,9 +258,10 @@ export const generatePlaylistName = async(prompt) => {
 
 export const generateImage = async (prompt) => {
     const data = JSON.stringify({
+        "model": "dall-e-3",
         "prompt": prompt,
         "n": 1,
-        "size": "512x512"
+        "size": "1024x1024"
     });
 
     try {
