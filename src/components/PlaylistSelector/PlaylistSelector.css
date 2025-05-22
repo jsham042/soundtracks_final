@@ -1,0 +1,21 @@
+.PlaylistSelector select {
+  background-color: #1E1E20;
+  color: #fff;
+  border: 1px solid #bcb967;
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+}
+
+.PlaylistSelector select:focus {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(188, 185, 103, 0.3);
+}
+
+.PlaylistSelector select option {
+  background-color: #1E1E20;
+  color: #fff;
+}

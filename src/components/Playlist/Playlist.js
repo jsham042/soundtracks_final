@@ -24,7 +24,7 @@ class Playlist extends React.Component {
             />
             
             <button className="Playlist-save" onClick={this.props.onSave}>
-              SAVE TO <img className='spotifyLogo' src={"./512px-Black_Spotify_logo_with_text.svg.png"} alt="Spotify Logo" />
+              {this.props.isExisting ? "ADD TRACKS" : "SAVE TO"} <img className='spotifyLogo' src={"./512px-Black_Spotify_logo_with_text.svg.png"} alt="Spotify Logo" />
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
 const awsPullRequestId = process.env.AWS_PULL_REQUEST_ID;
 const awsAppId = process.env.AWS_APP_ID;
+const domain = process.env.REACT_APP_DOMAIN || 'localhost'; // Define domain variable
 const previewUri =
   awsPullRequestId && awsAppId && domain
     ? `https://pr-${awsPullRequestId}.${awsAppId}.amplifyapp.com`
@@ -138,7 +139,7 @@ const Spotify = {
         if (!jsonResponse.tracks) {
           return [];
         }
-        return jsonResponse.tracks.items.map((track) => {
+        return jsonResponse.tracks.map((track) => {
           if (!track.preview_url) {
             console.error(
               `Missing or invalid preview URL for track ID: ${track.id}, track name: ${track.name}`,
@@ -198,6 +199,77 @@ const Spotify = {
     } else {
       return false;
     }
+  },
+
+  async getUserPlaylists() {
+    const accessToken = Spotify.getAccessToken();
+    return fetch("https://api.spotify.com/v1/me/playlists?limit=50", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((jsonResponse) => {
+        if (!jsonResponse.items) {
+          return [];
+        }
+        return jsonResponse.items.map((playlist) => {
+          return {
+            id: playlist.id,
+            name: playlist.name,
+            image: playlist.images[0]?.url,
+          };
+        });
+      });
+  },
+
+  async getPlaylistTracks(playlistId) {
+    const accessToken = Spotify.getAccessToken();
+    return fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((jsonResponse) => {
+        if (!jsonResponse.items) {
+          return [];
+        }
+        return jsonResponse.items.map((item) => {
+          const track = item.track;
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            uri: track.uri,
+            preview_url: track.preview_url || "No preview available",
+            image: track.album.images[0].url,
+            spotifyLogo: "spotify-logo.png",
+            spotifyLink: `https://open.spotify.com/track/${track.id}`,
+            genre: "Unknown Genre", // Genre is not provided in this endpoint
+          };
+        });
+      });
+  },
+
+  async addTracksToPlaylist(playlistId, trackUris) {
+    if (!playlistId || !trackUris.length) {
+      return;
+    }
+    
+    const accessToken = Spotify.getAccessToken();
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    
+    return fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+      headers: headers,
+      method: "POST",
+      body: JSON.stringify({ uris: trackUris }),
+    });
   },
 };
 
