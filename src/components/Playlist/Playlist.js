@@ -9,12 +9,20 @@ class Playlist extends React.Component {
     super(props);
     this.handleNameChange = this.handleNameChange.bind(this);
     this.state = {
-      loadingPlaylistName: false,
-      loadingAlbumArt: false,
       showNameEditor: false,
     };
     this.handleShowNameEditor = this.handleShowNameEditor.bind(this);
     this.inputRef = React.createRef();
+    this.audioRef = React.createRef();
+  }
+
+  componentDidUpdate(prevProps) {
+    // Pause audio if albumArt or playlist changes are detected
+    if (this.audioRef.current && 
+        (prevProps.albumArt !== this.props.albumArt || 
+         prevProps.playlistTracks !== this.props.playlistTracks)) {
+      this.audioRef.current.pause();
+    }
   }
 
   handleNameChange(event) {

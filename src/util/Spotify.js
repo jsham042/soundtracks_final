@@ -239,6 +239,128 @@ const Spotify = {
       return false;
     }
   },
+  
+  async getUserPlaylists() {
+    const accessToken = Spotify.getAccessToken();
+    try {
+      const response = await fetch("https://api.spotify.com/v1/me/playlists", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      
+      const jsonResponse = await response.json();
+      
+      if (!jsonResponse.items) {
+        return [];
+      }
+      
+      return jsonResponse.items.map(playlist => ({
+        id: playlist.id,
+        name: playlist.name,
+        image: playlist.images.length > 0 ? playlist.images[0].url : ''
+      }));
+    } catch (error) {
+      console.error("Error fetching user playlists:", error);
+      return [];
+    }
+  },
+  
+  async getPlaylistTracks(playlistId) {
+    const accessToken = Spotify.getAccessToken();
+    try {
+      const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      
+      const jsonResponse = await response.json();
+      
+      if (!jsonResponse.items) {
+        return [];
+      }
+      
+      const trackPromises = jsonResponse.items.map(async (item) => {
+        const track = item.track;
+        if (!track) return null; // Skip null tracks
+        
+        const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
+        
+        return {
+          id: track.id,
+          name: track.name,
+          artist: track.artists[0].name,
+          album: track.album.name,
+          uri: track.uri,
+          preview_url: track.preview_url || "No preview available",
+          image: track.album.images[0]?.url || '',
+          spotifyLogo: "spotify-logo.png",
+          spotifyLink: `https://open.spotify.com/track/${track.id}`,
+          genre: mainGenre,
+        };
+      });
+      
+      const tracks = await Promise.all(trackPromises);
+      return tracks.filter(track => track !== null); // Filter out any null tracks
+    } catch (error) {
+      console.error("Error fetching playlist tracks:", error);
+      return [];
+    }
+  },
+  
+  async addTracksToPlaylist(playlistId, trackUris) {
+    const accessToken = Spotify.getAccessToken();
+    try {
+      const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify({ uris: trackUris })
+      });
+      
+      return response.ok;
+    } catch (error) {
+      console.error("Error adding tracks to playlist:", error);
+      return false;
+    }
+  },
 };
 
 export default Spotify;
+```
+
+Additionally, we need to create an `.eslintrc.json` file in the project root:
+
+```json
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "react/prop-types": "off"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}

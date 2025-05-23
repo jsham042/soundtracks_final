@@ -1,0 +1,21 @@
+/* PlaylistSelector.css */
+.PlaylistSelector select {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #282828;
+  color: #fff;
+  border: 1px solid #555;
+  outline: none;
+}
+
+.PlaylistSelector select:focus {
+  border-color: #1db954;
+}
+
+.PlaylistSelector select option {
+  background-color: #282828;
+  color: #fff;
+}

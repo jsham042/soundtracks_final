@@ -5,6 +5,7 @@ import Playlist from "../Playlist/Playlist.js";
 import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
+import PlaylistSelector from "../PlaylistSelector/PlaylistSelector.js";
 import Spotify from "../../util/Spotify.js";
 
 import OpenAiAPIRequest, {
@@ -39,6 +40,9 @@ class App extends React.Component {
             loadingAlbumArt: false,
             loadingPlaylistName: false,
             showSearchResults: true, // New state to toggle between search results and playlist
+            userPlaylists: [],
+            selectedPlaylistId: null,
+            selectedPlaylistImage: '',
         };
 
         this.openAiSearch = this.openAiSearch.bind(this);
@@ -68,9 +72,13 @@ class App extends React.Component {
         if (accessToken) {
             this.setState({ loggedIn: true });
             const userInfo = await Spotify.getUserInfo();
+            const userPlaylists = await Spotify.getUserPlaylists();
+            
             this.setState({
                 spotifyUsername: userInfo.username,
                 spotifyAvatar: userInfo.avatar,
+                userPlaylists: userPlaylists,
+                selectedPlaylistId: null
             });
         } else {
             // Handle the case where the access token could not be obtained
@@ -331,15 +339,52 @@ class App extends React.Component {
     }
 
 
+    selectExistingPlaylist = async (playlistObj) => {
+        const tracks = await Spotify.getPlaylistTracks(playlistObj.id);
+        
+        // If currently playing a track, check if it exists in the new playlist
+        if (this.state.currentTrack) {
+            const trackExists = tracks.some(track => track.id === this.state.currentTrack.id);
+            if (!trackExists && this.audio) {
+                this.audio.pause();
+                this.setState({ currentTrack: null });
+            }
+        }
+        
+        this.setState({
+            selectedPlaylistId: playlistObj.id,
+            playlistName: playlistObj.name,
+            albumArt: playlistObj.image || this.state.albumArt,
+            playlistTracks: tracks,
+            searchState: false // automatically show playlist after selection
+        });
+    };
+
     savePlaylist() {
         const trackUris = this.state.playlistTracks.map((track) => track.uri);
-        Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
-            this.updatePlaylistName("New Playlist");
-            this.setState({ playlistTracks: [] });
-            localStorage.setItem('playlistTracks', JSON.stringify([]));
-            this.setState({ albumArt: defaultAlbumArt });
-            localStorage.setItem('albumArt', defaultAlbumArt);
-        });
+        
+        if (this.state.selectedPlaylistId) {
+            // Add tracks to existing playlist
+            Spotify.addTracksToPlaylist(this.state.selectedPlaylistId, trackUris).then(() => {
+                this.updatePlaylistName("New Playlist");
+                this.setState({ 
+                    playlistTracks: [],
+                    selectedPlaylistId: null,
+                    albumArt: defaultAlbumArt
+                });
+                localStorage.setItem('playlistTracks', JSON.stringify([]));
+                localStorage.setItem('albumArt', defaultAlbumArt);
+            });
+        } else {
+            // Create new playlist
+            Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
+                this.updatePlaylistName("New Playlist");
+                this.setState({ playlistTracks: [] });
+                localStorage.setItem('playlistTracks', JSON.stringify([]));
+                this.setState({ albumArt: defaultAlbumArt });
+                localStorage.setItem('albumArt', defaultAlbumArt);
+            });
+        }
     }
 
     setToSearchState(event) {
@@ -396,6 +441,11 @@ class App extends React.Component {
                     <div className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}>
                         <div className="SearchSectionHeader">
                             <h1 className="search-header">Search</h1>
+                            <PlaylistSelector 
+                                playlists={this.state.userPlaylists} 
+                                selectedId={this.state.selectedPlaylistId} 
+                                onSelect={this.selectExistingPlaylist}
+                            />
                             <SearchBar 
                                 onAiSearch={this.openAiSearch}
                                 onDirectSearch={this.directSearch}
