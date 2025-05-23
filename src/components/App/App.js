@@ -4,6 +4,7 @@ import defaultAlbumArt from "./djboticon.png";
 import Playlist from "../Playlist/Playlist.js";
 import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
+import SavedTracks from "../SavedTracks/SavedTracks.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
 
@@ -30,6 +31,7 @@ class App extends React.Component {
             searchResults: [],
             playlistName: "New Playlist",
             playlistTracks: [],
+            savedTracks: [],
             isFetching: false,
             searchState: true,
             albumArt: defaultAlbumArt,
@@ -92,6 +94,7 @@ class App extends React.Component {
             spotifyAvatar: null,
         });
         localStorage.clear();
+        this.setState({ savedTracks: [] });
     }
 
     async directSearch(userSearchInput) {
@@ -296,6 +299,12 @@ class App extends React.Component {
         if (storedPlaylistTracks) {
             this.setState({ playlistTracks: JSON.parse(storedPlaylistTracks) });
         }
+        const storedSavedTracks = localStorage.getItem('savedTracks');
+        if (storedSavedTracks) {
+            const parsedTracks = JSON.parse(storedSavedTracks);
+            const uniqueTracks = this.removeDuplicateTracks(parsedTracks);
+            this.setState({ savedTracks: uniqueTracks });
+        }
         const accessToken = Spotify.getAccessToken();
         if (accessToken) {
             this.setState({ loggedIn: true });
@@ -334,6 +343,22 @@ class App extends React.Component {
     savePlaylist() {
         const trackUris = this.state.playlistTracks.map((track) => track.uri);
         Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
+            // Get existing saved tracks from localStorage or state
+            const existingSavedTracks = localStorage.getItem('savedTracks') 
+                ? JSON.parse(localStorage.getItem('savedTracks')) 
+                : this.state.savedTracks;
+            
+            // Merge current playlist tracks with existing saved tracks
+            const combinedTracks = [...existingSavedTracks, ...this.state.playlistTracks];
+            
+            // Remove duplicates
+            const uniqueTracks = this.removeDuplicateTracks(combinedTracks);
+            
+            // Update localStorage and state
+            localStorage.setItem('savedTracks', JSON.stringify(uniqueTracks));
+            this.setState({ savedTracks: uniqueTracks });
+            
+            // Reset playlist state as before
             this.updatePlaylistName("New Playlist");
             this.setState({ playlistTracks: [] });
             localStorage.setItem('playlistTracks', JSON.stringify([]));
@@ -414,6 +439,14 @@ class App extends React.Component {
                             currentTrack={this.state.currentTrack}
                             onUpdateSearchResults={this.updateSearchResults}
                         />
+                        {this.state.savedTracks.length > 0 && (
+                            <SavedTracks
+                                savedTracks={this.state.savedTracks}
+                                onAdd={this.addTrack}
+                                onToggle={this.toggleTrack}
+                                currentTrack={this.state.currentTrack}
+                            />
+                        )}
                     </div>
                     <div className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}>
                         <div className="PlaylistSectionHeader">
@@ -463,3 +496,32 @@ class App extends React.Component {
 }
 
 export default App;
+```
+
+Additionally, we should create an `.eslintrc.json` file in the root directory of the project:
+
+```json
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "react/prop-types": "off"
+  }
+}
