@@ -6,6 +6,7 @@ import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
+import SavedTracks from "../../util/SavedTracks.js";
 
 import OpenAiAPIRequest, {
     generatePlaylistName,
@@ -39,6 +40,7 @@ class App extends React.Component {
             loadingAlbumArt: false,
             loadingPlaylistName: false,
             showSearchResults: true, // New state to toggle between search results and playlist
+            savedTracks: [], // Array of tracks saved from previous playlists
         };
 
         this.openAiSearch = this.openAiSearch.bind(this);
@@ -58,7 +60,8 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
-        this.directSearch = this.directSearch.bind(this);   
+        this.directSearch = this.directSearch.bind(this);
+        this.loadSavedTracks = this.loadSavedTracks.bind(this);   
         this.handleLogin();
     }
     async handleLogin() {
@@ -300,6 +303,9 @@ class App extends React.Component {
         if (accessToken) {
             this.setState({ loggedIn: true });
         }
+        
+        // Load saved tracks from previous playlists
+        this.setState({ savedTracks: SavedTracks.getSavedTracks() });
     }
 
     removeTrack(track) {
@@ -334,6 +340,13 @@ class App extends React.Component {
     savePlaylist() {
         const trackUris = this.state.playlistTracks.map((track) => track.uri);
         Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
+            // Save tracks to the SavedTracks utility before clearing
+            SavedTracks.addTracks(this.state.playlistTracks);
+            
+            // Update state with the latest saved tracks
+            this.setState({ savedTracks: SavedTracks.getSavedTracks() });
+            
+            // Reset playlist
             this.updatePlaylistName("New Playlist");
             this.setState({ playlistTracks: [] });
             localStorage.setItem('playlistTracks', JSON.stringify([]));
@@ -355,6 +368,23 @@ class App extends React.Component {
         
         this.setState({ searchResults: uniqueResults });
         
+        localStorage.setItem('searchResults', JSON.stringify(uniqueResults));
+    }
+    
+    loadSavedTracks() {
+        // Combine current search results with saved tracks
+        const combinedResults = [...this.state.searchResults, ...this.state.savedTracks];
+        
+        // De-duplicate the combined results
+        const uniqueResults = this.removeDuplicateTracks(combinedResults);
+        
+        // Update state with the unique combined results
+        this.setState({ 
+            searchResults: uniqueResults,
+            showSearchResults: true
+        });
+        
+        // Save to localStorage
         localStorage.setItem('searchResults', JSON.stringify(uniqueResults));
     }
 
@@ -396,10 +426,17 @@ class App extends React.Component {
                     <div className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}>
                         <div className="SearchSectionHeader">
                             <h1 className="search-header">Search</h1>
-                            <SearchBar 
-                                onAiSearch={this.openAiSearch}
-                                onDirectSearch={this.directSearch}
-                            />
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <SearchBar 
+                                    onAiSearch={this.openAiSearch}
+                                    onDirectSearch={this.directSearch}
+                                />
+                                {this.state.savedTracks.length > 0 && (
+                                    <button className="saved-tracks-button" onClick={this.loadSavedTracks}>
+                                        Saved Tracks
+                                    </button>
+                                )}
+                            </div>
                         </div>
                         {this.state.isFetching ? (
                             <div className="Fetching-sign">
