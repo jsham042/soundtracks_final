@@ -6,6 +6,7 @@ import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
+import { getSavedTracks, addTracks } from '../../util/SavedTracksManager.js';
 
 import OpenAiAPIRequest, {
     generatePlaylistName,
@@ -39,6 +40,7 @@ class App extends React.Component {
             loadingAlbumArt: false,
             loadingPlaylistName: false,
             showSearchResults: true, // New state to toggle between search results and playlist
+            savedTracks: getSavedTracks() || [],
         };
 
         this.openAiSearch = this.openAiSearch.bind(this);
@@ -58,7 +60,8 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
-        this.directSearch = this.directSearch.bind(this);   
+        this.directSearch = this.directSearch.bind(this);
+        this.showSavedTracks = this.showSavedTracks.bind(this);
         this.handleLogin();
     }
     async handleLogin() {
@@ -300,6 +303,7 @@ class App extends React.Component {
         if (accessToken) {
             this.setState({ loggedIn: true });
         }
+        this.setState({ savedTracks: getSavedTracks() });
     }
 
     removeTrack(track) {
@@ -333,6 +337,11 @@ class App extends React.Component {
 
     savePlaylist() {
         const trackUris = this.state.playlistTracks.map((track) => track.uri);
+        // Before clearing current playlist data, save tracks to savedTracks
+        addTracks(this.state.playlistTracks);
+        // Update the state with the latest saved tracks
+        this.setState({ savedTracks: getSavedTracks() });
+        
         Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
             this.updatePlaylistName("New Playlist");
             this.setState({ playlistTracks: [] });
@@ -360,6 +369,10 @@ class App extends React.Component {
 
     toggleView() {
         this.setState(prevState => ({ showSearchResults: !prevState.showSearchResults }));
+    }
+    
+    showSavedTracks = () => {
+        this.setState({ searchResults: this.state.savedTracks });
     }
 
     render() {
@@ -400,6 +413,7 @@ class App extends React.Component {
                                 onAiSearch={this.openAiSearch}
                                 onDirectSearch={this.directSearch}
                             />
+                            <button className="saved-tracks-button" onClick={this.showSavedTracks}>Saved Songs</button>
                         </div>
                         {this.state.isFetching ? (
                             <div className="Fetching-sign">
