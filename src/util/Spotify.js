@@ -1,6 +1,7 @@
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
 const awsPullRequestId = process.env.AWS_PULL_REQUEST_ID;
 const awsAppId = process.env.AWS_APP_ID;
+const domain = process.env.DOMAIN || "localhost"; // Added missing domain variable
 const previewUri =
   awsPullRequestId && awsAppId && domain
     ? `https://pr-${awsPullRequestId}.${awsAppId}.amplifyapp.com`
@@ -27,6 +28,101 @@ const Spotify = {
     } else {
       const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
       window.location = accessUrl;
+    }
+  },
+
+  async getUserPlaylists() {
+    const accessToken = Spotify.getAccessToken();
+    try {
+      const response = await fetch(
+        'https://api.spotify.com/v1/me/playlists?limit=50',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const jsonResponse = await response.json();
+      if (!jsonResponse.items) {
+        return [];
+      }
+      return jsonResponse.items.map(playlist => ({
+        id: playlist.id,
+        name: playlist.name,
+        image: playlist.images[0]?.url || null
+      }));
+    } catch (error) {
+      console.error("Error fetching user playlists:", error);
+      return [];
+    }
+  },
+
+  async getPlaylistTracks(playlistId) {
+    const accessToken = Spotify.getAccessToken();
+    try {
+      const response = await fetch(
+        `https://api.spotify.com/v1/playlists/${playlistId}/tracks?market=US`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const jsonResponse = await response.json();
+      if (!jsonResponse.items) {
+        return [];
+      }
+      
+      const trackPromises = jsonResponse.items.map(async (item) => {
+        if (!item.track) return null; // Skip null tracks
+        
+        const track = item.track;
+        const mainGenre = await this.getArtistGenres(track.artists[0].id, accessToken);
+        
+        return {
+          id: track.id,
+          name: track.name,
+          artist: track.artists[0].name,
+          album: track.album.name,
+          uri: track.uri,
+          preview_url: track.preview_url || "No preview available",
+          image: track.album.images[0]?.url,
+          spotifyLogo: "spotify-logo.png",
+          spotifyLink: `https://open.spotify.com/track/${track.id}`,
+          genre: mainGenre,
+        };
+      });
+
+      const tracks = await Promise.all(trackPromises);
+      return tracks.filter(track => track !== null); // Filter out null tracks
+    } catch (error) {
+      console.error("Error fetching playlist tracks:", error);
+      return [];
+    }
+  },
+  
+  async addTracksToPlaylist(playlistId, trackUris) {
+    if (!playlistId || !trackUris.length) {
+      return;
+    }
+    
+    const accessToken = Spotify.getAccessToken();
+    try {
+      const response = await fetch(
+        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          method: "POST",
+          body: JSON.stringify({ uris: trackUris }),
+        }
+      );
+      return response.ok;
+    } catch (error) {
+      console.error("Error adding tracks to playlist:", error);
+      return false;
     }
   },
   async getUserInfo() {
