@@ -1,6 +1,6 @@
 import React from 'react';
 import './SearchBar.css';
-import { faSearch, faMagicWandSparkles } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class SearchBar extends React.Component {
@@ -49,13 +49,13 @@ class SearchBar extends React.Component {
   render() {
     return (
       <div className="SearchBar-container">
-      <div className="SearchBar">
-        <input
-          placeholder="Describe the vibe you're going for"
-          value={this.state.term}
-          onChange={this.handleTermChange}
-          onKeyDown={this.handleKeyDown}
-        />
+        <div className="SearchBar">
+          <input
+            placeholder="Search for songs or artists (or describe a vibe for AI)"
+            value={this.state.term}
+            onChange={this.handleTermChange}
+            onKeyDown={this.handleKeyDown}
+          />
         </div>
         <div className="search-buttons">
           <button 
@@ -70,10 +70,10 @@ class SearchBar extends React.Component {
             onClick={this.aiSearch}
             data-tooltip="AI-powered search for mood-based recommendations"
           >
-            <FontAwesomeIcon icon={faMagicWandSparkles} />
+            <FontAwesomeIcon icon={faWandMagicSparkles} />
           </button>
         </div>
-        </div> 
+      </div> 
     );
   }
 }
