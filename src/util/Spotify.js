@@ -1,12 +1,14 @@
 const clientId = process.env.REACT_APP_MY_SPOTIFY_CLIENT_ID; // client ID  that Joe got from registering the app
-const awsPullRequestId = process.env.AWS_PULL_REQUEST_ID;
-const awsAppId = process.env.AWS_APP_ID;
-const previewUri =
-  awsPullRequestId && awsAppId && domain
-    ? `https://pr-${awsPullRequestId}.${awsAppId}.amplifyapp.com`
-    : undefined;
-const developmentProductionUri = process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI;
-const redirectUri = previewUri || developmentProductionUri;
+
+// Helper function to get the current origin (handles localhost, Vercel preview, etc.)
+const getOrigin = () => {
+  return typeof window !== 'undefined' ? window.location.origin : '';
+};
+
+// Set redirectUri with priority:
+// 1. Environment variable if set (allows hardcoded production redirect)
+// 2. Current origin (handles localhost, Vercel previews, Amplify PR URLs)
+const redirectUri = process.env.REACT_APP_MY_SPOTIFY_REDIRECT_URI || getOrigin();
 
 let accessToken;
 
@@ -25,7 +27,7 @@ const Spotify = {
       window.history.pushState("Access Token", null, "/"); // This clears the parameters, allowing us to grab a new access token when it expires.
       return accessToken;
     } else {
-      const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
+      const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${encodeURIComponent(redirectUri)}`;
       window.location = accessUrl;
     }
   },
