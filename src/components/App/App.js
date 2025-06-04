@@ -39,7 +39,12 @@ class App extends React.Component {
             loadingAlbumArt: false,
             loadingPlaylistName: false,
             showSearchResults: true, // New state to toggle between search results and playlist
+            searchPanelWidth: 50, // Default percentage width of SearchSection
+            isDragging: false, // Track if user is currently dragging the divider
         };
+        
+        // Create ref for the split pane container
+        this.splitPaneRef = React.createRef();
 
         this.openAiSearch = this.openAiSearch.bind(this);
         this.addTrack = this.addTrack.bind(this);
@@ -58,7 +63,10 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
-        this.directSearch = this.directSearch.bind(this);   
+        this.directSearch = this.directSearch.bind(this);
+        this.handleDividerMouseDown = this.handleDividerMouseDown.bind(this);
+        this.handleMouseMove = this.handleMouseMove.bind(this);
+        this.handleMouseUp = this.handleMouseUp.bind(this);
         this.handleLogin();
     }
     async handleLogin() {
@@ -270,6 +278,29 @@ class App extends React.Component {
         }
     }
 
+    // Handler for when mouse button is pressed on the divider
+    handleDividerMouseDown() {
+        this.setState({ isDragging: true });
+    }
+    
+    // Handler for mouse movement when dragging
+    handleMouseMove(e) {
+        if (this.state.isDragging && this.splitPaneRef.current) {
+            const rect = this.splitPaneRef.current.getBoundingClientRect();
+            let newWidth = ((e.clientX - rect.left) / rect.width) * 100;
+            
+            // Clamp width between 20% and 80%
+            newWidth = Math.min(Math.max(newWidth, 20), 80);
+            
+            this.setState({ searchPanelWidth: newWidth });
+        }
+    }
+    
+    // Handler for releasing the mouse button
+    handleMouseUp() {
+        this.setState({ isDragging: false });
+    }
+    
     componentDidMount() {
         const storedResults = localStorage.getItem('searchResults');
         if (storedResults) {
@@ -300,6 +331,16 @@ class App extends React.Component {
         if (accessToken) {
             this.setState({ loggedIn: true });
         }
+        
+        // Add event listeners for mouse movement and mouse up
+        window.addEventListener('mousemove', this.handleMouseMove);
+        window.addEventListener('mouseup', this.handleMouseUp);
+    }
+    
+    componentWillUnmount() {
+        // Clean up event listeners when component unmounts
+        window.removeEventListener('mousemove', this.handleMouseMove);
+        window.removeEventListener('mouseup', this.handleMouseUp);
     }
 
     removeTrack(track) {
@@ -392,8 +433,11 @@ class App extends React.Component {
                     
                 </div>
 
-                <div className="SearchAndPlaylist">
-                    <div className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}>
+                <div className="SearchAndPlaylist" ref={this.splitPaneRef}>
+                    <div 
+                        className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}
+                        style={{ width: `${this.state.searchPanelWidth}%` }}
+                    >
                         <div className="SearchSectionHeader">
                             <h1 className="search-header">Search</h1>
                             <SearchBar 
@@ -415,7 +459,18 @@ class App extends React.Component {
                             onUpdateSearchResults={this.updateSearchResults}
                         />
                     </div>
-                    <div className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}>
+                    
+                    {window.innerWidth > 600 && (
+                        <div 
+                            className="PanelDivider"
+                            onMouseDown={this.handleDividerMouseDown}
+                        />
+                    )}
+                    
+                    <div 
+                        className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}
+                        style={{ width: `${100 - this.state.searchPanelWidth}%` }}
+                    >
                         <div className="PlaylistSectionHeader">
                             <h1 style={{ margin: 0, cursor: 'default' }}>Playlist</h1>
                             {this.state.playlistName !== "New Playlist" && this.state.albumArt !== "./default-album-art.png" && (
