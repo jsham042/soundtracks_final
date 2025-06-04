@@ -106,6 +106,19 @@ h2 {
   margin:0
 }
 
+.Divider {
+  width: 4px;
+  cursor: col-resize;
+  background-color: #555;
+  opacity: 0.6;
+  transition: background-color 0.2s ease;
+}
+
+.Divider:hover {
+  background-color: #777;
+  opacity: 0.8;
+}
+
 .SearchSection,
 .PlaylistSection {
   display: flex;
@@ -113,6 +126,7 @@ h2 {
   height: 100%;
   overflow-y: auto;
   padding: 0 1rem; /* Add horizontal padding */
+  /* width: 50% property removed to allow for React inline styles to control widths */
 }
 
 .SearchSectionHeader, .PlaylistSectionHeader {
@@ -159,6 +173,10 @@ h2 {
     width: 100%;
     height: calc(100vh - 60px); /* Adjust based on your header height */
     overflow: hidden; /* Prevent overflow */
+  }
+  
+  .Divider {
+    display: none;
   }
 
   .SearchSection,

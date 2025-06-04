@@ -1,6 +1,4 @@
 import React from "react";
-
-import React from "react";
 import { ResizableDivider } from "../ResizableDivider/ResizableDivider";
 
 import "./App.css";
@@ -43,9 +41,14 @@ class App extends React.Component {
             loadingAlbumArt: false,
             loadingPlaylistName: false,
             showSearchResults: true,
-            searchWidth: "50%",
-            playlistWidth: "50%"
+            searchPanelWidth: 50, // Percentage width of search panel
+            dragging: false,
+            startX: 0,
+            startWidth: 0
         };
+
+        // Create a ref for the container
+        this.containerRef = React.createRef();
 
         this.openAiSearch = this.openAiSearch.bind(this);
         this.addTrack = this.addTrack.bind(this);
@@ -65,7 +68,12 @@ class App extends React.Component {
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
         this.directSearch = this.directSearch.bind(this);
-        this.handleResize = this.handleResize.bind(this);
+        
+        // Bind the dragging methods
+        this.startDragging = this.startDragging.bind(this);
+        this.stopDragging = this.stopDragging.bind(this);
+        this.onDrag = this.onDrag.bind(this);
+        
         this.handleLogin();
     }
     async handleLogin() {
@@ -277,6 +285,40 @@ class App extends React.Component {
         }
     }
 
+    // Add dragging event handlers
+    startDragging(e) {
+        this.setState({
+            dragging: true,
+            startX: e.clientX,
+            startWidth: this.state.searchPanelWidth
+        });
+        
+        document.addEventListener('mousemove', this.onDrag);
+        document.addEventListener('mouseup', this.stopDragging);
+    }
+    
+    onDrag(e) {
+        if (!this.state.dragging) return;
+        
+        const containerWidth = this.containerRef.current.offsetWidth;
+        const deltaX = e.clientX - this.state.startX;
+        const deltaPercentage = (deltaX / containerWidth) * 100;
+        
+        // Calculate new width and clamp between 10% and 90%
+        let newWidth = this.state.startWidth + deltaPercentage;
+        newWidth = Math.min(Math.max(newWidth, 10), 90);
+        
+        this.setState({
+            searchPanelWidth: newWidth
+        });
+    }
+    
+    stopDragging() {
+        this.setState({ dragging: false });
+        document.removeEventListener('mousemove', this.onDrag);
+        document.removeEventListener('mouseup', this.stopDragging);
+    }
+
     componentDidMount() {
         const storedResults = localStorage.getItem('searchResults');
         if (storedResults) {
@@ -307,6 +349,12 @@ class App extends React.Component {
         if (accessToken) {
             this.setState({ loggedIn: true });
         }
+    }
+    
+    componentWillUnmount() {
+        // Clean up event listeners
+        document.removeEventListener('mousemove', this.onDrag);
+        document.removeEventListener('mouseup', this.stopDragging);
     }
 
     removeTrack(track) {
@@ -370,15 +418,8 @@ class App extends React.Component {
     }
 
     toggleView() {
-            this.setState(prevState => ({ showSearchResults: !prevState.showSearchResults }));
-        }
-
-        handleResize = (widths) => {
-            this.setState({
-                searchWidth: widths.searchWidth,
-                playlistWidth: widths.playlistWidth
-            });
-        }
+        this.setState(prevState => ({ showSearchResults: !prevState.showSearchResults }));
+    }
 
 
     render() {
@@ -411,10 +452,10 @@ class App extends React.Component {
                     
                 </div>
 
-                <div className="SearchAndPlaylist">
+                <div className="SearchAndPlaylist" ref={this.containerRef}>
                     <div 
                         className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}
-                        style={{ width: this.state.searchWidth }}
+                        style={{ width: `${this.state.searchPanelWidth}%` }}
                     >
                         <div className="SearchSectionHeader">
                             <h1 className="search-header">Search</h1>
@@ -437,10 +478,10 @@ class App extends React.Component {
                             onUpdateSearchResults={this.updateSearchResults}
                         />
                     </div>
-                    <ResizableDivider onResize={this.handleResize} />
+                    <div className="Divider" onMouseDown={this.startDragging}></div>
                     <div 
                         className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}
-                        style={{ width: this.state.playlistWidth }}
+                        style={{ width: `${100 - this.state.searchPanelWidth}%` }}
                     >
                         <div className="PlaylistSectionHeader">
                             <h1 style={{ margin: 0, cursor: 'default' }}>Playlist</h1>
