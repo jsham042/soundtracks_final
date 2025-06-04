@@ -5,6 +5,7 @@ import Playlist from "../Playlist/Playlist.js";
 import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
+import PlaylistSelector from "../PlaylistSelector/PlaylistSelector.js";
 import Spotify from "../../util/Spotify.js";
 
 import OpenAiAPIRequest, {
@@ -39,6 +40,8 @@ class App extends React.Component {
             loadingAlbumArt: false,
             loadingPlaylistName: false,
             showSearchResults: true, // New state to toggle between search results and playlist
+            userPlaylists: [], // For storing user's Spotify playlists
+            showPlaylistSelector: false, // To control visibility of playlist selector
         };
 
         this.openAiSearch = this.openAiSearch.bind(this);
@@ -58,7 +61,10 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
-        this.directSearch = this.directSearch.bind(this);   
+        this.directSearch = this.directSearch.bind(this);
+        this.fetchUserPlaylists = this.fetchUserPlaylists.bind(this);
+        this.handleLoadExistingClick = this.handleLoadExistingClick.bind(this);
+        this.handlePlaylistSelected = this.handlePlaylistSelected.bind(this);   
         this.handleLogin();
     }
     async handleLogin() {
@@ -362,6 +368,39 @@ class App extends React.Component {
         this.setState(prevState => ({ showSearchResults: !prevState.showSearchResults }));
     }
 
+    fetchUserPlaylists = async () => { 
+        const lists = await Spotify.getUserPlaylists(); 
+        this.setState({ userPlaylists: lists }); 
+    };
+
+    handleLoadExistingClick = async () => { 
+        if (!this.state.showPlaylistSelector && this.state.userPlaylists.length === 0) 
+            await this.fetchUserPlaylists(); 
+        this.setState(prev => ({ showPlaylistSelector: !prev.showPlaylistSelector })); 
+    };
+
+    handlePlaylistSelected = async (playlist) => {
+        this.setState({ 
+            showPlaylistSelector: false, 
+            playlistName: playlist.name, 
+            albumArt: playlist.image || defaultAlbumArt, 
+            isFetching: true 
+        });
+        
+        const tracks = await Spotify.getPlaylistTracks(playlist.id);
+        const uniqueTracks = this.removeDuplicateTracks(tracks);
+        
+        this.setState({ 
+            playlistTracks: uniqueTracks, 
+            isFetching: false 
+        });
+        
+        // persist to localStorage
+        localStorage.setItem('playlistName', playlist.name);
+        localStorage.setItem('albumArt', playlist.image || defaultAlbumArt);
+        localStorage.setItem('playlistTracks', JSON.stringify(uniqueTracks));
+    };
+
     render() {
         if (!this.state.loggedIn) {
             return <LoginPage onLogin={() => this.handleLogin()} />;
@@ -418,11 +457,18 @@ class App extends React.Component {
                     <div className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}>
                         <div className="PlaylistSectionHeader">
                             <h1 style={{ margin: 0, cursor: 'default' }}>Playlist</h1>
-                            {this.state.playlistName !== "New Playlist" && this.state.albumArt !== "./default-album-art.png" && (
-                                <button className="new-playlist-button" onClick={this.clearPlaylist}>
-                                    Create New Playlist
-                                </button>
-                            )}
+                            <div>
+                                {!this.state.showPlaylistSelector && (
+                                    <button className="new-playlist-button" onClick={this.handleLoadExistingClick} style={{ marginRight: '10px' }}>
+                                        Load Playlist
+                                    </button>
+                                )}
+                                {this.state.playlistName !== "New Playlist" && this.state.albumArt !== "./default-album-art.png" && (
+                                    <button className="new-playlist-button" onClick={this.clearPlaylist}>
+                                        Create New Playlist
+                                    </button>
+                                )}
+                            </div>
                         </div>
                         <Playlist
                             playlistName={this.state.playlistName}
@@ -457,6 +503,14 @@ class App extends React.Component {
                         Playlist
                     </button>
                 </div>
+                
+                {this.state.showPlaylistSelector && (
+                    <PlaylistSelector 
+                        playlists={this.state.userPlaylists} 
+                        onSelect={this.handlePlaylistSelected} 
+                        onClose={this.handleLoadExistingClick} 
+                    />
+                )}
             </div>
         );
     }
