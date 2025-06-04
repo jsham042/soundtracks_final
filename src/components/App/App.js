@@ -1,3 +1,40 @@
+openPlaylistSelector = async () => {
+        this.setState(prevState => ({ showPlaylistSelector: !prevState.showPlaylistSelector }));
+        
+        // If userPlaylists is empty, load them
+        if (this.state.userPlaylists.length === 0) {
+            try {
+                const playlists = await Spotify.getUserPlaylists();
+                this.setState({ userPlaylists: playlists });
+            } catch (error) {
+                console.error("Error loading playlists:", error);
+            }
+        }
+    }
+    
+    handlePlaylistSelect = async (playlist) => {
+        try {
+            // Fetch the tracks for the selected playlist
+            const tracks = await Spotify.getPlaylistTracks(playlist.id);
+            
+            // Update state with the selected playlist's data
+            this.setState({
+                playlistName: playlist.name,
+                playlistTracks: tracks,
+                albumArt: playlist.image || defaultAlbumArt,
+                selectedPlaylistId: playlist.id,
+                showPlaylistSelector: false
+            });
+            
+            // Persist to localStorage as done elsewhere
+            localStorage.setItem('playlistName', playlist.name);
+            localStorage.setItem('playlistTracks', JSON.stringify(tracks));
+            localStorage.setItem('albumArt', playlist.image || defaultAlbumArt);
+        } catch (error) {
+            console.error("Error loading playlist tracks:", error);
+        }
+    }
+
 import React from "react";
 import "./App.css";
 import defaultAlbumArt from "./djboticon.png";
@@ -5,6 +42,7 @@ import Playlist from "../Playlist/Playlist.js";
 import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
 import LoginPage from "../LoginPage/LoginPage.js";
+import PlaylistSelector from "../PlaylistSelector/PlaylistSelector.js";
 import Spotify from "../../util/Spotify.js";
 
 import OpenAiAPIRequest, {
@@ -39,6 +77,9 @@ class App extends React.Component {
             loadingAlbumArt: false,
             loadingPlaylistName: false,
             showSearchResults: true, // New state to toggle between search results and playlist
+            userPlaylists: [],
+            showPlaylistSelector: false,
+            selectedPlaylistId: null
         };
 
         this.openAiSearch = this.openAiSearch.bind(this);
@@ -58,7 +99,9 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
-        this.directSearch = this.directSearch.bind(this);   
+        this.directSearch = this.directSearch.bind(this);
+        this.openPlaylistSelector = this.openPlaylistSelector.bind(this);
+        this.handlePlaylistSelect = this.handlePlaylistSelect.bind(this);   
         this.handleLogin();
     }
     async handleLogin() {
@@ -321,11 +364,14 @@ class App extends React.Component {
     clearPlaylist() {
         const confirmClear = window.confirm("Careful! Your playlist will be lost forever unless you save it to Spotify. Are you sure you want to clear the playlist?");
         if (confirmClear) {
-            this.setState({ playlistName: "New Playlist" });
+            this.setState({ 
+                playlistName: "New Playlist",
+                playlistTracks: [],
+                albumArt: defaultAlbumArt,
+                selectedPlaylistId: null
+            });
             localStorage.setItem('playlistName', "New Playlist");
-            this.setState({ playlistTracks: [] });
             localStorage.setItem('playlistTracks', JSON.stringify([]));
-            this.setState({ albumArt: defaultAlbumArt });
             localStorage.setItem('albumArt', defaultAlbumArt);
         }
     }
@@ -333,13 +379,25 @@ class App extends React.Component {
 
     savePlaylist() {
         const trackUris = this.state.playlistTracks.map((track) => track.uri);
-        Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
-            this.updatePlaylistName("New Playlist");
-            this.setState({ playlistTracks: [] });
-            localStorage.setItem('playlistTracks', JSON.stringify([]));
-            this.setState({ albumArt: defaultAlbumArt });
-            localStorage.setItem('albumArt', defaultAlbumArt);
-        });
+        
+        if (this.state.selectedPlaylistId) {
+            // Add tracks to existing playlist
+            Spotify.addTracksToPlaylist(this.state.selectedPlaylistId, trackUris).then(() => {
+                // Keep existing playlist open (don't reset)
+                console.log(`Added ${trackUris.length} tracks to existing playlist: ${this.state.selectedPlaylistId}`);
+            });
+        } else {
+            // Create new playlist (original behavior)
+            Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
+                this.updatePlaylistName("New Playlist");
+                this.setState({ 
+                    playlistTracks: [],
+                    albumArt: defaultAlbumArt
+                });
+                localStorage.setItem('playlistTracks', JSON.stringify([]));
+                localStorage.setItem('albumArt', defaultAlbumArt);
+            });
+        }
     }
 
     setToSearchState(event) {
@@ -375,6 +433,14 @@ class App extends React.Component {
                         <span className="highlight">TRACKS</span>
                     </h1>
                     </div>
+                
+                {this.state.showPlaylistSelector && (
+                    <PlaylistSelector 
+                        playlists={this.state.userPlaylists}
+                        onSelect={this.handlePlaylistSelect}
+                        onClose={() => this.setState({ showPlaylistSelector: false })}
+                    />
+                )}
                     <div className="user-info">
                         <img
                             className="avatar"
@@ -418,11 +484,16 @@ class App extends React.Component {
                     <div className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}>
                         <div className="PlaylistSectionHeader">
                             <h1 style={{ margin: 0, cursor: 'default' }}>Playlist</h1>
-                            {this.state.playlistName !== "New Playlist" && this.state.albumArt !== "./default-album-art.png" && (
-                                <button className="new-playlist-button" onClick={this.clearPlaylist}>
-                                    Create New Playlist
+                            <div>
+                                <button className="new-playlist-button" onClick={this.openPlaylistSelector} style={{ marginRight: "10px" }}>
+                                    Load Playlist
                                 </button>
-                            )}
+                                {this.state.playlistName !== "New Playlist" && this.state.albumArt !== "./default-album-art.png" && (
+                                    <button className="new-playlist-button" onClick={this.clearPlaylist}>
+                                        Create New Playlist
+                                    </button>
+                                )}
+                            </div>
                         </div>
                         <Playlist
                             playlistName={this.state.playlistName}

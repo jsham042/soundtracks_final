@@ -1,0 +1,82 @@
+/* PlaylistSelector.css */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #1E1E20;
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  max-height: 80vh;
+  overflow-y: auto;
+  width: 90%;
+  max-width: 420px;
+}
+
+.playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  cursor: pointer;
+  border-bottom: 1px solid #333;
+}
+
+.playlist-item:hover {
+  background: #2c2c2e;
+}
+
+.playlist-item img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.playlist-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlist-list {
+  margin-top: 1rem;
+}
+
+.playlist-image-placeholder {
+  width: 50px;
+  height: 50px;
+  background-color: #333;
+  border-radius: 4px;
+}
+
+.no-playlists {
+  text-align: center;
+  padding: 1rem 0;
+  color: #999;
+}
