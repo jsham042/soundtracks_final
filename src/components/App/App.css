@@ -106,9 +106,20 @@ h2 {
   margin:0
 }
 
+.PanelDivider {
+  width: 4px;                /* thickness of divider */
+  background: #4b4b4b;       /* color of divider */
+  cursor: col-resize;        /* resize cursor */
+  flex-shrink: 0;            /* keep constant width */
+}
+
+.PanelDivider:hover { 
+  background: #6d6d6d; 
+}
+
 .SearchSection,
 .PlaylistSection {
-  width: 50%;
+  flex: 0 0 auto;   /* allow explicit width via inline style */
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -153,6 +164,10 @@ h2 {
 @media (max-width: 600px) {
   .App {
     overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+  
+  .PanelDivider {
+    display: none;
   }
 
   .SearchAndPlaylist {
