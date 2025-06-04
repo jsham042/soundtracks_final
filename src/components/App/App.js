@@ -4,6 +4,7 @@ import defaultAlbumArt from "./djboticon.png";
 import Playlist from "../Playlist/Playlist.js";
 import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
+import PreviousTracks from "../PreviousTracks/PreviousTracks.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
 
@@ -30,6 +31,7 @@ class App extends React.Component {
             searchResults: [],
             playlistName: "New Playlist",
             playlistTracks: [],
+            previousTracks: JSON.parse(localStorage.getItem('previousTracks') || '[]'),
             isFetching: false,
             searchState: true,
             albumArt: defaultAlbumArt,
@@ -84,6 +86,7 @@ class App extends React.Component {
             searchResults: [],
             playlistName: "New Playlist",
             playlistTracks: [],
+            previousTracks: [],
             isFetching: false,
             searchState: true,
             albumArt: defaultAlbumArt,
@@ -248,6 +251,15 @@ class App extends React.Component {
         tracks.push(track);
         this.setState({ playlistTracks: tracks });
         localStorage.setItem('playlistTracks', JSON.stringify(tracks));
+        
+        // Add track to previousTracks if not already present
+        let previousTracks = this.state.previousTracks;
+        if (!previousTracks.find((savedTrack) => savedTrack.id === track.id)) {
+            previousTracks.push(track);
+            this.setState({ previousTracks: previousTracks });
+            localStorage.setItem('previousTracks', JSON.stringify(previousTracks));
+        }
+        
         let searchResults = this.state.searchResults;
         searchResults.splice(searchResults.indexOf(track), 1);
         this.setState({ searchResults: searchResults });
@@ -295,6 +307,10 @@ class App extends React.Component {
         const storedPlaylistTracks = localStorage.getItem('playlistTracks');
         if (storedPlaylistTracks) {
             this.setState({ playlistTracks: JSON.parse(storedPlaylistTracks) });
+        }
+        const storedPreviousTracks = localStorage.getItem('previousTracks');
+        if (storedPreviousTracks) {
+            this.setState({ previousTracks: JSON.parse(storedPreviousTracks) });
         }
         const accessToken = Spotify.getAccessToken();
         if (accessToken) {
@@ -413,6 +429,12 @@ class App extends React.Component {
                             onToggle={this.toggleTrack}
                             currentTrack={this.state.currentTrack}
                             onUpdateSearchResults={this.updateSearchResults}
+                        />
+                        <PreviousTracks
+                            tracks={this.state.previousTracks}
+                            onAdd={this.addTrack}
+                            onToggle={this.toggleTrack}
+                            currentTrack={this.state.currentTrack}
                         />
                     </div>
                     <div className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}>

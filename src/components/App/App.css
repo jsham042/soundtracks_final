@@ -149,6 +149,25 @@ h2 {
   transform: scale(0.98);
 }
 
+.PreviousTracks {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: 100%;
+  padding: 0.88rem 0.88rem;
+  background-color: #1E1E20;
+}
+
+.PreviousTracks h2 {
+  font-family: "Poppins", sans-serif;
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem 0;
+  color: #fff;
+}
+
+/* Hide scroll bar same as TrackList */
+.PreviousTracks::-webkit-scrollbar { width: 0px; background: transparent; }
+
 
 @media (max-width: 600px) {
   .App {
