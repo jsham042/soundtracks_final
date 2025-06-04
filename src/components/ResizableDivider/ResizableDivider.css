@@ -1,0 +1,34 @@
+.ResizableDivider {
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.ResizableDivider:hover {
+  background-color: rgba(188, 185, 103, 0.2); /* Using the app's highlight color with transparency */
+}
+
+.divider-line {
+  width: 2px;
+  height: 100%;
+  background-color: #3b3142; /* Using the app's header gradient color */
+  opacity: 0.5;
+  transition: opacity 0.2s ease, width 0.2s ease;
+}
+
+.ResizableDivider:hover .divider-line {
+  opacity: 1;
+  width: 3px;
+}
+
+/* Handle mobile devices */
+@media (max-width: 600px) {
+  .ResizableDivider {
+    display: none; /* Hide divider on mobile as sections are stacked */
+  }
+}
