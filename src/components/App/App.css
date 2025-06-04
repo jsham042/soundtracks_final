@@ -2,6 +2,19 @@ html {
   font-size: 1rem;
 }
 
+.selector-overlay { 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100vw; 
+  height: 100vh; 
+  background: rgba(0, 0, 0, 0.6); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  z-index: 1000; 
+}
+
 h1 {
   padding: 1rem 0;
   text-align: left;
