@@ -243,37 +243,3 @@ const Spotify = {
 };
 
 export default Spotify;
-```
-
-To fix the actual error mentioned (missing .eslintrc.json file), you would need to create an ESLint configuration file at the root of your project. Here's a basic ESLint configuration you could use:
-
-```json
-{
-  "env": {
-    "browser": true,
-    "es2021": true,
-    "node": true
-  },
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended"
-  ],
-  "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "ecmaVersion": 12,
-    "sourceType": "module"
-  },
-  "plugins": [
-    "react"
-  ],
-  "rules": {
-    "react/react-in-jsx-scope": "off"
-  },
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
-  }
-}
