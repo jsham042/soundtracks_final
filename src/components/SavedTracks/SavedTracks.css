@@ -1,0 +1,34 @@
+.SavedTracks {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 0.88rem 0.88rem;
+  background-color: #1E1E20;
+  color: white;
+}
+
+.SavedTracks h2 {
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.saved-tracks-placeholder {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 1rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+@media screen and (max-width: 600px) {
+  .SavedTracks {
+    padding: 0.5rem;
+  }
+  
+  .saved-tracks-placeholder {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+}

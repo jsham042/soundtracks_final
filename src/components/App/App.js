@@ -4,6 +4,7 @@ import defaultAlbumArt from "./djboticon.png";
 import Playlist from "../Playlist/Playlist.js";
 import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
+import SavedTracks from "../SavedTracks/SavedTracks.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
 
@@ -39,6 +40,8 @@ class App extends React.Component {
             loadingAlbumArt: false,
             loadingPlaylistName: false,
             showSearchResults: true, // New state to toggle between search results and playlist
+            savedTracks: [], // Store previously saved tracks
+            showSavedTracks: false, // Toggle between regular search results and saved tracks view
         };
 
         this.openAiSearch = this.openAiSearch.bind(this);
@@ -59,6 +62,7 @@ class App extends React.Component {
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
         this.directSearch = this.directSearch.bind(this);   
+        this.toggleSavedTracksView = this.toggleSavedTracksView.bind(this);
         this.handleLogin();
     }
     async handleLogin() {
@@ -248,10 +252,24 @@ class App extends React.Component {
         tracks.push(track);
         this.setState({ playlistTracks: tracks });
         localStorage.setItem('playlistTracks', JSON.stringify(tracks));
+        
+        // Remove from search results
         let searchResults = this.state.searchResults;
-        searchResults.splice(searchResults.indexOf(track), 1);
-        this.setState({ searchResults: searchResults });
-        localStorage.setItem('searchResults', JSON.stringify(searchResults));
+        const searchIndex = searchResults.findIndex(result => result.id === track.id);
+        if (searchIndex !== -1) {
+            searchResults.splice(searchIndex, 1);
+            this.setState({ searchResults: searchResults });
+            localStorage.setItem('searchResults', JSON.stringify(searchResults));
+        }
+        
+        // Also remove from savedTracks
+        let savedTracks = this.state.savedTracks;
+        const savedIndex = savedTracks.findIndex(saved => saved.id === track.id);
+        if (savedIndex !== -1) {
+            savedTracks.splice(savedIndex, 1);
+            this.setState({ savedTracks: savedTracks });
+            localStorage.setItem('savedTracks', JSON.stringify(savedTracks));
+        }
     }
 
     toggleTrack(track) {
@@ -296,6 +314,10 @@ class App extends React.Component {
         if (storedPlaylistTracks) {
             this.setState({ playlistTracks: JSON.parse(storedPlaylistTracks) });
         }
+        const storedSavedTracks = localStorage.getItem('savedTracks');
+        if (storedSavedTracks) {
+            this.setState({ savedTracks: JSON.parse(storedSavedTracks) });
+        }
         const accessToken = Spotify.getAccessToken();
         if (accessToken) {
             this.setState({ loggedIn: true });
@@ -321,6 +343,19 @@ class App extends React.Component {
     clearPlaylist() {
         const confirmClear = window.confirm("Careful! Your playlist will be lost forever unless you save it to Spotify. Are you sure you want to clear the playlist?");
         if (confirmClear) {
+            // Before clearing, merge tracks into savedTracks without duplicates
+            const newSavedTracks = [...this.state.savedTracks];
+            this.state.playlistTracks.forEach(track => {
+                if (!newSavedTracks.some(savedTrack => savedTrack.id === track.id)) {
+                    newSavedTracks.push(track);
+                }
+            });
+            
+            // Update savedTracks in state and localStorage
+            this.setState({ savedTracks: newSavedTracks });
+            localStorage.setItem('savedTracks', JSON.stringify(newSavedTracks));
+            
+            // Now clear the playlist
             this.setState({ playlistName: "New Playlist" });
             localStorage.setItem('playlistName', "New Playlist");
             this.setState({ playlistTracks: [] });
@@ -334,6 +369,19 @@ class App extends React.Component {
     savePlaylist() {
         const trackUris = this.state.playlistTracks.map((track) => track.uri);
         Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
+            // Before resetting, merge tracks into savedTracks without duplicates
+            const newSavedTracks = [...this.state.savedTracks];
+            this.state.playlistTracks.forEach(track => {
+                if (!newSavedTracks.some(savedTrack => savedTrack.id === track.id)) {
+                    newSavedTracks.push(track);
+                }
+            });
+            
+            // Update savedTracks in state and localStorage
+            this.setState({ savedTracks: newSavedTracks });
+            localStorage.setItem('savedTracks', JSON.stringify(newSavedTracks));
+            
+            // Now reset the playlist
             this.updatePlaylistName("New Playlist");
             this.setState({ playlistTracks: [] });
             localStorage.setItem('playlistTracks', JSON.stringify([]));
@@ -360,6 +408,10 @@ class App extends React.Component {
 
     toggleView() {
         this.setState(prevState => ({ showSearchResults: !prevState.showSearchResults }));
+    }
+
+    toggleSavedTracksView() {
+        this.setState(prevState => ({ showSavedTracks: !prevState.showSavedTracks }));
     }
 
     render() {
@@ -395,7 +447,16 @@ class App extends React.Component {
                 <div className="SearchAndPlaylist">
                     <div className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}>
                         <div className="SearchSectionHeader">
-                            <h1 className="search-header">Search</h1>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <h1 className="search-header">Search</h1>
+                                <button 
+                                    className="new-playlist-button" 
+                                    style={{ marginLeft: '10px' }}
+                                    onClick={this.toggleSavedTracksView}
+                                >
+                                    {this.state.showSavedTracks ? 'Search Results' : 'Saved Songs'}
+                                </button>
+                            </div>
                             <SearchBar 
                                 onAiSearch={this.openAiSearch}
                                 onDirectSearch={this.directSearch}
@@ -407,13 +468,22 @@ class App extends React.Component {
                                 Fetching results...
                             </div>
                         ) : null}
-                        <SearchResults
-                            searchResults={this.state.searchResults}
-                            onAdd={this.addTrack}
-                            onToggle={this.toggleTrack}
-                            currentTrack={this.state.currentTrack}
-                            onUpdateSearchResults={this.updateSearchResults}
-                        />
+                        {this.state.showSavedTracks ? (
+                            <SavedTracks
+                                savedTracks={this.state.savedTracks}
+                                onAdd={this.addTrack}
+                                onToggle={this.toggleTrack}
+                                currentTrack={this.state.currentTrack}
+                            />
+                        ) : (
+                            <SearchResults
+                                searchResults={this.state.searchResults}
+                                onAdd={this.addTrack}
+                                onToggle={this.toggleTrack}
+                                currentTrack={this.state.currentTrack}
+                                onUpdateSearchResults={this.updateSearchResults}
+                            />
+                        )}
                     </div>
                     <div className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}>
                         <div className="PlaylistSectionHeader">
