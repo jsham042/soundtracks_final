@@ -44,7 +44,7 @@ h2 {
   align-items: center;
   justify-content: space-between;
   padding: 0.2rem 1rem;
-  background: linear-gradient(to bottom, #3b3142, #1d1721);
+  background: linear-gradient(to bottom, #0052cc, #002f6c);
 }
 
 .Header img {
@@ -239,8 +239,8 @@ h2 {
     align-items: center;
     justify-content: space-evenly;
     padding: 0.5rem;
-    background: #1d1721;
-    box-shadow: 0px 4px 20px #3b3142;
+    background: #002f6c;
+    box-shadow: 0px 4px 20px #0052cc;
     border-radius: 50px;
   }
   .Navigator button {
