@@ -107,8 +107,9 @@ h2 {
 }
 
 .SearchSection,
-.PlaylistSection {
-  width: 50%;
+.PlaylistSection,
+.RecentSection {
+  width: 33.33%;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -163,7 +164,8 @@ h2 {
   }
 
   .SearchSection,
-  .PlaylistSection {
+  .PlaylistSection,
+  .RecentSection {
     width: 100%;
     height: 90%;
     position: absolute;
@@ -181,7 +183,8 @@ h2 {
   }
 
   .SearchSection.active,
-  .PlaylistSection.active {
+  .PlaylistSection.active,
+  .RecentSection.active {
     opacity: 1;
     pointer-events: auto;
   }
@@ -245,11 +248,11 @@ h2 {
   }
   .Navigator button {
     cursor: pointer;
-    width: 47%;
-    padding: 3%;
+    width: 30%;
+    padding: 2.5%;
     text-align: center;
     font-family: sans-serif;
-    font-size: 1rem;
+    font-size: 0.9rem;
     border: none;
     color: white;
     background: transparent;
