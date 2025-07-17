@@ -4,6 +4,7 @@ import defaultAlbumArt from "./djboticon.png";
 import Playlist from "../Playlist/Playlist.js";
 import SearchBar from "../SearchBar/SearchBar.js";
 import SearchResults from "../SearchResults/SearchResults.js";
+import RecentSongs from "../RecentSongs/RecentSongs.js";
 import LoginPage from "../LoginPage/LoginPage.js";
 import Spotify from "../../util/Spotify.js";
 
@@ -17,6 +18,7 @@ import {
     faCommentAlt,
     faSearch,
     faMusic,
+    faHistory,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from 'react';
@@ -39,6 +41,8 @@ class App extends React.Component {
             loadingAlbumArt: false,
             loadingPlaylistName: false,
             showSearchResults: true, // New state to toggle between search results and playlist
+            recentlyAddedSongs: [], // Array to store recently added songs with timestamps
+            currentView: 'search', // 'search', 'playlist', or 'recent'
         };
 
         this.openAiSearch = this.openAiSearch.bind(this);
@@ -58,7 +62,11 @@ class App extends React.Component {
         this.removeDuplicateTracks = this.removeDuplicateTracks.bind(this);
         this.toggleView = this.toggleView.bind(this);
         this.regenerateAlbumArt = this.regenerateAlbumArt.bind(this);
-        this.directSearch = this.directSearch.bind(this);   
+        this.directSearch = this.directSearch.bind(this);
+        this.addFromRecent = this.addFromRecent.bind(this);
+        this.removeFromRecent = this.removeFromRecent.bind(this);
+        this.clearRecentHistory = this.clearRecentHistory.bind(this);
+        this.setCurrentView = this.setCurrentView.bind(this);
         this.handleLogin();
     }
     async handleLogin() {
@@ -90,6 +98,8 @@ class App extends React.Component {
             currentTrack: null,
             spotifyUsername: null,
             spotifyAvatar: null,
+            recentlyAddedSongs: [],
+            currentView: 'search',
         });
         localStorage.clear();
     }
@@ -248,6 +258,10 @@ class App extends React.Component {
         tracks.push(track);
         this.setState({ playlistTracks: tracks });
         localStorage.setItem('playlistTracks', JSON.stringify(tracks));
+        
+        // Add to recently added songs
+        this.addToRecentlyAdded(track);
+        
         let searchResults = this.state.searchResults;
         searchResults.splice(searchResults.indexOf(track), 1);
         this.setState({ searchResults: searchResults });
@@ -296,6 +310,26 @@ class App extends React.Component {
         if (storedPlaylistTracks) {
             this.setState({ playlistTracks: JSON.parse(storedPlaylistTracks) });
         }
+        
+        // Load recently added songs
+        const storedRecentSongs = localStorage.getItem('recentlyAddedSongs');
+        if (storedRecentSongs) {
+            try {
+                let recentSongs = JSON.parse(storedRecentSongs);
+                // Clean up old entries beyond 50 items
+                if (recentSongs.length > 50) {
+                    recentSongs = recentSongs.slice(0, 50);
+                    localStorage.setItem('recentlyAddedSongs', JSON.stringify(recentSongs));
+                }
+                this.setState({ recentlyAddedSongs: recentSongs });
+            } catch (error) {
+                console.error("Error loading recent songs from localStorage:", error);
+                // Reset to empty array if corrupted
+                this.setState({ recentlyAddedSongs: [] });
+                localStorage.setItem('recentlyAddedSongs', JSON.stringify([]));
+            }
+        }
+        
         const accessToken = Spotify.getAccessToken();
         if (accessToken) {
             this.setState({ loggedIn: true });
@@ -358,6 +392,58 @@ class App extends React.Component {
         localStorage.setItem('searchResults', JSON.stringify(uniqueResults));
     }
 
+    addToRecentlyAdded(track) {
+        let recentSongs = [...this.state.recentlyAddedSongs];
+        
+        // Remove existing entry if it exists (to update timestamp)
+        recentSongs = recentSongs.filter(recentTrack => recentTrack.track.id !== track.id);
+        
+        // Add new entry with current timestamp
+        const recentEntry = {
+            track: track,
+            addedAt: new Date().toISOString()
+        };
+        
+        // Add to beginning of array (most recent first)
+        recentSongs.unshift(recentEntry);
+        
+        // Keep only last 50 entries to prevent storage bloat
+        if (recentSongs.length > 50) {
+            recentSongs = recentSongs.slice(0, 50);
+        }
+        
+        this.setState({ recentlyAddedSongs: recentSongs });
+        localStorage.setItem('recentlyAddedSongs', JSON.stringify(recentSongs));
+    }
+
+    addFromRecent(recentEntry) {
+        // Add the track from recent history back to current playlist
+        this.addTrack(recentEntry.track);
+    }
+
+    removeFromRecent(recentEntry) {
+        let recentSongs = this.state.recentlyAddedSongs.filter(
+            item => item.track.id !== recentEntry.track.id || item.addedAt !== recentEntry.addedAt
+        );
+        
+        this.setState({ recentlyAddedSongs: recentSongs });
+        localStorage.setItem('recentlyAddedSongs', JSON.stringify(recentSongs));
+    }
+
+    clearRecentHistory() {
+        const confirmClear = window.confirm("Are you sure you want to clear your recent songs history?");
+        if (confirmClear) {
+            this.setState({ recentlyAddedSongs: [] });
+            localStorage.setItem('recentlyAddedSongs', JSON.stringify([]));
+        }
+    }
+
+    setCurrentView(view) {
+        this.setState({ currentView: view });
+        // Update showSearchResults for backward compatibility
+        this.setState({ showSearchResults: view === 'search' });
+    }
+
     toggleView() {
         this.setState(prevState => ({ showSearchResults: !prevState.showSearchResults }));
     }
@@ -393,7 +479,7 @@ class App extends React.Component {
                 </div>
 
                 <div className="SearchAndPlaylist">
-                    <div className={`SearchSection ${this.state.showSearchResults ? 'active' : ''}`}>
+                    <div className={`SearchSection ${this.state.currentView === 'search' ? 'active' : ''}`}>
                         <div className="SearchSectionHeader">
                             <h1 className="search-header">Search</h1>
                             <SearchBar 
@@ -415,7 +501,7 @@ class App extends React.Component {
                             onUpdateSearchResults={this.updateSearchResults}
                         />
                     </div>
-                    <div className={`PlaylistSection ${!this.state.showSearchResults ? 'active' : ''}`}>
+                    <div className={`PlaylistSection ${this.state.currentView === 'playlist' ? 'active' : ''}`}>
                         <div className="PlaylistSectionHeader">
                             <h1 style={{ margin: 0, cursor: 'default' }}>Playlist</h1>
                             {this.state.playlistName !== "New Playlist" && this.state.albumArt !== "./default-album-art.png" && (
@@ -439,22 +525,39 @@ class App extends React.Component {
                         >
                         </Playlist>
                     </div>
+                    <div className={`RecentSection ${this.state.currentView === 'recent' ? 'active' : ''}`}>
+                        <RecentSongs
+                            recentlyAddedSongs={this.state.recentlyAddedSongs}
+                            onAddFromRecent={this.addFromRecent}
+                            onRemoveFromRecent={this.removeFromRecent}
+                            onClearHistory={this.clearRecentHistory}
+                            currentTrack={this.state.currentTrack}
+                            onToggle={this.toggleTrack}
+                        />
+                    </div>
                 </div>
 
                 <div className="Navigator">
                     <button
-                        onClick={this.toggleView}
-                        className={this.state.showSearchResults ? "active" : ""}
+                        onClick={() => this.setCurrentView('search')}
+                        className={this.state.currentView === 'search' ? "active" : ""}
                     >
                         <FontAwesomeIcon icon={faSearch} style={{ marginRight: "0.4em" }} />
                         Search
                     </button>
                     <button
-                        onClick={this.toggleView}
-                        className={this.state.showSearchResults ? "" : "active"}
+                        onClick={() => this.setCurrentView('playlist')}
+                        className={this.state.currentView === 'playlist' ? "active" : ""}
                     >
                         <FontAwesomeIcon icon={faMusic} style={{ marginRight: "0.5em" }} />
                         Playlist
+                    </button>
+                    <button
+                        onClick={() => this.setCurrentView('recent')}
+                        className={this.state.currentView === 'recent' ? "active" : ""}
+                    >
+                        <FontAwesomeIcon icon={faHistory} style={{ marginRight: "0.4em" }} />
+                        Recent
                     </button>
                 </div>
             </div>
